@@ -4,13 +4,13 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HitokotoService } from './hitokoto/hitokoto.service';
 import { HitokotoSchema } from './hitokoto/hitokoto.schema';
-
+const dbConfig = require('../config/db.json');
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/common_api', {
+    MongooseModule.forRoot(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.db_name}`, {
       useNewUrlParser: true,
-      user: 'sookie',
-      pass: '123456'
+      user: dbConfig.user,
+      pass: dbConfig.password
     }),
     MongooseModule.forFeature([{ name: 'Hitokoto', schema: HitokotoSchema }])
   ],

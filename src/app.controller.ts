@@ -18,7 +18,6 @@ export class AppController {
 
   @Get('/hitokoto')
   getHitokoto(@Query() hitokotoDto : HitokotoDto): Promise<Hitokoto> {
-    console.log(hitokotoDto)
     return this.hitokotoService.findOne(hitokotoDto);
   }
 }
