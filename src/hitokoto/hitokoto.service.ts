@@ -9,6 +9,10 @@ import { HitokotoQc } from './hitokoto.qc'
 export class HitokotoService {
   constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: Model<Hitokoto>) {}
 
+  /**
+   * 随机获取一条一言
+   * @param hitokotoDto 查询条件
+   */
   async findOne(hitokotoDto : HitokotoDto): Promise<Hitokoto> {
     var searchParam: HitokotoQc = {};
     if(hitokotoDto.type) {
