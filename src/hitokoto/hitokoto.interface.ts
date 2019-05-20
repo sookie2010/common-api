@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 
 export interface Hitokoto extends mongoose.Document {
-  readonly _id: mongoose.Schema.Types.ObjectId,
-  readonly hitokoto: String,
+  readonly _id: mongoose.Schema.Types.ObjectId
+  readonly hitokoto: String
   /**
    * a	Anime - 动画
    * b	Comic – 漫画
@@ -12,9 +12,9 @@ export interface Hitokoto extends mongoose.Document {
    * f	Internet – 来自网络
    * g	Other – 其他
    */
-  readonly type: String,
-  readonly from: String,
-  readonly creator: String,
-  readonly created_at: Date,
-  readonly number: Number,
+  readonly type: String
+  readonly from: String
+  readonly creator: String
+  readonly created_at: Date
+  readonly number: Number
 }

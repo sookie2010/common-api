@@ -10,10 +10,14 @@ export interface HitokotoDto {
    * g	Other – 其他
    * (默认全部)
    */
-  type: String,
+  type: String
   /**
    * text	返回纯净文本
    * json	返回不进行unicode转码的json文本(默认)
    */
   format: String
+  /**
+   * 文字长度上限
+   */
+  length: Number
 }
