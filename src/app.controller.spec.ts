@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HitokotoService } from './hitokoto/hitokoto.service';
+import { PhotoWallService } from './photo-wall/photo-wall.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HitokotoSchema } from './hitokoto/hitokoto.schema';
+import { PhotoWallSchema } from './photo-wall/photo-wall.schema';
 
 const dbConfig = require('../config/db.json');
 describe('AppController', () => {
@@ -17,12 +19,14 @@ describe('AppController', () => {
           user: dbConfig.user,
           pass: dbConfig.password
         }),
-        MongooseModule.forFeature([{ name: 'Hitokoto', schema: HitokotoSchema }])
+        MongooseModule.forFeature([
+          { name: 'Hitokoto', schema: HitokotoSchema },
+          { name: 'PhotoWall', schema: PhotoWallSchema }
+        ])
       ],
       controllers: [AppController],
-      providers: [AppService, HitokotoService],
+      providers: [AppService, HitokotoService, PhotoWallService],
     }).compile();
-
     appController = app.get<AppController>(AppController);
   });
 
