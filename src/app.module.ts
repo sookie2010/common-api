@@ -11,8 +11,8 @@ const dbConfig = require('../config/db.json');
   imports: [
     MongooseModule.forRoot(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.db_name}`, {
       useNewUrlParser: true,
-      // user: dbConfig.user,
-      // pass: dbConfig.password
+      user: dbConfig.user,
+      pass: dbConfig.password
     }),
     MongooseModule.forFeature([
       { name: 'Hitokoto', schema: HitokotoSchema },
