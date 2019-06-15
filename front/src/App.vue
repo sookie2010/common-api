@@ -1,6 +1,5 @@
 <template>
   <div id="app" class="layout">
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <Row type="flex">
       <i-col span="5" class="layout-menu-left">
         <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" @on-select="menuSelected" >
@@ -132,5 +131,23 @@ export default {
     padding: 14px 24px 14px 43px;
     color: inherit;
     display: block;
+  }
+  .search-title {
+    line-height: 32px;
+    text-align: right;
+    padding-right: 5px;
+  }
+  .table-container {
+    position: relative;
+  }
+  .btn-container {
+    padding: 10px 0;
+  }
+  .btn-container button {
+    margin-right: 3px;
+  }
+  .page-container {
+    padding: 10px;
+    text-align: center;
   }
 </style>

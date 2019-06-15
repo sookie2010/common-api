@@ -14,7 +14,6 @@ export class PhotoWallService {
    * @param limit 每页数据条数
    */
   async queryPage(page: Page): Promise<Page> {
-    console.log(page)
     return this.photoWallModel.countDocuments({}).exec().then((cnt: Number) => {
       if(cnt === 0) {
         throw new Error('没有图片数据');

@@ -1,6 +1,15 @@
 
 export interface HitokotoDto {
   /**
+   * 内容模糊搜索
+   */
+  content: string
+  /**
+   * 创建时间范围搜索, 数组包含2个元素
+   * 分别是起始时间与结束时间的 UTS 字符串
+   */
+  createAt: Array<string>
+  /**
    * a	Anime - 动画
    * b	Comic – 漫画
    * c	Game – 游戏
