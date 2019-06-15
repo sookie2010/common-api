@@ -27,12 +27,16 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
+    <Checkbox v-model="single">Checkbox</Checkbox>
   </div>
 </template>
 
 <script>
+import Checkbox from 'iview/src/components/checkbox'
+
 export default {
   name: 'HelloWorld',
+  components: {Checkbox},
   props: {
     msg: String
   }

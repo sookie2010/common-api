@@ -1,28 +1,136 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="layout">
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <Row type="flex">
+      <i-col span="5" class="layout-menu-left">
+        <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" @on-select="menuSelected" >
+          <Submenu v-for="(item,index) in menus" :key="index" :name="index">
+            <template slot="title">
+              <Icon :type="item.icon"></Icon>{{item.name}}
+            </template>
+            <Menu-item v-for="(subItem,subIndex) in item.child" :key="subIndex" :link="'/api/hitokoto'"
+                :name="index + '-' + subIndex" >
+              <router-link class="menu-link" :to="subItem.path" >
+                {{subItem.name}}
+              </router-link>
+            </Menu-item>
+          </Submenu>
+        </Menu>
+      </i-col>
+      <i-col span="19">
+        <div class="layout-header">
+          <h1>博客API管理后台</h1>
+        </div>
+        <div class="layout-breadcrumb">
+          <Breadcrumb>
+            <Breadcrumb-item >首页</Breadcrumb-item>
+            <Breadcrumb-item v-for="(item,index) in breadcrumb" :key="index">{{item}}</Breadcrumb-item>
+          </Breadcrumb>
+        </div>
+        <div class="layout-content">
+          <router-view class="main-view"></router-view>
+        </div>
+        <div class="layout-copy">2016-2019 &copy; colorfulsweet</div>
+      </i-col>
+    </Row>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+
+// import Row from 'iview/src/components/row'
+// import Menu from 'iview/src/components/menu'
+// import Submenu from 'iview/src/components/submenu'
+// import Icon from 'iview/src/components/icon'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    // HelloWorld
+    // Row, Menu, Submenu, Icon
+  },
+  data() {
+    return {
+      // 菜单项
+      menus: [{
+        name: '系统管理',
+        icon: 'ios-navigate',
+        child: [{
+          name: '用户管理',
+          path: '/system/user'
+        }]
+      },{
+        name: 'API数据',
+        icon: 'ios-keypad',
+        child: [{
+          name: '一言',
+          path: '/api/hitokoto'
+        },{
+          name: '照片墙',
+          path: '/api/photoWall'
+        }]
+      }],
+      // 面包屑
+      breadcrumb: []
+    }
+  },
+  methods: {
+    menuSelected(menuName) {
+      let menuIndexes = menuName.split('-')
+      this.breadcrumb.length = 0
+      this.breadcrumb.push(
+        this.menus[menuIndexes[0]].name, 
+        this.menus[menuIndexes[0]].child[menuIndexes[1]].name)
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  html,body {
+    height: 100%;
+  }
+  .layout{
+    height: 100%;
+    background: #f5f7f9;
+    position: relative;
+  }
+  .ivu-row-flex {
+    height: 100%;
+  }
+  .layout-breadcrumb{
+    padding: 10px 15px 0;
+  }
+  .layout-content{
+    min-height: 300px;
+    margin: 15px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 4px;
+    padding: 10px;
+  }
+  .layout-copy{
+    text-align: center;
+    padding: 10px 0 20px;
+    color: #9ea7b4;
+  }
+  .layout-menu-left{
+    background: #464c5b;
+  }
+  .layout-header{
+    height: 60px;
+    line-height: 60px;
+    padding-left: 30px;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+  }
+  .ivu-menu-item {
+    padding: 0 !important;
+  }
+  .ivu-menu-item a.menu-link {
+    padding: 14px 24px 14px 43px;
+    color: inherit;
+    display: block;
+  }
 </style>
