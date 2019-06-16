@@ -1,0 +1,167 @@
+<template>
+<div>
+  <Row>
+    <Col span="2">
+      <div class="search-title">文件名：</div>
+    </Col>
+    <Col span="4">
+      <Input v-model="search.name"  />
+    </Col>
+
+    <Col span="2">
+      <div class="search-title">宽度：</div>
+    </Col>
+    <Col span="1">
+      <Input-number :min="0" v-model="search.widthMin"></Input-number>
+    </Col>
+    <Col span="2"><div class="search-title"> —— </div></Col>
+    <Col span="1">
+      <Input-number :min="0" v-model="search.widthMax"></Input-number>
+    </Col>
+
+    <Col span="2">
+      <div class="search-title">高度</div>
+    </Col>
+    <Col span="1">
+      <Input-number :min="0" v-model="search.heightMin"></Input-number>
+    </Col>
+    <Col span="2"><div class="search-title"> —— </div></Col>
+    <Col span="1">
+      <Input-number :min="0" v-model="search.heightMax"></Input-number>
+    </Col>
+    <Col span="5" offset="1">
+      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
+      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+    </Col>
+  </Row>
+  
+  <div class="btn-container">
+    <Button type="primary" >上传图片</Button>
+    <Button type="error" @click="deleteAll">删除</Button>
+  </div>
+  <div class="table-container">
+    <Table border :columns="photowallColumns" :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
+    <Spin fix v-show="loading"></Spin>
+  </div>
+  <div class="page-container">
+    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+  </div>
+  
+</div>
+</template>
+<script>
+import Table from 'iview/src/components/table'
+import Row from 'iview/src/components/row'
+import Col from 'iview/src/components/col'
+import Input from 'iview/src/components/input'
+import InputNumber from 'iview/src/components/input-number'
+import Button from 'iview/src/components/button'
+import Page from 'iview/src/components/page'
+import Spin from 'iview/src/components/spin'
+
+var selectedData = null
+export default {
+  components: {
+    Table, Row, Col, Input, InputNumber, Button, Page, Spin
+  },
+  data() {
+    return {
+      loading: false,
+      search: {
+        pageNum: 1,
+        limit: 10,
+        total: null,
+        widthMin: 0,
+        widthMax: 0,
+        heightMin: 0,
+        heightMax: 0
+      },
+      photowallColumns: [{
+          type: 'selection',
+          key: '_id',
+          width: 60,
+          align: 'center'
+        },{
+            title: '文件名',
+            key: 'name'
+        },{
+            title: 'md5',
+            key: 'md5',
+            width: 280
+        },{
+            title: '缩略图',
+            key: 'thumbnail'
+        },{
+            title: '宽度',
+            key: 'width',
+            width: 70
+        },{
+            title: '高度',
+            key: 'height',
+            width: 70
+        }],
+      photowallData: []
+    }
+  },
+  methods: {
+    reset() {
+      this.search = {
+        pageNum: 1,
+        limit: 10,
+        total: this.search.total,
+        widthMin: 0,
+        widthMax: 0,
+        heightMin: 0,
+        heightMax: 0
+      }
+      this.loadData()
+    },
+    loadData(resetPage) {
+      if(resetPage) {
+        this.search.pageNum = 1
+        this.search.limit = 10
+      }
+      this.loading = true
+      this.$http.get('/photowall/list', {params:this.search}).then(res => {
+        selectedData = null
+        this.loading = false
+        this.search.total = res.data.total
+        this.photowallData = res.data.data
+      })
+    },
+    deleteAll() {
+      if(!selectedData || !selectedData.length) {
+        this.$Message.warning('请选择要删除的数据')
+        return
+      }
+      this.$Modal.confirm({
+        title: '确认删除',
+        content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
+        loading: true,
+        onOk: () => {
+          this.$http.delete('/photowall/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(res => {
+            this.$Modal.remove()
+            this.$Message.success('删除成功')
+            this.loadData()
+          })
+        }
+      })
+    },
+    pageChange(pageNum) {
+      this.search.pageNum = pageNum
+      this.loadData()
+    },
+    pageSizeChange(pageSize) {
+      this.search.limit = pageSize
+      this.loadData()
+    },
+    dataSelect(selection) {
+      selectedData = selection
+    }
+  },
+  created() {
+    this.loadData()
+  }
+}
+</script>

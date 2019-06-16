@@ -1,6 +1,10 @@
 
 export interface HitokotoDto {
   /**
+   * 多个ID, 用于批量删除
+   */
+  _ids: Array<string>
+  /**
    * 内容模糊搜索
    */
   content: string

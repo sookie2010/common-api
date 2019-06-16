@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HitokotoController } from './hitokoto/hitokoto.controller';
+import { PhotoWallController } from './photo-wall/photo-wall.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HitokotoService } from './hitokoto/hitokoto.service';
@@ -20,7 +21,7 @@ const dbConfig = require('../config/db.json');
       { name: 'PhotoWall', schema: PhotoWallSchema },
     ])
   ],
-  controllers: [AppController, HitokotoController],
+  controllers: [AppController, HitokotoController, PhotoWallController],
   providers: [AppService, HitokotoService,PhotoWallService]
 })
 export class AppModule {}

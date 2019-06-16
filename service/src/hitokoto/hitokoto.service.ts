@@ -1,14 +1,14 @@
-import { Model } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Hitokoto } from './hitokoto.interface';
 import { HitokotoDto } from './hitokoto.dto';
 import { HitokotoQc } from './hitokoto.qc';
-import { Page } from '../page.dto'
+import { Page } from '../common/page.dto'
 
 @Injectable()
 export class HitokotoService {
-  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: Model<Hitokoto>) {}
+  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: mongoose.Model<Hitokoto>) {}
 
   /**
    * 随机获取一条一言
@@ -67,8 +67,6 @@ export class HitokotoService {
     }).then((hitokotos : Array<Hitokoto>) => {
       page.data = hitokotos
       return page
-    }).catch((err: Error) => {
-      return {msg: err.message};
     })
   }
 
@@ -78,6 +76,25 @@ export class HitokotoService {
    */
   async save(hitokoto: Hitokoto): Promise<String> {
     hitokoto.created_at = new Date();
-    return this.hitokotoModel.insert(hitokoto).exec();
+    return this.hitokotoModel.aggregate([{$group: {
+        _id: "max_number",
+        number: { $max: "$number" }
+      }}]).then((hitokotoMax: Array<Hitokoto>) =>{
+        if(hitokotoMax && hitokotoMax.length) {
+          hitokoto.number = hitokotoMax[0].number + 1;
+        } else {
+          hitokoto.number = 1
+        }
+        hitokoto._id = new mongoose.Types.ObjectId();
+        return this.hitokotoModel.create(hitokoto);
+      })
+  }
+
+  /**
+   * 批量删除一言
+   * @param _ids 删除数据的ID们
+   */
+  async delete(_ids: Array<string>): Promise<String> {
+    return this.hitokotoModel.deleteMany({_id: {$in: _ids}}).exec();
   }
 }

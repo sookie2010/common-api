@@ -4,9 +4,11 @@ import App from './App.vue'
 import router from './router'
 
 // iview
-import iView from 'iview'
 import 'iview/dist/styles/iview.css'
-Vue.use(iView)
+import Message from 'iview/src/components/message'
+import Modal from 'iview/src/components/modal'
+Vue.prototype.$Message = Message
+Vue.prototype.$Modal = Modal
 
 Vue.config.productionTip = false
 

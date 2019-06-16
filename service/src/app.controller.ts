@@ -4,7 +4,7 @@ import { HitokotoService } from './hitokoto/hitokoto.service';
 import { PhotoWallService } from './photo-wall/photo-wall.service';
 import { Hitokoto } from './hitokoto/hitokoto.interface';
 import { HitokotoDto } from './hitokoto/hitokoto.dto';
-import { Page } from './page.dto';
+import { Page } from './common/page.dto';
 
 @Controller()
 export class AppController {

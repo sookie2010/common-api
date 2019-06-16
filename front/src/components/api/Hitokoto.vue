@@ -1,53 +1,67 @@
 <template>
-  <div>
-    <Row>
-      <Col span="2">
-        <div class="search-title">内容：</div>
-      </Col>
-      <Col span="4">
-        <Input v-model="search.content" />
-      </Col>
+<div>
+  <Row>
+    <Col span="2">
+      <div class="search-title">内容：</div>
+    </Col>
+    <Col span="4">
+      <Input v-model="search.content"  />
+    </Col>
 
-      <Col span="2">
-        <div class="search-title">类型：</div>
-      </Col>
-      <Col span="4">
-        <Select v-model="search.type">
-          <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-        </Select>
-      </Col>
+    <Col span="2">
+      <div class="search-title">类型：</div>
+    </Col>
+    <Col span="4">
+      <Select v-model="search.type" clearable>
+        <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+      </Select>
+    </Col>
 
-      <Col span="2">
-        <div class="search-title">创建时间：</div>
-      </Col>
-      <Col span="4">
-        <Date-picker v-model="search.createAt" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
-      </Col>
-      <Col span="5" offset="1">
-        <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-        <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
-      </Col>
-    </Row>
-    
-    <div class="btn-container">
-      <Button type="primary" @click="addModal = true">添加</Button>
-      <Button type="error" @click="deleteAll">删除</Button>
-    </div>
-    <div class="table-container">
-      <Table border :columns="hitokotoColumns" :data="hitokotoData" height="520"></Table>
-      <Spin fix v-show="loading"></Spin>
-    </div>
-    <div class="page-container">
-      <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-        show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
-    </div>
-    <Modal v-model="addModal" title="新增 一言" :loading="true" @on-ok="save">
-      <p>点击确定后，对话框将在 2秒 后关闭。</p>
-    </Modal>
-    
+    <Col span="2">
+      <div class="search-title">创建时间：</div>
+    </Col>
+    <Col span="4">
+      <Date-picker v-model="search.createAt" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
+    </Col>
+    <Col span="5" offset="1">
+      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
+      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+    </Col>
+  </Row>
+  
+  <div class="btn-container">
+    <Button type="primary" @click="addModal = true">添加</Button>
+    <Button type="error" @click="deleteAll">删除</Button>
   </div>
+  <div class="table-container">
+    <Table border :columns="hitokotoColumns" :data="hitokotoData" height="520" @on-selection-change="dataSelect"></Table>
+    <Spin fix v-show="loading"></Spin>
+  </div>
+  <div class="page-container">
+    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+  </div>
+  <Modal v-model="addModal" title="新增 一言" :loading="true" @on-ok="save">
+    <HitokotoAdd :typeList="typeList" :formData="formData" />
+  </Modal>
+  
+</div>
 </template>
 <script>
+import Table from 'iview/src/components/table'
+import Row from 'iview/src/components/row'
+import Col from 'iview/src/components/col'
+import Input from 'iview/src/components/input'
+import Select from 'iview/src/components/select'
+import Option from 'iview/src/components/option'
+import DatePicker from 'iview/src/components/date-picker'
+import Button from 'iview/src/components/button'
+import Page from 'iview/src/components/page'
+import Spin from 'iview/src/components/spin'
+import Modal from 'iview/src/components/modal'
+
+import HitokotoAdd from './HitokotoAdd'
+
 var typeList = [
   {label:'Anime - 动画', value:'a'},
   {label:'Comic – 漫画', value:'b'},
@@ -56,8 +70,12 @@ var typeList = [
   {label:'Myself – 原创', value:'e'},
   {label:'Internet – 来自网络', value:'f'},
   {label:'Other – 其他', value:'g'}
-]
+],
+selectedData = null
 export default {
+  components: {
+    Table, Row, Col, Input, Select, Option, DatePicker, Button, Page, Spin, Modal, HitokotoAdd
+  },
   data() {
     return {
       loading: false,
@@ -69,6 +87,7 @@ export default {
       typeList,
       hitokotoColumns: [{
           type: 'selection',
+          key: '_id',
           width: 60,
           align: 'center'
         },{
@@ -103,6 +122,12 @@ export default {
             }
         }],
       hitokotoData: [],
+      formData: {
+        hitokoto: null,
+        type: null,
+        from: null,
+        creator: null
+      },
       addModal: false
     }
   },
@@ -115,22 +140,46 @@ export default {
       }
       this.loadData()
     },
-    loadData() {
+    loadData(resetPage) {
+      if(resetPage) {
+        this.search.pageNum = 1
+        this.search.limit = 10
+      }
       this.loading = true
       this.$http.get('/hitokoto/list', {params:this.search}).then(res => {
+        selectedData = null
         this.loading = false
         this.search.total = res.data.total
         this.hitokotoData = res.data.data
       })
     },
     save() {
-      // TODO 保存一言
-      setTimeout(()=>{
+      this.$http.post('/hitokoto/save', this.formData).then(res => {
         this.addModal = false
-      }, 2000)
+        this.loadData()
+        // 清空表单
+        Object.keys(this.formData).forEach(key => {
+          this.formData[key] = null
+        })
+      })
     },
     deleteAll() {
-      
+      if(!selectedData || !selectedData.length) {
+        this.$Message.warning('请选择要删除的数据')
+        return
+      }
+      this.$Modal.confirm({
+        title: '确认删除',
+        content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
+        loading: true,
+        onOk: () => {
+          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(res => {
+            this.$Modal.remove()
+            this.$Message.success('删除成功')
+            this.loadData()
+          })
+        }
+      })
     },
     pageChange(pageNum) {
       this.search.pageNum = pageNum
@@ -139,6 +188,9 @@ export default {
     pageSizeChange(pageSize) {
       this.search.limit = pageSize
       this.loadData()
+    },
+    dataSelect(selection) {
+      selectedData = selection
     }
   },
   created() {

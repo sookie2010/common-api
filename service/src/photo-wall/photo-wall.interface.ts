@@ -1,10 +1,10 @@
 import * as mongoose from 'mongoose';
 
 export interface PhotoWall extends mongoose.Document {
-  readonly _id: mongoose.Schema.Types.ObjectId
-  readonly name: String,
-  readonly md5: String,
-  readonly thumbnail: String,
-  readonly width: number,
-  readonly height: number,
+  _id: mongoose.Schema.Types.ObjectId
+  name: String,
+  md5: String,
+  thumbnail: String,
+  width: number,
+  height: number,
 }

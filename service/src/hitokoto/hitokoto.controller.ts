@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Query, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Query, Body } from '@nestjs/common';
 import { HitokotoService } from './hitokoto.service';
 import { Hitokoto } from './hitokoto.interface';
 import { HitokotoDto } from './hitokoto.dto';
-import { Page } from '../page.dto';
+import { Page } from '../common/page.dto';
 
 @Controller()
 export class HitokotoController {
@@ -20,6 +20,12 @@ export class HitokotoController {
 
   @Post('/hitokoto/save')
   save(@Body() hitokoto: Hitokoto): Promise<String> {
+    console.log()
     return this.hitokotoService.save(hitokoto);
+  }
+
+  @Delete('/hitokoto/delete')
+  delete(@Query() hitokotoDto: HitokotoDto): Promise<String> {
+    return this.hitokotoService.delete(hitokotoDto._ids);
   }
 }

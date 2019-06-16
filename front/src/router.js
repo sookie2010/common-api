@@ -4,10 +4,12 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
+const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
 
 const router = new Router({
 	routes: [
-		{ path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto }
+    { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
+    { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall }
 	]
 })
 // 登陆状态过滤器需要排除的路由名称

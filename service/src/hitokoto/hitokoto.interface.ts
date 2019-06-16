@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 export interface Hitokoto extends mongoose.Document {
-  readonly _id: mongoose.Schema.Types.ObjectId
+  _id: mongoose.Schema.Types.ObjectId
   hitokoto: String
   /**
    * a	Anime - 动画
@@ -16,5 +16,5 @@ export interface Hitokoto extends mongoose.Document {
   from: String
   creator: String
   created_at: Date
-  number: Number
+  number: number
 }
