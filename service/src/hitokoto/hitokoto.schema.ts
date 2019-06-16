@@ -8,4 +8,4 @@ export const HitokotoSchema = new mongoose.Schema({
   creator: String,
   created_at: Date,
   number: Number,
-}, { collection: 'hitokoto' });
+}, { collection: 'hitokoto', versionKey: false });

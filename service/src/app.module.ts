@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common/index';
 import { AppController } from './app.controller';
 import { HitokotoController } from './hitokoto/hitokoto.controller';
 import { PhotoWallController } from './photo-wall/photo-wall.controller';
-import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HitokotoService } from './hitokoto/hitokoto.service';
 import { PhotoWallService } from './photo-wall/photo-wall.service';
@@ -13,8 +12,8 @@ const dbConfig = require('../config/db.json');
   imports: [
     MongooseModule.forRoot(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.db_name}`, {
       useNewUrlParser: true,
-      // user: dbConfig.user,
-      // pass: dbConfig.password
+      user: dbConfig.user,
+      pass: dbConfig.password
     }),
     MongooseModule.forFeature([
       { name: 'Hitokoto', schema: HitokotoSchema },
@@ -22,6 +21,6 @@ const dbConfig = require('../config/db.json');
     ])
   ],
   controllers: [AppController, HitokotoController, PhotoWallController],
-  providers: [AppService, HitokotoService,PhotoWallService]
+  providers: [HitokotoService,PhotoWallService]
 })
 export class AppModule {}

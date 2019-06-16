@@ -1,14 +1,28 @@
 import * as mongoose from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common/index';
 import { InjectModel } from '@nestjs/mongoose';
 import { PhotoWallDto } from './photo-wall.dto';
 import { PhotoWall } from './photo-wall.interface';
 import { Page } from '../common/page.dto';
+import { FileDto } from '../common/file.dto';
 import { PhotoWallQc } from './photo-wall.qc';
+
+const images = require('images');
+const nos = require('@xgheaven/nos-node-sdk'), 
+  nosSetting = require('../../config/auth.json');
+const crypto = require('crypto');
 
 @Injectable()
 export class PhotoWallService {
-  constructor(@InjectModel('PhotoWall') private readonly photoWallModel: mongoose.Model<PhotoWall>) {}
+  client: {
+    putObject: Function, 
+    deleteMultiObject: Function
+  }
+
+  constructor(@InjectModel('PhotoWall') private readonly photoWallModel: mongoose.Model<PhotoWall>) {
+    // 网易云对象存储接口
+    this.client = new nos.NosClient(nosSetting)
+  }
 
   /**
    * 分页查询照片墙图片数据
@@ -70,9 +84,55 @@ export class PhotoWallService {
    * 保存照片信息
    * @param photowall 照片信息
    */
-  async save(photowall: PhotoWall): Promise<String> {
+  async save(image: FileDto): Promise<String> {
+    var ext = image.originalname.substr(image.originalname.indexOf('.')+1); // 文件扩展名
+    var photowall:PhotoWall = {};
     photowall._id = new mongoose.Types.ObjectId();
-    return this.photoWallModel.create(photowall);
+    var img = images(image.buffer);
+    // 获取图片宽高
+    photowall.width = img.width();
+    photowall.height = img.height();
+
+    // 获取图片MD5值
+    var fsHash = crypto.createHash('md5');
+    fsHash.update(image.buffer);
+    photowall.md5 = fsHash.digest('hex');
+
+    // 生成缩略图
+    img.resize(370);
+    var thumbnailBuffer = img.encode(ext, {operation:50});
+    return this.photoWallModel.countDocuments({}).exec().then((cnt: number) => {
+      let groupId = Math.floor(cnt / 50) + 1; // 当前分组
+      let num = '', len = (cnt+1).toString().length; // 编号
+      for(let i=0 ; i<5-len ; i++) {
+        num += '0';
+      }
+      photowall.name = `photo-wall/${groupId}/pic_${num}${cnt+1}.${ext}`;
+      photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${cnt+1}_thumbnail.${ext}`;
+      // 上传原图到对象存储仓库
+      return this.client.putObject({
+        objectKey: photowall.name,
+        body: image.buffer
+      });
+    }).then(result => {
+      // eTag是上传后远端校验的md5值, 用于和本地进行比对
+      let eTag = result.eTag.replace(/"/g,'');
+      if(photowall.md5 === eTag) {
+        console.log(`${photowall.name} 上传成功, md5:${eTag}`);
+        // 上传缩略图
+        return this.client.putObject({
+          objectKey: photowall.thumbnail,
+          body: thumbnailBuffer
+        });
+      } else {
+        console.warn(`${photowall.name} 上传出错, md5值不一致`);
+        console.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`);
+        return Promise.reject(`${photowall.name} 上传出错, md5值不一致`)
+      }
+    }).then(() => {
+      console.log(`缩略图 ${photowall.thumbnail} 上传成功`);
+      return this.photoWallModel.create(photowall);
+    })
   }
 
   /**

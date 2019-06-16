@@ -1,6 +1,6 @@
 {
   "name": "common-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -20,10 +20,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^6.0.0",
-    "@nestjs/core": "^6.0.0",
+    "@nestjs/common": "^6.3.1",
+    "@nestjs/core": "^6.3.1",
     "@nestjs/mongoose": "^6.1.2",
-    "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/platform-express": "^6.3.1",
+    "@xgheaven/nos-node-sdk": "^0.2.5",
+    "images": "^3.0.2",
     "mongoose": "^5.5.9",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",

@@ -36,12 +36,20 @@
   </Row>
   
   <div class="btn-container">
-    <Button type="primary" >上传图片</Button>
+    <Upload action="/photowall/upload" name="image" :show-upload-list="false" 
+      :format="['jpg','jpeg','png']"
+      :on-progress="uploadProgress" :on-success="uploadSuccess" @on-error="uploadError">
+      <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
+    </Upload>
     <Button type="error" @click="deleteAll">删除</Button>
   </div>
   <div class="table-container">
     <Table border :columns="photowallColumns" :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
     <Spin fix v-show="loading"></Spin>
+    <Spin fix v-show="uploading">
+      <Icon type="load-c" size=18></Icon>
+      <div>正在上传，请稍候...</div>
+    </Spin>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -57,17 +65,20 @@ import Col from 'iview/src/components/col'
 import Input from 'iview/src/components/input'
 import InputNumber from 'iview/src/components/input-number'
 import Button from 'iview/src/components/button'
+import Upload from 'iview/src/components/upload'
 import Page from 'iview/src/components/page'
 import Spin from 'iview/src/components/spin'
+import Icon from 'iview/src/components/icon'
 
 var selectedData = null
 export default {
   components: {
-    Table, Row, Col, Input, InputNumber, Button, Page, Spin
+    Table, Row, Col, Input, InputNumber, Button, Upload, Page, Spin, Icon
   },
   data() {
     return {
       loading: false,
+      uploading: false,
       search: {
         pageNum: 1,
         limit: 10,
@@ -158,6 +169,18 @@ export default {
     },
     dataSelect(selection) {
       selectedData = selection
+    },
+    uploadProgress() {
+      this.uploading = true
+    },
+    uploadSuccess() {
+      this.uploading = false
+      this.$Message.success('上传成功')
+      this.loadData()
+    },
+    uploadError() {
+      this.uploading = false
+      this.$Message.error('上传失败')
     }
   },
   created() {
@@ -165,3 +188,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.ivu-upload {
+  display: inline-block;
+}
+</style>
+

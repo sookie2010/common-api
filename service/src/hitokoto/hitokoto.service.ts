@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common/index';
 import { InjectModel } from '@nestjs/mongoose';
 import { Hitokoto } from './hitokoto.interface';
 import { HitokotoDto } from './hitokoto.dto';
