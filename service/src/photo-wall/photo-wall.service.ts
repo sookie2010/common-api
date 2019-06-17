@@ -101,14 +101,19 @@ export class PhotoWallService {
     // 生成缩略图
     img.resize(370);
     var thumbnailBuffer = img.encode(ext, {operation:50});
-    return this.photoWallModel.countDocuments({}).exec().then((cnt: number) => {
-      let groupId = Math.floor(cnt / 50) + 1; // 当前分组
-      let num = '', len = (cnt+1).toString().length; // 编号
+    return this.photoWallModel.aggregate([{$group: {
+      _id: "max_index",
+      index: { $max: "$index" }
+    }}]).then((maxIndex: Array<PhotoWall>) => {
+      let lastIndex = maxIndex[0].index;
+      let groupId = Math.floor(lastIndex / 50) + 1; // 当前分组
+      let num = '', len = (lastIndex+1).toString().length; // 编号
       for(let i=0 ; i<5-len ; i++) {
         num += '0';
       }
-      photowall.name = `photo-wall/${groupId}/pic_${num}${cnt+1}.${ext}`;
-      photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${cnt+1}_thumbnail.${ext}`;
+      photowall.name = `photo-wall/${groupId}/pic_${num}${lastIndex+1}.${ext}`;
+      photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${lastIndex+1}_thumbnail.${ext}`;
+      photowall.index = lastIndex + 1;
       // 上传原图到对象存储仓库
       return this.client.putObject({
         objectKey: photowall.name,
@@ -140,6 +145,16 @@ export class PhotoWallService {
    * @param _ids 删除数据的ID们
    */
   async delete(_ids: Array<string>): Promise<String> {
-    return this.photoWallModel.deleteMany({_id: {$in: _ids}}).exec();
+    return this.photoWallModel.find({_id: {$in: _ids}}).exec().then((photoWalls : Array<PhotoWall>) => {
+      let deleteFileNames = [];
+      photoWalls.forEach((photoWall : PhotoWall) => {
+        deleteFileNames.push(photoWall.name);
+        deleteFileNames.push(photoWall.thumbnail);
+      });
+      return this.client.deleteMultiObject({objectKeys: deleteFileNames})
+    }).then(err => {
+      if(err) console.error(err);
+      return this.photoWallModel.deleteMany({_id: {$in: _ids}}).exec();
+    });
   }
 }

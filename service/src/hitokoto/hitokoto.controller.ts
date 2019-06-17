@@ -4,7 +4,7 @@ import { Hitokoto } from './hitokoto.interface';
 import { HitokotoDto } from './hitokoto.dto';
 import { Page } from '../common/page.dto';
 
-@Controller()
+@Controller('/hitokoto')
 export class HitokotoController {
   constructor(
     private readonly hitokotoService: HitokotoService
@@ -14,7 +14,7 @@ export class HitokotoController {
    * @param hitokotoDto 查询条件
    * @param page 分页
    */
-  @Get('/hitokoto/list')
+  @Get('/list')
   list(@Query() hitokotoDto: HitokotoDto, @Query() page: Page): Promise<Page> {
     if(page.pageNum && page.limit) {
       page.start = ~~page.limit * (~~page.pageNum - 1);
@@ -25,7 +25,7 @@ export class HitokotoController {
    * 保存一言
    * @param hitokoto 一言
    */
-  @Post('/hitokoto/save')
+  @Post('/save')
   save(@Body() hitokoto: Hitokoto): Promise<String> {
     console.log()
     return this.hitokotoService.save(hitokoto);
@@ -34,7 +34,7 @@ export class HitokotoController {
    * 删除一言
    * @param hitokotoDto 需要删除的多个ID
    */
-  @Delete('/hitokoto/delete')
+  @Delete('/delete')
   delete(@Query() hitokotoDto: HitokotoDto): Promise<String> {
     return this.hitokotoService.delete(hitokotoDto._ids);
   }

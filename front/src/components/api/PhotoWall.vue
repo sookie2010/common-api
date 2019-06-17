@@ -5,29 +5,35 @@
       <div class="search-title">文件名：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name"  />
+      <Input v-model="search.name" @on-enter="loadData" />
     </Col>
 
     <Col span="2">
       <div class="search-title">宽度：</div>
     </Col>
-    <Col span="1">
-      <Input-number :min="0" v-model="search.widthMin"></Input-number>
+    <Col span="2">
+      <Input :number="true" v-model="search.widthMin" @on-enter="loadData">
+        <span slot="prepend">&gt;=</span>
+      </Input>
     </Col>
-    <Col span="2"><div class="search-title"> —— </div></Col>
-    <Col span="1">
-      <Input-number :min="0" v-model="search.widthMax"></Input-number>
+    <Col span="2">
+      <Input :number="true" v-model="search.widthMax" @on-enter="loadData">
+        <span slot="prepend">&lt;=</span>
+      </Input>
     </Col>
 
     <Col span="2">
-      <div class="search-title">高度</div>
+      <div class="search-title">高度：</div>
     </Col>
-    <Col span="1">
-      <Input-number :min="0" v-model="search.heightMin"></Input-number>
+    <Col span="2">
+      <Input :number="true" v-model="search.heightMin" @on-enter="loadData">
+        <span slot="prepend">&gt;=</span>
+      </Input>
     </Col>
-    <Col span="2"><div class="search-title"> —— </div></Col>
-    <Col span="1">
-      <Input-number :min="0" v-model="search.heightMax"></Input-number>
+    <Col span="2">
+      <Input :number="true" v-model="search.heightMax" @on-enter="loadData">
+        <span slot="prepend">&lt;=</span>
+      </Input>
     </Col>
     <Col span="5" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
@@ -63,7 +69,6 @@ import Table from 'iview/src/components/table'
 import Row from 'iview/src/components/row'
 import Col from 'iview/src/components/col'
 import Input from 'iview/src/components/input'
-import InputNumber from 'iview/src/components/input-number'
 import Button from 'iview/src/components/button'
 import Upload from 'iview/src/components/upload'
 import Page from 'iview/src/components/page'
@@ -73,7 +78,7 @@ import Icon from 'iview/src/components/icon'
 var selectedData = null
 export default {
   components: {
-    Table, Row, Col, Input, InputNumber, Button, Upload, Page, Spin, Icon
+    Table, Row, Col, Input, Button, Upload, Page, Spin, Icon
   },
   data() {
     return {
@@ -94,23 +99,32 @@ export default {
           width: 60,
           align: 'center'
         },{
-            title: '文件名',
-            key: 'name'
+          title: '文件名',
+          key: 'name'
         },{
-            title: 'md5',
-            key: 'md5',
-            width: 280
+          title: 'md5',
+          key: 'md5',
+          width: 280
         },{
-            title: '缩略图',
-            key: 'thumbnail'
+          title: '缩略图',
+          key: 'thumbnail'
         },{
-            title: '宽度',
-            key: 'width',
-            width: 70
+          title: '宽度',
+          key: 'width',
+          width: 70
         },{
-            title: '高度',
-            key: 'height',
-            width: 70
+          title: '高度',
+          key: 'height',
+          width: 70
+        },{
+          title: '操作',
+          width: 70,
+          render: (h, data) => {
+            return h(Button, {
+              props: {size:'small'},
+              on: { click: () => {this.preview(data.row) } }
+            },'预览')
+          }
         }],
       photowallData: []
     }
@@ -181,6 +195,15 @@ export default {
     uploadError() {
       this.uploading = false
       this.$Message.error('上传失败')
+    },
+    preview(row) {
+      let previewHeight = Math.floor(row.height * (500 / row.width))
+      this.$Modal.info({
+        title: '图片预览',
+        width: 500 + 100,
+        content: `<img src="https://cdn.colorfulsweet.site/${row.name}" 
+          style="width:500px;height:${previewHeight}px;" />`
+      })
     }
   },
   created() {

@@ -5,7 +5,7 @@
       <div class="search-title">内容：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.content"  />
+      <Input v-model="search.content" @on-enter="loadData" />
     </Col>
 
     <Col span="2">
@@ -62,16 +62,7 @@ import Modal from 'iview/src/components/modal'
 
 import HitokotoAdd from './HitokotoAdd'
 
-var typeList = [
-  {label:'Anime - 动画', value:'a'},
-  {label:'Comic – 漫画', value:'b'},
-  {label:'Game – 游戏', value:'c'},
-  {label:'Novel – 小说', value:'d'},
-  {label:'Myself – 原创', value:'e'},
-  {label:'Internet – 来自网络', value:'f'},
-  {label:'Other – 其他', value:'g'}
-],
-selectedData = null
+var selectedData = null
 export default {
   components: {
     Table, Row, Col, Input, Select, Option, DatePicker, Button, Page, Spin, Modal, HitokotoAdd
@@ -84,7 +75,15 @@ export default {
         limit: 10,
         total: null
       },
-      typeList,
+      typeList: [
+        {label:'Anime - 动画', value:'a'},
+        {label:'Comic – 漫画', value:'b'},
+        {label:'Game – 游戏', value:'c'},
+        {label:'Novel – 小说', value:'d'},
+        {label:'Myself – 原创', value:'e'},
+        {label:'Internet – 来自网络', value:'f'},
+        {label:'Other – 其他', value:'g'}
+      ],
       hitokotoColumns: [{
           type: 'selection',
           key: '_id',
@@ -94,32 +93,32 @@ export default {
           title: '类型',
           key: 'type',
           width: 150,
-          render (h, data) {
-            let type = typeList.find(item => item.value === data.row.type)
+          render: (h, data) => {
+            let type = this.typeList.find(item => item.value === data.row.type)
             return type ? h('span', type.label) : undefined
           }
         },{
-            title: '内容',
-            key: 'hitokoto'
+          title: '内容',
+          key: 'hitokoto'
         },{
-            title: '来自',
-            key: 'from',
-            width: 150
+          title: '来自',
+          key: 'from',
+          width: 150
         },{
-            title: '作者',
-            key: 'creator',
-            width: 150
+          title: '作者',
+          key: 'creator',
+          width: 150
         },{
-            title: '编号',
-            key: 'number',
-            width: 70
+          title: '编号',
+          key: 'number',
+          width: 70
         },{
-            title: '创建时间',
-            key: 'created_at',
-            width: 150,
-            render (h, data) {
-              return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
-            }
+          title: '创建时间',
+          key: 'created_at',
+          width: 150,
+          render (h, data) {
+            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+          }
         }],
       hitokotoData: [],
       formData: {

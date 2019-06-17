@@ -7,4 +7,5 @@ export const PhotoWallSchema = new mongoose.Schema({
   thumbnail: String,
   width: Number,
   height: Number,
+  index: Number
 }, { collection: 'photo_wall', versionKey: false });

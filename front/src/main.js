@@ -19,9 +19,10 @@ axios.defaults.timeout = 1000000
 Vue.prototype.$http = axios
 
 new Vue({
+  el: '#app',
   render: h => h(App),
   router
-}).$mount('#app')
+})//.$mount('#app')
 
 // 日期格式化函数
 Date.prototype.Format = function(fmt) {
