@@ -5,7 +5,7 @@ import { Hitokoto } from './hitokoto/hitokoto.interface';
 import { HitokotoDto } from './hitokoto/hitokoto.dto';
 import { Page } from './common/page.dto';
 
-@Controller()
+@Controller('/common')
 export class AppController {
   constructor(
     private readonly hitokotoService: HitokotoService,
@@ -20,5 +20,10 @@ export class AppController {
   @Get('/photos')
   getPhotos(@Query() page: Page): Promise<Page> {
     return this.photoWallService.queryPage(page);
+  }
+
+  @Get('/hitokotoTypes')
+  listHitokotoTypes(): Promise<Array<Object>> {
+    return this.hitokotoService.listTypes();
   }
 }

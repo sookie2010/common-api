@@ -3,13 +3,13 @@ import { Injectable } from '@nestjs/common/index';
 import { InjectModel } from '@nestjs/mongoose';
 import { PhotoWallDto } from './photo-wall.dto';
 import { PhotoWall } from './photo-wall.interface';
+import { SystemConfig } from '../system/system-config.interface';
 import { Page } from '../common/page.dto';
 import { FileDto } from '../common/file.dto';
 import { PhotoWallQc } from './photo-wall.qc';
 
 const images = require('images');
-const nos = require('@xgheaven/nos-node-sdk'), 
-  nosSetting = require('../../config/auth.json');
+const nos = require('@xgheaven/nos-node-sdk');
 const crypto = require('crypto');
 
 @Injectable()
@@ -19,9 +19,13 @@ export class PhotoWallService {
     deleteMultiObject: Function
   }
 
-  constructor(@InjectModel('PhotoWall') private readonly photoWallModel: mongoose.Model<PhotoWall>) {
-    // 网易云对象存储接口
-    this.client = new nos.NosClient(nosSetting)
+  constructor(@InjectModel('PhotoWall') private readonly photoWallModel: mongoose.Model<PhotoWall>,
+              @InjectModel('SystemConfig') private readonly systemConfigModel: mongoose.Model<SystemConfig>) {
+    
+    systemConfigModel.findOne({name:'nos_setting'}).exec().then((systemConfig : SystemConfig) => {
+      // 网易云对象存储接口
+      this.client = new nos.NosClient(systemConfig.value);
+    });
   }
 
   /**
@@ -37,8 +41,8 @@ export class PhotoWallService {
       page.total = cnt;
       return this.photoWallModel.find({}).skip(~~page.start).limit(~~page.limit).exec();
     }).then((photoWalls : Array<PhotoWall>) => {
-      page.data = photoWalls
-      return page
+      page.data = photoWalls;
+      return page;
     }).catch((err: Error) => {
       return {msg: err.message};
     })
@@ -55,29 +59,29 @@ export class PhotoWallService {
       searchParam.name = {$regex: new RegExp(photoWallDto.name)}
     }
     if(~~photoWallDto.widthMin || ~~photoWallDto.widthMax) {
-      searchParam.width = {}
+      searchParam.width = {};
       if(~~photoWallDto.widthMin) {
-        searchParam.width['$gte'] = ~~photoWallDto.widthMin
+        searchParam.width['$gte'] = ~~photoWallDto.widthMin;
       }
       if(~~photoWallDto.widthMax) {
-        searchParam.width['$lte'] = ~~photoWallDto.widthMax
+        searchParam.width['$lte'] = ~~photoWallDto.widthMax;
       }
     }
     if(~~photoWallDto.heightMin || ~~photoWallDto.heightMax) {
-      searchParam.height = {}
+      searchParam.height = {};
       if(~~photoWallDto.heightMin) {
-        searchParam.height['$gte'] = ~~photoWallDto.heightMin
+        searchParam.height['$gte'] = ~~photoWallDto.heightMin;
       }
       if(~~photoWallDto.heightMax) {
-        searchParam.height['$lte'] = ~~photoWallDto.heightMax
+        searchParam.height['$lte'] = ~~photoWallDto.heightMax;
       }
     }
     return this.photoWallModel.countDocuments(searchParam).exec().then((cnt: Number) => {
       page.total = cnt;
       return this.photoWallModel.find(searchParam).skip(~~page.start).limit(~~page.limit).exec();
     }).then((photoWalls : Array<PhotoWall>) => {
-      page.data = photoWalls
-      return page
+      page.data = photoWalls;
+      return page;
     })
   }
   /**
@@ -99,12 +103,15 @@ export class PhotoWallService {
     photowall.md5 = fsHash.digest('hex');
 
     // 生成缩略图
-    img.resize(370);
-    var thumbnailBuffer = img.encode(ext, {operation:50});
-    return this.photoWallModel.aggregate([{$group: {
-      _id: "max_index",
-      index: { $max: "$index" }
-    }}]).then((maxIndex: Array<PhotoWall>) => {
+    var thumbnailBuffer = null;
+    return this.systemConfigModel.findOne({name:'thumbnail_width'}).exec().then((systemConfig : SystemConfig) => {
+      img.resize(systemConfig.value);
+      thumbnailBuffer = img.encode(ext, {operation:50});
+      return this.photoWallModel.aggregate([{$group: {
+        _id: "max_index",
+        index: { $max: "$index" }
+      }}]);
+    }).then((maxIndex: Array<PhotoWall>) => {
       let lastIndex = maxIndex[0].index;
       let groupId = Math.floor(lastIndex / 50) + 1; // 当前分组
       let num = '', len = (lastIndex+1).toString().length; // 编号
@@ -137,7 +144,7 @@ export class PhotoWallService {
     }).then(() => {
       console.log(`缩略图 ${photowall.thumbnail} 上传成功`);
       return this.photoWallModel.create(photowall);
-    })
+    });
   }
 
   /**
@@ -151,7 +158,7 @@ export class PhotoWallService {
         deleteFileNames.push(photoWall.name);
         deleteFileNames.push(photoWall.thumbnail);
       });
-      return this.client.deleteMultiObject({objectKeys: deleteFileNames})
+      return this.client.deleteMultiObject({objectKeys: deleteFileNames});
     }).then(err => {
       if(err) console.error(err);
       return this.photoWallModel.deleteMany({_id: {$in: _ids}}).exec();

@@ -2,13 +2,15 @@ import * as mongoose from 'mongoose';
 import { Injectable } from '@nestjs/common/index';
 import { InjectModel } from '@nestjs/mongoose';
 import { Hitokoto } from './hitokoto.interface';
+import { SystemConfig } from '../system/system-config.interface';
 import { HitokotoDto } from './hitokoto.dto';
 import { HitokotoQc } from './hitokoto.qc';
 import { Page } from '../common/page.dto'
 
 @Injectable()
 export class HitokotoService {
-  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: mongoose.Model<Hitokoto>) {}
+  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: mongoose.Model<Hitokoto>,
+              @InjectModel('SystemConfig') private readonly systemConfigModel: mongoose.Model<SystemConfig>) {}
 
   /**
    * 随机获取一条一言
@@ -96,5 +98,14 @@ export class HitokotoService {
    */
   async delete(_ids: Array<string>): Promise<String> {
     return this.hitokotoModel.deleteMany({_id: {$in: _ids}}).exec();
+  }
+
+  /**
+   * 查询系统配置, 获取一言的类型名称与编号的对应关系
+   */
+  async listTypes(): Promise<Array<Object>> {
+    return this.systemConfigModel.findOne({name:'hitokoto_type'}).exec().then((systemConfig : SystemConfig) => {
+      return Promise.resolve(systemConfig.value);
+    });
   }
 }

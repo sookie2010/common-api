@@ -32,7 +32,7 @@ export class PhotoWallController {
   }
   /**
    * 上传照片, 同步到对象存储仓库并保存照片信息
-   * @param image 
+   * @param image 上传的图片文件
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))

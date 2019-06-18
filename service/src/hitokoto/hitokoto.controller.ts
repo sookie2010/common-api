@@ -27,7 +27,6 @@ export class HitokotoController {
    */
   @Post('/save')
   save(@Body() hitokoto: Hitokoto): Promise<String> {
-    console.log()
     return this.hitokotoService.save(hitokoto);
   }
   /**
