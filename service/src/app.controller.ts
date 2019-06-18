@@ -26,4 +26,9 @@ export class AppController {
   listHitokotoTypes(): Promise<Array<Object>> {
     return this.hitokotoService.listTypes();
   }
+
+  @Get('/pictureCdn')
+  getPictureCdn(): Promise<String> {
+    return this.photoWallService.getPictureCdn();
+  }
 }

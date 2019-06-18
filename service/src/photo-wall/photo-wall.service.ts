@@ -164,4 +164,12 @@ export class PhotoWallService {
       return this.photoWallModel.deleteMany({_id: {$in: _ids}}).exec();
     });
   }
+  /**
+   * 获取图片存储CDN地址
+   */
+  async getPictureCdn(): Promise<String> {
+    return this.systemConfigModel.findOne({name:'picture_cdn'}).exec().then((systemConfig : SystemConfig) => {
+      return Promise.resolve(systemConfig.value);
+    });
+  }
 }
