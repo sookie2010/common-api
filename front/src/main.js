@@ -14,7 +14,7 @@ Vue.config.productionTip = false
 
 import axios from 'axios'
 // 配置默认axios参数
-// axios.defaults.baseURL = 'https://www.colorfulsweet.site/api'
+axios.defaults.baseURL = 'https://www.colorfulsweet.site/api'
 axios.defaults.timeout = 1000000
 Vue.prototype.$http = axios
 
