@@ -75,15 +75,7 @@ export default {
         limit: 10,
         total: null
       },
-      typeList: [
-        {label:'Anime - 动画', value:'a'},
-        {label:'Comic – 漫画', value:'b'},
-        {label:'Game – 游戏', value:'c'},
-        {label:'Novel – 小说', value:'d'},
-        {label:'Myself – 原创', value:'e'},
-        {label:'Internet – 来自网络', value:'f'},
-        {label:'Other – 其他', value:'g'}
-      ],
+      typeList: [],
       hitokotoColumns: [{
           type: 'selection',
           key: '_id',
@@ -193,7 +185,10 @@ export default {
     }
   },
   created() {
-    this.loadData()
+    this.$http.get('/common/hitokotoTypes').then(res => {
+      this.typeList = res.data
+      this.loadData()
+    })
   }
 }
 </script>

@@ -198,11 +198,13 @@ export default {
     },
     preview(row) {
       let previewHeight = Math.floor(row.height * (500 / row.width))
-      this.$Modal.info({
-        title: '图片预览',
-        width: 500 + 100,
-        content: `<img src="https://cdn.colorfulsweet.site/${row.name}" 
-          style="width:500px;height:${previewHeight}px;" />`
+      this.$http.get('/common/pictureCdn').then(res => {
+        this.$Modal.info({
+          title: '图片预览',
+          width: 500 + 100,
+          content: `<img src="${res.data}${row.name}" 
+            style="width:500px;height:${previewHeight}px;" />`
+        })
       })
     }
   },
