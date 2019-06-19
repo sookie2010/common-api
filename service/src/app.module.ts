@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common/index';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { HitokotoController } from './hitokoto/hitokoto.controller';
 import { PhotoWallController } from './photo-wall/photo-wall.controller';

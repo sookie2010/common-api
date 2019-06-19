@@ -1,9 +1,12 @@
-import { Controller, Get, Query } from '@nestjs/common/index';
+import { Controller, Get, Query, Post, Body } from '@nestjs/common';
 import { HitokotoService } from './hitokoto/hitokoto.service';
 import { PhotoWallService } from './photo-wall/photo-wall.service';
 import { Hitokoto } from './hitokoto/hitokoto.interface';
 import { HitokotoDto } from './hitokoto/hitokoto.dto';
 import { Page } from './common/page.dto';
+import { UserDto } from './common/user.dto';
+
+const Jwt = require('jsonwebtoken');
 
 @Controller('/common')
 export class AppController {
@@ -11,6 +14,17 @@ export class AppController {
     private readonly hitokotoService: HitokotoService,
     private readonly photoWallService: PhotoWallService
   ) {}
+
+  @Post('/login')
+  login(@Body() userDto: UserDto): Promise<Object> {
+    const token = Jwt.sign({       
+      user_id: 1,
+      user_name: userDto.username
+    }, '1234'/*秘钥*/, {
+      expiresIn: '60s' /*过期时间*/
+    });
+    return Promise.resolve({token});
+  }
 
   @Get('/hitokoto')
   getHitokoto(@Query() hitokotoDto : HitokotoDto): Promise<Hitokoto> {

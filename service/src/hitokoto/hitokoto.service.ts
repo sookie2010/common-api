@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Injectable } from '@nestjs/common/index';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Hitokoto } from './hitokoto.interface';
 import { SystemConfig } from '../system/system-config.interface';
@@ -57,7 +57,6 @@ export class HitokotoService {
       searchParam.hitokoto = {$regex: new RegExp(hitokotoDto.content)}
     }
     if(hitokotoDto.createAt && hitokotoDto.createAt[0] && hitokotoDto.createAt[1]) {
-      console.log(hitokotoDto.createAt)
       searchParam.created_at = {
         $gte: new Date(hitokotoDto.createAt[0]),
         $lte: new Date(hitokotoDto.createAt[1])

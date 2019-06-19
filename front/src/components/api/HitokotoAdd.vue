@@ -1,5 +1,5 @@
 <template>
-<div class="form-panel">
+<div>
   <Form :model="formData" :label-width="80">
     <Form-item label="内容">
       <Input v-model="formData.hitokoto" type="textarea" :rows="4"/>

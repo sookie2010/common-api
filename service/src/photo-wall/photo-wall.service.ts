@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Injectable } from '@nestjs/common/index';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PhotoWallDto } from './photo-wall.dto';
 import { PhotoWall } from './photo-wall.interface';

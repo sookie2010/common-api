@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^6.3.1",
     "@xgheaven/nos-node-sdk": "^0.2.5",
     "images": "^3.0.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.9",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",

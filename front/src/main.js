@@ -16,6 +16,18 @@ import axios from 'axios'
 // 配置默认axios参数
 axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 axios.defaults.timeout = 1000000
+
+// 添加请求拦截器
+axios.interceptors.request.use(function (config) {
+  // 在发送请求之前添加token到请求头
+  if (localStorage.getItem('login_token')) {
+    config.headers.common['token'] = localStorage.getItem('login_token')
+  }
+  return config
+}, function (error) {
+  // 对请求错误做些什么
+  return Promise.reject(error)
+})
 Vue.prototype.$http = axios
 
 new Vue({
