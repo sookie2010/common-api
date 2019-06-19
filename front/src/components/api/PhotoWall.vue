@@ -148,11 +148,11 @@ export default {
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/photowall/list', {params:this.search}).then(res => {
+      this.$http.get('/photowall/list', {params:this.search}).then(data => {
         selectedData = null
         this.loading = false
-        this.search.total = res.data.total
-        this.photowallData = res.data.data
+        this.search.total = data.total
+        this.photowallData = data.data
       })
     },
     deleteAll() {
@@ -165,7 +165,7 @@ export default {
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
         onOk: () => {
-          this.$http.delete('/photowall/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(res => {
+          this.$http.delete('/photowall/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
             this.$Modal.remove()
             this.$Message.success('删除成功')
             this.loadData()
@@ -198,11 +198,11 @@ export default {
     },
     preview(row) {
       let previewHeight = Math.floor(row.height * (500 / row.width))
-      this.$http.get('/common/pictureCdn').then(res => {
+      this.$http.get('/common/pictureCdn').then(data => {
         this.$Modal.info({
           title: '图片预览',
           width: 500 + 100,
-          content: `<img src="${res.data}${row.name}" 
+          content: `<img src="${data}${row.name}" 
             style="width:500px;height:${previewHeight}px;" />`
         })
       })

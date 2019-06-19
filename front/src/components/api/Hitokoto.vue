@@ -137,15 +137,15 @@ export default {
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/hitokoto/list', {params:this.search}).then(res => {
+      this.$http.get('/hitokoto/list', {params:this.search}).then(data => {
         selectedData = null
         this.loading = false
-        this.search.total = res.data.total
-        this.hitokotoData = res.data.data
+        this.search.total = data.total
+        this.hitokotoData = data.data
       })
     },
     save() {
-      this.$http.post('/hitokoto/save', this.formData).then(res => {
+      this.$http.post('/hitokoto/save', this.formData).then(() => {
         this.addModal = false
         this.loadData()
         // 清空表单
@@ -164,7 +164,7 @@ export default {
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
         onOk: () => {
-          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(res => {
+          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
             this.$Modal.remove()
             this.$Message.success('删除成功')
             this.loadData()
@@ -185,8 +185,8 @@ export default {
     }
   },
   created() {
-    this.$http.get('/common/hitokotoTypes').then(res => {
-      this.typeList = res.data
+    this.$http.get('/common/hitokotoTypes').then(data => {
+      this.typeList = data
       this.loadData()
     })
   }

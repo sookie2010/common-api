@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Delete, Query, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common';
 import { HitokotoService } from './hitokoto.service';
 import { Hitokoto } from './hitokoto.interface';
 import { HitokotoDto } from './hitokoto.dto';
 import { Page } from '../common/page.dto';
-import { AuthGuard } from '../common/auth.guard';
+import { LoginInterceptor } from '../common/login.interceptor'
 
-@UseGuards(AuthGuard)
+@UseInterceptors(LoginInterceptor)
 @Controller('/hitokoto')
 export class HitokotoController {
   constructor(

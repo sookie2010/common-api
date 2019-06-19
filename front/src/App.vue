@@ -19,6 +19,7 @@
     <Col span="19">
       <div class="layout-header">
         <h1>博客API管理后台</h1>
+        <div class="nav-btns"><Button @click="logout">注销</Button></div>
       </div>
       <div class="layout-breadcrumb">
         <Breadcrumb>
@@ -44,11 +45,12 @@ import Icon from 'iview/src/components/icon'
 import Col from 'iview/src/components/col'
 import Breadcrumb from 'iview/src/components/breadcrumb'
 import BreadcrumbItem from 'iview/src/components/breadcrumb-item'
+import Button from 'iview/src/components/button'
 
 export default {
   name: 'app',
   components: {
-    Row, Menu, Submenu, Icon, MenuItem, Col, Breadcrumb, BreadcrumbItem
+    Row, Menu, Submenu, Icon, MenuItem, Col, Breadcrumb, BreadcrumbItem, Button
   },
   data() {
     return {
@@ -82,6 +84,10 @@ export default {
       this.breadcrumb.push(
         this.menus[menuIndexes[0]].name, 
         this.menus[menuIndexes[0]].child[menuIndexes[1]].name)
+    },
+    logout() {
+      localStorage.removeItem('login_token')
+      this.$router.push('/')
     }
   }
 }
@@ -124,6 +130,14 @@ export default {
     padding-left: 30px;
     background: #fff;
     box-shadow: 0 1px 1px rgba(0,0,0,.1);
+  }
+  .layout-header h1 {
+    display: inline-block;
+  }
+  .layout-header .nav-btns {
+    display: inline-block;
+    position: absolute;
+    right: 20px;
   }
   .ivu-menu-item {
     padding: 0 !important;

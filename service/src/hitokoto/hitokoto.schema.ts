@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-export const HitokotoSchema = new mongoose.Schema({
-  _id: mongoose.Types.ObjectId,
+export const HitokotoSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   hitokoto: String,
   type: String,
   from: String,

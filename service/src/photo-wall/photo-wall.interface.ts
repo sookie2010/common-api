@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
-export interface PhotoWall extends mongoose.Document {
-  _id?: mongoose.Schema.Types.ObjectId
+export interface PhotoWall extends Document {
+  _id?: Schema.Types.ObjectId
   name?: String
   md5?: String
   thumbnail?: String

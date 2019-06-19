@@ -4,7 +4,8 @@ import { PhotoWallService } from './photo-wall/photo-wall.service';
 import { Hitokoto } from './hitokoto/hitokoto.interface';
 import { HitokotoDto } from './hitokoto/hitokoto.dto';
 import { Page } from './common/page.dto';
-import { UserDto } from './common/user.dto';
+import { SystemUser } from './system/system-user.interface';
+import { AppService } from './app.service';
 
 const Jwt = require('jsonwebtoken');
 
@@ -12,18 +13,13 @@ const Jwt = require('jsonwebtoken');
 export class AppController {
   constructor(
     private readonly hitokotoService: HitokotoService,
-    private readonly photoWallService: PhotoWallService
+    private readonly photoWallService: PhotoWallService,
+    private readonly appService: AppService
   ) {}
 
   @Post('/login')
-  login(@Body() userDto: UserDto): Promise<Object> {
-    const token = Jwt.sign({       
-      user_id: 1,
-      user_name: userDto.username
-    }, '1234'/*秘钥*/, {
-      expiresIn: '60s' /*过期时间*/
-    });
-    return Promise.resolve({token});
+  login(@Body() systemUser: SystemUser): Promise<Object> {
+    return this.appService.login(systemUser);
   }
 
   @Get('/hitokoto')

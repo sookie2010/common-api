@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
-export interface Hitokoto extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId
+export interface Hitokoto extends Document {
+  _id: Schema.Types.ObjectId
   hitokoto: String
   /**
    * a	Anime - 动画

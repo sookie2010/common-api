@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/index';
 import { PhotoWallService } from './photo-wall.service';
 import { PhotoWallDto } from './photo-wall.dto';
 import { Page } from '../common/page.dto';
 import { FileDto } from '../common/file.dto';
-import { AuthGuard } from '../common/auth.guard';
+import { LoginInterceptor } from '../common/login.interceptor'
 
-@UseGuards(AuthGuard)
+@UseInterceptors(LoginInterceptor)
 @Controller('/photowall')
 export class PhotoWallController {
 

@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-export const SystemConfigSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+export const SystemConfigSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   name: String,
   value: Object
 }, { collection: 'system_config', versionKey: false });

@@ -18,19 +18,44 @@ axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 axios.defaults.timeout = 1000000
 
 // 添加请求拦截器
-axios.interceptors.request.use(function (config) {
+axios.interceptors.request.use(config => {
   // 在发送请求之前添加token到请求头
   if (localStorage.getItem('login_token')) {
     config.headers.common['token'] = localStorage.getItem('login_token')
   }
   return config
-}, function (error) {
+}, err => {
   // 对请求错误做些什么
-  return Promise.reject(error)
+  vm.$Modal.error({
+    title: '错误',
+    content: '请求超时，请稍后再试'
+  })
+  return Promise.reject(err)
 })
+
+axios.interceptors.response.use(res=> {
+  return res.data
+}, err => {
+  if(err.response.status === 403) {
+    vm.$Modal.warning({
+      title: '警告',
+      content: err.response.data.msg,
+      onOk() {
+        vm.$router.push('/login')
+      }
+    })
+  } else if(err.response.status >= 500) {
+    vm.$Modal.error({
+      title: '错误',
+      content: '服务器内部错误'
+    })
+  }
+  return Promise.resolve(err);
+})
+
 Vue.prototype.$http = axios
 
-new Vue({
+const vm = new Vue({
   el: '#app',
   render: h => h(App),
   router

@@ -27,9 +27,10 @@ export default {
   methods: {
     login() {
       // 登录
-      this.$http.post('/common/login', this.userInfo).then(res => {
-        if(res.data.token) {
-          localStorage.setItem('login_token', res.data.token)
+      this.$http.post('/common/login', this.userInfo).then(data => {
+        if(data.token) {
+          localStorage.setItem('login_token', data.token)
+          this.$router.push('/')
         } else {
           this.$Message.error('用户名/密码 错误')
         }
