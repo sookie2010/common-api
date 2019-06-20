@@ -56,10 +56,9 @@ axios.interceptors.response.use(res=> {
 Vue.prototype.$http = axios
 
 const vm = new Vue({
-  el: '#app',
   render: h => h(App),
   router
-})//.$mount('#app')
+}).$mount('#app')
 
 // 日期格式化函数
 Date.prototype.Format = function(fmt) {

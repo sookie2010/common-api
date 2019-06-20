@@ -1,7 +1,7 @@
 <template>
 <div id="app" class="layout">
   <Row type="flex">
-    <Col span="5" class="layout-menu-left">
+    <Col span="4" class="layout-left">
       <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" @on-select="menuSelected" >
         <Submenu v-for="(item,index) in menus" :key="index" :name="index">
           <template slot="title">
@@ -16,10 +16,15 @@
         </Submenu>
       </Menu>
     </Col>
-    <Col span="19">
+    <Col span="20" class="layout-right">
       <div class="layout-header">
         <h1>博客API管理后台</h1>
-        <div class="nav-btns"><Button @click="logout">注销</Button></div>
+        <div class="nav-btns-left">
+          <router-link to="/">首页</router-link>
+        </div>
+        <div class="nav-btns-right">
+          <Button @click="logout">注销</Button>
+        </div>
       </div>
       <div class="layout-breadcrumb">
         <Breadcrumb>
@@ -109,20 +114,25 @@ export default {
     padding: 10px 15px 0;
   }
   .layout-content{
-    min-height: 300px;
     margin: 15px;
-    overflow: hidden;
+    overflow: auto;
     background: #fff;
     border-radius: 4px;
     padding: 10px;
+    flex-grow: 1;
+    flex-basis: 0;
   }
   .layout-copy{
     text-align: center;
     padding: 10px 0 20px;
     color: #9ea7b4;
   }
-  .layout-menu-left{
+  .layout-left{
     background: #464c5b;
+  }
+  .layout-right{
+    display: flex !important;
+    flex-direction: column;
   }
   .layout-header{
     height: 60px;
@@ -134,10 +144,16 @@ export default {
   .layout-header h1 {
     display: inline-block;
   }
-  .layout-header .nav-btns {
+  .layout-header .nav-btns-right {
     display: inline-block;
     position: absolute;
     right: 20px;
+  }
+  .layout-header .nav-btns-left {
+    display: inline-block;
+    position: absolute;
+    margin-left: 20px;
+    font-size: 16px;
   }
   .ivu-menu-item {
     padding: 0 !important;
@@ -164,5 +180,16 @@ export default {
   .page-container {
     padding: 10px;
     text-align: center;
+  }
+  .carousel-container {
+    width: 80%;
+    margin:0 auto;
+  }
+  .carsouel-img {
+    position: relative;
+    left: 50%;transform:
+    translateX(-50%);
+    height: 500px;
+    width: auto;
   }
 </style>

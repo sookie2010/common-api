@@ -42,9 +42,11 @@
   </Row>
   
   <div class="btn-container">
-    <Upload action="/photowall/upload" name="image" :show-upload-list="false" 
+    <Upload :action="$http.defaults.baseURL + '/photowall/upload'" 
+      name="image" :show-upload-list="false" 
       :format="['jpg','jpeg','png']"
-      :on-progress="uploadProgress" :on-success="uploadSuccess" @on-error="uploadError">
+      :on-progress="uploadProgress" :on-success="uploadSuccess" @on-error="uploadError"
+      style="display: inline-block;">
       <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
     </Upload>
     <Button type="error" @click="deleteAll">删除</Button>
@@ -213,9 +215,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.ivu-upload {
-  display: inline-block;
-}
-</style>
-

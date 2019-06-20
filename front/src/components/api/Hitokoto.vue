@@ -147,6 +147,7 @@ export default {
     save() {
       this.$http.post('/hitokoto/save', this.formData).then(() => {
         this.addModal = false
+        this.$Message.success('保存成功')
         this.loadData()
         // 清空表单
         Object.keys(this.formData).forEach(key => {

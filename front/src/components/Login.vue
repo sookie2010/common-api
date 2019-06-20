@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div style="width: 400px;margin: 20px auto;">
     <Form :model="userInfo" :label-width="80">
       <Form-item label="用户名">
         <Input v-model="userInfo.username" />
@@ -8,7 +9,10 @@
         <Input v-model="userInfo.password" type="password" />
       </Form-item>
     </Form>
+    <div style="padding-left:80px">
     <Button type="primary" @click="login">登录</Button>
+    </div>
+    </div>
   </div>
 </template>
 <script>
