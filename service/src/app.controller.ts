@@ -7,22 +7,21 @@ import { HitokotoDto } from './hitokoto/hitokoto.interface'
 import { Page } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 
-
 @Controller('/common')
 export default class AppController {
   constructor(
     private readonly hitokotoService: HitokotoService,
     private readonly photoWallService: PhotoWallService,
-    private readonly appService: AppService
+    private readonly appService: AppService,
   ) {}
 
   @Post('/login')
-  login(@Body() systemUser: SystemUser): Promise<Object> {
+  login(@Body() systemUser: SystemUser): Promise<object> {
     return this.appService.login(systemUser)
   }
 
   @Get('/hitokoto')
-  getHitokoto(@Query() hitokotoDto : HitokotoDto): Promise<Hitokoto> {
+  getHitokoto(@Query() hitokotoDto: HitokotoDto): Promise<Hitokoto> {
     return this.hitokotoService.findOne(hitokotoDto)
   }
 
@@ -32,12 +31,12 @@ export default class AppController {
   }
 
   @Get('/hitokotoTypes')
-  listHitokotoTypes(): Promise<Array<Object>> {
+  listHitokotoTypes(): Promise<object[]> {
     return this.hitokotoService.listTypes()
   }
 
   @Get('/pictureCdn')
-  getPictureCdn(): Promise<String> {
+  getPictureCdn(): Promise<string> {
     return this.photoWallService.getPictureCdn()
   }
 }

@@ -14,26 +14,25 @@ export default class AppService {
               @InjectModel('SystemUser') private readonly systemUserModel: mongoose.Model<SystemUser>,
   ) {}
 
-
   async login(systemUser: SystemUser) {
-    let pwdHashed = crypto.createHash('sha1')
+    const pwdHashed = crypto.createHash('sha1')
         .update(systemUser.password)
         .digest('hex')
     systemUser.password = pwdHashed
-    var signUser = null
+    let signUser = null
     return this.systemUserModel.findOne(systemUser).exec().then((user: SystemUser) => {
-      if(!user) {
-        return Promise.reject({statusCode:401, msg:'用户名/密码错误'})
+      if (!user) {
+        return Promise.reject({statusCode: 401, msg: '用户名/密码错误'})
       }
       signUser = {
         _id: user._id.toString(),
         username: user.username,
-        realname: user.realname
+        realname: user.realname,
       }
-      return this.systemConfigModel.findOne({name:'token_private_key'}).exec()
-    }).then((systemConfig : SystemConfig) => {
+      return this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
+    }).then((systemConfig: SystemConfig) => {
       const token = jwt.sign(signUser, systemConfig.value/*秘钥*/, {
-        expiresIn: '1h' /*过期时间*/
+        expiresIn: '1h', /*过期时间*/
       })
       return Promise.resolve({token})
     }).catch(result => {

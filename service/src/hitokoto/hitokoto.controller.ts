@@ -9,7 +9,7 @@ import LoginInterceptor from '../common/login.interceptor'
 @Controller('/hitokoto')
 export default class HitokotoController {
   constructor(
-    private readonly hitokotoService: HitokotoService
+    private readonly hitokotoService: HitokotoService,
   ) {}
   /**
    * 查询一言列表
@@ -18,7 +18,7 @@ export default class HitokotoController {
    */
   @Get('/list')
   list(@Query() hitokotoDto: HitokotoDto, @Query() page: Page): Promise<Page> {
-    if(page.pageNum && page.limit) {
+    if (page.pageNum && page.limit) {
       page.start = ~~page.limit * (~~page.pageNum - 1)
     }
     return this.hitokotoService.list(hitokotoDto, page)

@@ -19,16 +19,16 @@ const dbConfig = require('../config/db.json')
     MongooseModule.forRoot(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.db_name}`, {
       useNewUrlParser: true,
       user: dbConfig.user,
-      pass: dbConfig.password
+      pass: dbConfig.password,
     }),
     MongooseModule.forFeature([
       { name: 'Hitokoto', schema: HitokotoSchema },
       { name: 'PhotoWall', schema: PhotoWallSchema },
       { name: 'SystemConfig', schema: SystemConfigSchema },
-      { name: 'SystemUser', schema: SystemUserSchema }
-    ])
+      { name: 'SystemUser', schema: SystemUserSchema },
+    ]),
   ],
   controllers: [AppController, HitokotoController, PhotoWallController, SystemController],
-  providers: [AppService, HitokotoService, PhotoWallService, SystemService]
+  providers: [AppService, HitokotoService, PhotoWallService, SystemService],
 })
 export class AppModule {}

@@ -7,5 +7,5 @@ export const PhotoWallSchema = new Schema({
   thumbnail: String,
   width: Number,
   height: Number,
-  index: Number
+  index: Number,
 }, { collection: 'photo_wall', versionKey: false })

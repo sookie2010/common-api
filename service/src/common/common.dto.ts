@@ -8,9 +8,9 @@ export interface FileDto {
 }
 
 export interface Page {
-  start: Number // 起始数据行(从0开始)
-  pageNum: Number // 当前页码
-  limit: Number // 每页数据数量
-  total: Number // 数据总数
-  data: Array<Object> // 当前页数据
+  start: number // 起始数据行(从0开始)
+  pageNum: number // 当前页码
+  limit: number // 每页数据数量
+  total: number // 数据总数
+  data: object[] // 当前页数据
 }

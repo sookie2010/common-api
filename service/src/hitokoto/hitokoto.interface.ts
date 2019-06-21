@@ -3,7 +3,7 @@ import BaseQc from '../common/base.qc'
 
 export interface Hitokoto extends Document {
   _id: Schema.Types.ObjectId
-  hitokoto: String
+  hitokoto: string
   /**
    * a	Anime - 动画
    * b	Comic – 漫画
@@ -13,9 +13,9 @@ export interface Hitokoto extends Document {
    * f	Internet – 来自网络
    * g	Other – 其他
    */
-  type: String
-  from: String
-  creator: String
+  type: string
+  from: string
+  creator: string
   created_at: Date
   number: number
 }
@@ -30,7 +30,7 @@ export interface HitokotoDto {
   /**
    * 多个ID, 用于批量删除
    */
-  _ids: Array<string>
+  _ids: string[]
   /**
    * 内容模糊搜索
    */
@@ -39,7 +39,7 @@ export interface HitokotoDto {
    * 创建时间范围搜索, 数组包含2个元素
    * 分别是起始时间与结束时间的 UTS 字符串
    */
-  createAt: Array<string>
+  createAt: string[]
   /**
    * a	Anime - 动画
    * b	Comic – 漫画
@@ -50,14 +50,14 @@ export interface HitokotoDto {
    * g	Other – 其他
    * (默认全部)
    */
-  type: String
+  type: string
   /**
    * text	返回纯净文本
    * json	返回不进行unicode转码的json文本(默认)
    */
-  format: String
+  format: string
   /**
    * 文字长度上限
    */
-  length: Number
+  length: number
 }

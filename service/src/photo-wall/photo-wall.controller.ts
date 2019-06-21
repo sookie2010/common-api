@@ -17,7 +17,7 @@ export default class PhotoWallController {
    */
   @Get('/list')
   list(@Query() photoWallDto: PhotoWallDto, @Query() page: Page): Promise<Page> {
-    if(page.pageNum && page.limit) {
+    if (page.pageNum && page.limit) {
       page.start = ~~page.limit * (~~page.pageNum - 1)
     }
     return this.photoWallService.list(photoWallDto, page)
@@ -27,7 +27,7 @@ export default class PhotoWallController {
    * @param hitokotoDto 需要删除的多个ID
    */
   @Delete('/delete')
-  delete(@Query() photoWallDto: PhotoWallDto): Promise<String> {
+  delete(@Query() photoWallDto: PhotoWallDto): Promise<string> {
     return this.photoWallService.delete(photoWallDto._ids)
   }
   /**

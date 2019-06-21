@@ -13,7 +13,7 @@ export default class SystemController {
    * @param systemConfig 查询条件
    */
   @Get('/config/list')
-  list(@Query() systemConfig: SystemConfig): Promise<Array<SystemConfig>> {
+  list(@Query() systemConfig: SystemConfig): Promise<SystemConfig[]> {
     return this.systemService.listConfig(systemConfig);
   }
 }
