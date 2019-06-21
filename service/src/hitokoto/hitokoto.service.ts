@@ -16,7 +16,7 @@ export default class HitokotoService {
    * @param hitokotoDto 查询条件
    */
   async findOne(hitokotoDto: HitokotoDto): Promise<Hitokoto> {
-    let searchParam: HitokotoQc = {}
+    const searchParam: HitokotoQc = {}
     if (hitokotoDto.type) {
       searchParam.type = hitokotoDto.type.length > 1 ? {$in: hitokotoDto.type.split('')} : hitokotoDto.type
     }
@@ -28,7 +28,7 @@ export default class HitokotoService {
       if (cnt === 0) {
         throw new Error('没有匹配的一言')
       }
-      let skipNum = Math.floor(Math.random() * cnt)
+      const skipNum = Math.floor(Math.random() * cnt)
       return this.hitokotoModel.find(searchParam).sort({number: 1}).skip(skipNum).limit(1).exec()
     }).then((hitokotos: Hitokoto[]) => {
       switch (hitokotoDto.format) {
@@ -48,7 +48,7 @@ export default class HitokotoService {
    * @param page 分页
    */
   async list(hitokotoDto: HitokotoDto, page: Page): Promise<Page> {
-    let searchParam: HitokotoQc = {}
+    const searchParam: HitokotoQc = {}
     if (hitokotoDto.type) {
       searchParam.type = hitokotoDto.type
     }
@@ -92,16 +92,16 @@ export default class HitokotoService {
 
   /**
    * 批量删除一言
-   * @param _ids 删除数据的ID们
+   * @param ids 删除数据的ID们
    */
-  async delete(_ids: string[]): Promise<string> {
-    return this.hitokotoModel.deleteMany({_id: {$in: _ids}}).exec()
+  async delete(ids: string[]): Promise<string> {
+    return this.hitokotoModel.deleteMany({_id: {$in: ids}}).exec()
   }
 
   /**
    * 查询系统配置, 获取一言的类型名称与编号的对应关系
    */
-  async listTypes(): Promise<Object[]> {
+  async listTypes(): Promise<object[]> {
     return this.systemConfigModel.findOne({name: 'hitokoto_type'}).exec().then((systemConfig: SystemConfig) => {
       return Promise.resolve(systemConfig.value)
     })

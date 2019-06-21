@@ -52,7 +52,7 @@
     <Button type="error" @click="deleteAll">删除</Button>
   </div>
   <div class="table-container">
-    <Table border :loading="loadding" :columns="photowallColumns" 
+    <Table border :loading="loading" :columns="photowallColumns" 
       :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
@@ -70,12 +70,11 @@ import Input from 'iview/src/components/input'
 import Button from 'iview/src/components/button'
 import Upload from 'iview/src/components/upload'
 import Page from 'iview/src/components/page'
-import Icon from 'iview/src/components/icon'
 
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, Button, Upload, Page, Icon
+    Table, Row, Col, Input, Button, Upload, Page
   },
   data() {
     return {

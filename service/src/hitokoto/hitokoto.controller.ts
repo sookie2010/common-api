@@ -28,7 +28,7 @@ export default class HitokotoController {
    * @param hitokoto 一言
    */
   @Post('/save')
-  save(@Body() hitokoto: Hitokoto): Promise<String> {
+  save(@Body() hitokoto: Hitokoto): Promise<string> {
     return this.hitokotoService.save(hitokoto)
   }
   /**
@@ -36,7 +36,7 @@ export default class HitokotoController {
    * @param hitokotoDto 需要删除的多个ID
    */
   @Delete('/delete')
-  delete(@Query() hitokotoDto: HitokotoDto): Promise<String> {
+  delete(@Query() hitokotoDto: HitokotoDto): Promise<string> {
     return this.hitokotoService.delete(hitokotoDto._ids)
   }
 }

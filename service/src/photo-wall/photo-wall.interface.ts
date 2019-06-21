@@ -13,8 +13,12 @@ export interface PhotoWall extends Document {
 
 export interface PhotoWallQc extends BaseQc {
   name?: object
-  width?: object
-  height?: object
+  width?: {
+    $gte?: number
+    $lte?: number}
+  height?: {
+    $gte?: number
+    $lte?: number}
 }
 
 export interface PhotoWallDto {

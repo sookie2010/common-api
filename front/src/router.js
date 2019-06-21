@@ -5,6 +5,7 @@ Vue.use(Router)
 
 const Welcome = () => import(/* webpackChunkName: "welcome" */'@/components/Welcome')
 const Login = () => import(/* webpackChunkName: "login" */'@/components/Login')
+const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/components/system/SystemConfig')
 const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
 const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
 
@@ -12,6 +13,7 @@ const router = new Router({
 	routes: [
     { path: '/', name: 'Welcome', component: Welcome },
     { path: '/login', name: 'Login', component: Login },
+    { path: '/system/config', name: 'SystemConfig', component: SystemConfig },
     { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
     { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall }
 	]
@@ -21,12 +23,10 @@ const filterExclude = ['Login']
 
 // 全局路由导航前置守卫
 router.beforeEach(function (to, from, next) {
-  // 显示加载提示框
-  let isLogin = true// TODO 获取是否登录
-  if(filterExclude.indexOf(to.name) !== -1 || isLogin) {
+  if(filterExclude.indexOf(to.name) !== -1 || localStorage.getItem('login_token')) {
     next()
   } else {
-    next('/')
+    next('/login')
   }
 })
 

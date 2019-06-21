@@ -64,8 +64,8 @@ export default {
         name: '系统管理',
         icon: 'ios-cog',
         child: [{
-          name: '用户管理',
-          path: '/system/user'
+          name: '系统配置',
+          path: '/system/config'
         }]
       },{
         name: 'API数据',

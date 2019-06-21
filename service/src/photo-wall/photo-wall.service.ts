@@ -13,9 +13,8 @@ const crypto = require('crypto')
 @Injectable()
 export default class PhotoWallService {
   client: {
-    putObject: Function,
-    deleteMultiObject: Function,
-  }
+    putObject({objectKey: string, body: Buffer}) : Promise<object>
+    deleteMultiObject({objectKeys: any}) : Promise<object>}
 
   constructor(@InjectModel('PhotoWall') private readonly photoWallModel: Model<PhotoWall>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
@@ -59,19 +58,19 @@ export default class PhotoWallService {
     if (~~photoWallDto.widthMin || ~~photoWallDto.widthMax) {
       searchParam.width = {}
       if (~~photoWallDto.widthMin) {
-        searchParam.width['$gte'] = ~~photoWallDto.widthMin
+        searchParam.width.$gte = ~~photoWallDto.widthMin
       }
       if (~~photoWallDto.widthMax) {
-        searchParam.width['$lte'] = ~~photoWallDto.widthMax
+        searchParam.width.$lte = ~~photoWallDto.widthMax
       }
     }
     if (~~photoWallDto.heightMin || ~~photoWallDto.heightMax) {
       searchParam.height = {}
       if (~~photoWallDto.heightMin) {
-        searchParam.height['$gte'] = ~~photoWallDto.heightMin
+        searchParam.height.$gte = ~~photoWallDto.heightMin
       }
       if (~~photoWallDto.heightMax) {
-        searchParam.height['$lte'] = ~~photoWallDto.heightMax
+        searchParam.height.$lte = ~~photoWallDto.heightMax
       }
     }
     return this.photoWallModel.countDocuments(searchParam).exec().then((cnt: number) => {

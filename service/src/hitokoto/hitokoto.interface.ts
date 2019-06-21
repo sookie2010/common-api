@@ -21,9 +21,13 @@ export interface Hitokoto extends Document {
 }
 
 export interface HitokotoQc extends BaseQc {
-  type?: Object
-  hitokoto?: Object
-  created_at?: Object
+  type?: string | {$in: string[]}
+  hitokoto?: {
+    $exists?: boolean
+    $regex?: RegExp}
+  created_at?: {
+    $gte: Date
+    $lte: Date}
 }
 
 export interface HitokotoDto {
