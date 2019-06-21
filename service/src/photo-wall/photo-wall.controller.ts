@@ -1,14 +1,13 @@
-import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express/index';
-import { PhotoWallService } from './photo-wall.service';
-import { PhotoWallDto } from './photo-wall.dto';
-import { Page } from '../common/page.dto';
-import { FileDto } from '../common/file.dto';
-import { LoginInterceptor } from '../common/login.interceptor'
+import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express/index'
+import PhotoWallService from './photo-wall.service'
+import { PhotoWallDto } from './photo-wall.interface'
+import { FileDto, Page } from '../common/common.dto'
+import LoginInterceptor from '../common/login.interceptor'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/photowall')
-export class PhotoWallController {
+export default class PhotoWallController {
 
   constructor(private readonly photoWallService: PhotoWallService) {}
   /**
@@ -19,9 +18,9 @@ export class PhotoWallController {
   @Get('/list')
   list(@Query() photoWallDto: PhotoWallDto, @Query() page: Page): Promise<Page> {
     if(page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1);
+      page.start = ~~page.limit * (~~page.pageNum - 1)
     }
-    return this.photoWallService.list(photoWallDto, page);
+    return this.photoWallService.list(photoWallDto, page)
   }
   /**
    * 删除照片
@@ -29,7 +28,7 @@ export class PhotoWallController {
    */
   @Delete('/delete')
   delete(@Query() photoWallDto: PhotoWallDto): Promise<String> {
-    return this.photoWallService.delete(photoWallDto._ids);
+    return this.photoWallService.delete(photoWallDto._ids)
   }
   /**
    * 上传照片, 同步到对象存储仓库并保存照片信息
@@ -38,6 +37,6 @@ export class PhotoWallController {
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(@UploadedFile() image: FileDto) {
-    return this.photoWallService.save(image);
+    return this.photoWallService.save(image)
   }
 }

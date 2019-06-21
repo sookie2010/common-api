@@ -34,8 +34,7 @@
     <Button type="error" @click="deleteAll">删除</Button>
   </div>
   <div class="table-container">
-    <Table border :columns="hitokotoColumns" :data="hitokotoData" height="520" @on-selection-change="dataSelect"></Table>
-    <Spin fix v-show="loading"></Spin>
+    <Table border :loading="loading" :columns="hitokotoColumns" :data="hitokotoData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -57,7 +56,6 @@ import Option from 'iview/src/components/option'
 import DatePicker from 'iview/src/components/date-picker'
 import Button from 'iview/src/components/button'
 import Page from 'iview/src/components/page'
-import Spin from 'iview/src/components/spin'
 import Modal from 'iview/src/components/modal'
 
 import HitokotoAdd from './HitokotoAdd'
@@ -65,7 +63,7 @@ import HitokotoAdd from './HitokotoAdd'
 var selectedData = null
 export default {
   components: {
-    Table, Row, Col, Input, Select, Option, DatePicker, Button, Page, Spin, Modal, HitokotoAdd
+    Table, Row, Col, Input, Select, Option, DatePicker, Button, Page, Modal, HitokotoAdd
   },
   data() {
     return {

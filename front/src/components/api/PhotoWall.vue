@@ -52,12 +52,8 @@
     <Button type="error" @click="deleteAll">删除</Button>
   </div>
   <div class="table-container">
-    <Table border :columns="photowallColumns" :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
-    <Spin fix v-show="loading"></Spin>
-    <Spin fix v-show="uploading">
-      <Icon type="load-c" size=18></Icon>
-      <div>正在上传，请稍候...</div>
-    </Spin>
+    <Table border :loading="loadding" :columns="photowallColumns" 
+      :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -74,13 +70,12 @@ import Input from 'iview/src/components/input'
 import Button from 'iview/src/components/button'
 import Upload from 'iview/src/components/upload'
 import Page from 'iview/src/components/page'
-import Spin from 'iview/src/components/spin'
 import Icon from 'iview/src/components/icon'
 
-var selectedData = null
+var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, Button, Upload, Page, Spin, Icon
+    Table, Row, Col, Input, Button, Upload, Page, Icon
   },
   data() {
     return {
@@ -188,15 +183,24 @@ export default {
       selectedData = selection
     },
     uploadProgress() {
-      this.uploading = true
+      closeUploadTip = this.$Message.loading({
+        content: '正在上传，请稍候...',
+        duration: 0
+      })
     },
     uploadSuccess() {
-      this.uploading = false
+      if(typeof closeUploadTip === 'function') {
+        closeUploadTip.call(this)
+        closeUploadTip = null
+      }
       this.$Message.success('上传成功')
       this.loadData()
     },
     uploadError() {
-      this.uploading = false
+      if(typeof closeUploadTip === 'function') {
+        closeUploadTip.call(this)
+        closeUploadTip = null
+      }
       this.$Message.error('上传失败')
     },
     preview(row) {

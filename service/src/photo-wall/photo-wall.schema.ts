@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema } from 'mongoose'
 
 export const PhotoWallSchema = new Schema({
   _id: Schema.Types.ObjectId,
@@ -8,4 +8,4 @@ export const PhotoWallSchema = new Schema({
   width: Number,
   height: Number,
   index: Number
-}, { collection: 'photo_wall', versionKey: false });
+}, { collection: 'photo_wall', versionKey: false })

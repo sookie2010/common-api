@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema } from 'mongoose'
 
 export const HitokotoSchema = new Schema({
   _id: Schema.Types.ObjectId,
@@ -8,4 +8,4 @@ export const HitokotoSchema = new Schema({
   creator: String,
   created_at: Date,
   number: Number,
-}, { collection: 'hitokoto', versionKey: false });
+}, { collection: 'hitokoto', versionKey: false })

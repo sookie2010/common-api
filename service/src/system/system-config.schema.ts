@@ -4,4 +4,4 @@ export const SystemConfigSchema = new Schema({
   _id: Schema.Types.ObjectId,
   name: String,
   value: Object
-}, { collection: 'system_config', versionKey: false });
+}, { collection: 'system_config', versionKey: false })

@@ -62,14 +62,14 @@ export default {
       // 菜单项
       menus: [{
         name: '系统管理',
-        icon: 'ios-navigate',
+        icon: 'ios-cog',
         child: [{
           name: '用户管理',
           path: '/system/user'
         }]
       },{
         name: 'API数据',
-        icon: 'ios-keypad',
+        icon: 'ios-grid',
         child: [{
           name: '一言',
           path: '/api/hitokoto'

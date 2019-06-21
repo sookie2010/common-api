@@ -1,13 +1,13 @@
-import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common';
-import { HitokotoService } from './hitokoto.service';
-import { Hitokoto } from './hitokoto.interface';
-import { HitokotoDto } from './hitokoto.dto';
-import { Page } from '../common/page.dto';
-import { LoginInterceptor } from '../common/login.interceptor'
+import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common'
+import HitokotoService from './hitokoto.service'
+import { Hitokoto } from './hitokoto.interface'
+import { HitokotoDto } from './hitokoto.interface'
+import { Page } from '../common/common.dto'
+import LoginInterceptor from '../common/login.interceptor'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/hitokoto')
-export class HitokotoController {
+export default class HitokotoController {
   constructor(
     private readonly hitokotoService: HitokotoService
   ) {}
@@ -19,9 +19,9 @@ export class HitokotoController {
   @Get('/list')
   list(@Query() hitokotoDto: HitokotoDto, @Query() page: Page): Promise<Page> {
     if(page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1);
+      page.start = ~~page.limit * (~~page.pageNum - 1)
     }
-    return this.hitokotoService.list(hitokotoDto, page);
+    return this.hitokotoService.list(hitokotoDto, page)
   }
   /**
    * 保存一言
@@ -29,7 +29,7 @@ export class HitokotoController {
    */
   @Post('/save')
   save(@Body() hitokoto: Hitokoto): Promise<String> {
-    return this.hitokotoService.save(hitokoto);
+    return this.hitokotoService.save(hitokoto)
   }
   /**
    * 删除一言
@@ -37,6 +37,6 @@ export class HitokotoController {
    */
   @Delete('/delete')
   delete(@Query() hitokotoDto: HitokotoDto): Promise<String> {
-    return this.hitokotoService.delete(hitokotoDto._ids);
+    return this.hitokotoService.delete(hitokotoDto._ids)
   }
 }

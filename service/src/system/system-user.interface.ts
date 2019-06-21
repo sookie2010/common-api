@@ -1,8 +1,8 @@
-import { Schema, Document } from 'mongoose';
+import { Schema, Document } from 'mongoose'
 
-export interface SystemUser extends Document {
+export default interface SystemUser extends Document {
   _id?: Schema.Types.ObjectId
-  username?: String
-  password?: String
-  realname?: String
+  username?: String // 用户名
+  password?: String // 密码(SHA1)
+  realname?: String // 显示名称
 }
