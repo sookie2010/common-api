@@ -44,7 +44,7 @@
   <div class="btn-container">
     <Upload :action="$http.defaults.baseURL + '/photowall/upload'" 
       name="image" :show-upload-list="false" 
-      :format="['jpg','jpeg','png']"
+      :format="['jpg','jpeg','png']" :headers="uploadHeaders"
       :on-progress="uploadProgress" :on-success="uploadSuccess" @on-error="uploadError"
       style="display: inline-block;">
       <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
@@ -86,6 +86,7 @@ export default {
     return {
       loading: false,
       uploading: false,
+      uploadHeaders: {token: localStorage.getItem('login_token')},
       search: {
         pageNum: 1,
         limit: 10,
