@@ -32,7 +32,9 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
+    "rules": {
+      "vue/no-parsing-error": [2, { "x-invalid-end-tag": false }]
+    },
     "parserOptions": {
       "parser": "babel-eslint",
       "ecmaVersion": 6,
@@ -40,7 +42,6 @@
       "ecmaFeatures": {
         "jsx": true,
         "modules": true,
-        "experimentalObjectRestSpread": true,
         "objectLiteralComputedProperties": true
       }
     }

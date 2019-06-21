@@ -7,8 +7,6 @@ import { Page } from './common/page.dto';
 import { SystemUser } from './system/system-user.interface';
 import { AppService } from './app.service';
 
-const Jwt = require('jsonwebtoken');
-
 @Controller('/common')
 export class AppController {
   constructor(
