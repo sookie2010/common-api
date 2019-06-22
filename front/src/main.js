@@ -64,11 +64,10 @@ const vm = new Vue({
 
 // 全局路由导航前置守卫
 router.beforeEach((function (to, from, next) {
+  this.$store.commit('setBreadcrumb', routePathes[to.name] || [])
   if(filterExclude.indexOf(to.name) !== -1 || localStorage.getItem('login_token')) {
-    this.$store.commit('setBreadcrumb', routePathes[to.name] || [])
     next()
   } else {
-    this.$store.commit('setBreadcrumb', routePathes.Login)
     next('/login')
   }
 }).bind(vm))

@@ -77,9 +77,7 @@ export default {
           name: '照片墙',
           path: '/api/photoWall'
         }]
-      }],
-      // 面包屑
-      breadcrumb: []
+      }]
     }
   },
   computed: {
@@ -91,19 +89,19 @@ export default {
   methods: {
     logout() {
       this.$store.commit('logout')
-      this.$router.push('/')
+      this.$router.push('/login')
     }
   },
   created() {
-    if(localStorage.getItem('login_token')) {
-      this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')}).then(data => {
-        if(data.status) {
-          this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
-        } else {
-          this.$router.push('/login')
-        }
-      })
-    }
+    if(!localStorage.getItem('login_token')) return
+    this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')}).then(data => {
+      if(data.status) {
+        this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
+        this.$router.push('/')
+      } else {
+        this.$router.push('/login')
+      }
+    })
   }
 }
 </script>
