@@ -13,8 +13,11 @@ export default class AppService {
   constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: mongoose.Model<SystemConfig>,
               @InjectModel('SystemUser') private readonly systemUserModel: mongoose.Model<SystemUser>,
   ) {}
-
-  async login(systemUser: SystemUser) {
+  /**
+   * 登录
+   * @param systemUser 用户信息
+   */
+  async login(systemUser: SystemUser): Promise<object> {
     const pwdHashed = crypto.createHash('sha1')
         .update(systemUser.password)
         .digest('hex')
@@ -34,9 +37,27 @@ export default class AppService {
       const token = jwt.sign(signUser, systemConfig.value/*秘钥*/, {
         expiresIn: '1h', /*过期时间*/
       })
-      return Promise.resolve({token})
+      return Promise.resolve({token, userInfo: signUser})
     }).catch(result => {
       return result
+    })
+  }
+  /**
+   * 校验Token
+   * @param token Token字符串
+   */
+  async verifyToken(token: string): Promise<object> {
+    return this.systemConfigModel.findOne({name: 'token_private_key'}).exec().then((systemConfig: SystemConfig) => {
+      const userInfo = jwt.verify(token, systemConfig.value)
+      return {status: true, userInfo}
+    }).catch(err => {
+      let msg = null
+      if (err instanceof jwt.TokenExpiredError) {
+        msg = '登录超时，请重新登录'
+      } else if (err instanceof jwt.JsonWebTokenError) {
+        msg = 'Token无效，请重新登录'
+      }
+      return {status: false, msg}
     })
   }
 }

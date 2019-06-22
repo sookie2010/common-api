@@ -2,7 +2,7 @@
 <div id="app" class="layout">
   <Row type="flex">
     <Col span="4" class="layout-left">
-      <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" @on-select="menuSelected" >
+      <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" >
         <Submenu v-for="(item,index) in menus" :key="index" :name="index">
           <template slot="title">
             <Icon :type="item.icon"></Icon>{{item.name}}
@@ -23,13 +23,13 @@
           <router-link to="/">首页</router-link>
         </div>
         <div class="nav-btns-right">
+          <span>{{ realname }}</span>
           <Button @click="logout">注销</Button>
         </div>
       </div>
       <div class="layout-breadcrumb">
         <Breadcrumb>
-          <Breadcrumb-item >首页</Breadcrumb-item>
-          <Breadcrumb-item v-for="(item,index) in breadcrumb" :key="index">{{item}}</Breadcrumb-item>
+          <Breadcrumb-item v-for="(item,index) in $store.state.breadcrumb" :key="index">{{item}}</Breadcrumb-item>
         </Breadcrumb>
       </div>
       <div class="layout-content">
@@ -82,17 +82,27 @@ export default {
       breadcrumb: []
     }
   },
+  computed: {
+    realname () { // 当前用户的显示名称
+			return this.$store.state.loginInfo.userInfo
+				? this.$store.state.loginInfo.userInfo.realname : null
+		}
+  },
   methods: {
-    menuSelected(menuName) {
-      let menuIndexes = menuName.split('-')
-      this.breadcrumb.length = 0
-      this.breadcrumb.push(
-        this.menus[menuIndexes[0]].name, 
-        this.menus[menuIndexes[0]].child[menuIndexes[1]].name)
-    },
     logout() {
-      localStorage.removeItem('login_token')
+      this.$store.commit('logout')
       this.$router.push('/')
+    }
+  },
+  created() {
+    if(localStorage.getItem('login_token')) {
+      this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')}).then(data => {
+        if(data.status) {
+          this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
+        } else {
+          this.$router.push('/login')
+        }
+      })
     }
   }
 }

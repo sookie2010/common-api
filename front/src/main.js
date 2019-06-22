@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import router from './router'
+import { router, routePathes, filterExclude} from './router'
+import store from './store'
 
 // iview
 import 'iview/dist/styles/iview.css'
@@ -52,29 +53,22 @@ axios.interceptors.response.use(res=> {
   }
   return Promise.resolve(err);
 })
-
 Vue.prototype.$http = axios
 
 const vm = new Vue({
   render: h => h(App),
-  router
+  router,
+  store
 }).$mount('#app')
 
-// 日期格式化函数
-Date.prototype.Format = function(fmt) {
-  let o = {
-    "M+" : this.getMonth()+1,                 //月份  
-    "d+" : this.getDate(),                    //日  
-    "h+" : this.getHours(),                   //小时  
-    "m+" : this.getMinutes(),                 //分  
-    "s+" : this.getSeconds(),                 //秒  
-    "q+" : Math.floor((this.getMonth()+3)/3), //季度  
-    "S"  : this.getMilliseconds()             //毫秒  
+
+// 全局路由导航前置守卫
+router.beforeEach((function (to, from, next) {
+  if(filterExclude.indexOf(to.name) !== -1 || localStorage.getItem('login_token')) {
+    this.$store.commit('setBreadcrumb', routePathes[to.name] || [])
+    next()
+  } else {
+    this.$store.commit('setBreadcrumb', routePathes.Login)
+    next('/login')
   }
-  if(/(y+)/.test(fmt))  
-      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length))
-  for(let k in o)
-      if(new RegExp("("+ k +")").test(fmt))
-          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)))
-  return fmt
-}
+}).bind(vm))
