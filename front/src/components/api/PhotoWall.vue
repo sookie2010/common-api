@@ -42,10 +42,10 @@
   </Row>
   
   <div class="btn-container">
-    <Upload :action="$http.defaults.baseURL + '/photowall/upload'" 
+    <Upload :action="($http.defaults.baseURL || '') + '/photowall/upload'" 
       name="image" :show-upload-list="false" 
-      :format="['jpg','jpeg','png']" :headers="uploadHeaders"
-      :on-progress="uploadProgress" :on-success="uploadSuccess" @on-error="uploadError"
+      :format="['jpg','jpeg','png']" :headers="uploadHeaders" 
+      :before-upload="beforeUpload" :on-success="uploadSuccess" @on-error="uploadError"
       style="display: inline-block;">
       <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
     </Upload>
@@ -181,11 +181,16 @@ export default {
     dataSelect(selection) {
       selectedData = selection
     },
-    uploadProgress() {
+    beforeUpload(file) {
+      let filenameCut = undefined
+      if(file.name.length > 15) {
+        filenameCut = file.name.substr(0, 15) + '...'
+      }
       closeUploadTip = this.$Message.loading({
-        content: '正在上传，请稍候...',
+        content: (filenameCut || file.name) + ' 正在上传，请稍候...',
         duration: 0
       })
+      return true
     },
     uploadSuccess() {
       if(typeof closeUploadTip === 'function') {

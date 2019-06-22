@@ -22,9 +22,9 @@
 import Input from 'iview/src/components/input'
 import Select from 'iview/src/components/select'
 import Option from 'iview/src/components/option'
-
 import Form from 'iview/src/components/form'
 import FormItem from 'iview/src/components/form-item'
+
 export default {
   components: { Input, Select, Option, Form, FormItem },
   props: {
