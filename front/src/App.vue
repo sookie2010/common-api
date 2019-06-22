@@ -93,7 +93,10 @@ export default {
     }
   },
   created() {
-    if(!localStorage.getItem('login_token')) return
+    if(!localStorage.getItem('login_token')) {
+      this.$router.push('/login')
+      return
+    } 
     this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')}).then(data => {
       if(data.status) {
         this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
