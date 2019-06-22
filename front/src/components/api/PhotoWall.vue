@@ -1,5 +1,9 @@
 <template>
 <div>
+  <Alert show-icon>
+    上传要求
+    <template slot="desc">图片格式为{{allowUploadExt.join('、')}}，文件大小不超过10MB。</template>
+  </Alert>
   <Row>
     <Col span="2">
       <div class="search-title">文件名：</div>
@@ -44,8 +48,10 @@
   <div class="btn-container">
     <Upload :action="($http.defaults.baseURL || '') + '/photowall/upload'" 
       name="image" :show-upload-list="false" 
-      :format="['jpg','jpeg','png']" :headers="uploadHeaders" 
+      :format="allowUploadExt" :headers="uploadHeaders" :max-size="10240" 
       :before-upload="beforeUpload" :on-success="uploadSuccess" @on-error="uploadError"
+      :on-format-error="uploadFormatError" :on-exceeded-size="uploadFileSizeError"
+      
       style="display: inline-block;">
       <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
     </Upload>
@@ -63,6 +69,7 @@
 </div>
 </template>
 <script>
+import Alert from 'iview/src/components/alert'
 import Table from 'iview/src/components/table'
 import Row from 'iview/src/components/row'
 import Col from 'iview/src/components/col'
@@ -74,7 +81,7 @@ import Page from 'iview/src/components/page'
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, Button, Upload, Page
+    Alert, Table, Row, Col, Input, Button, Upload, Page
   },
   data() {
     return {
@@ -90,6 +97,7 @@ export default {
         heightMin: 0,
         heightMax: 0
       },
+      allowUploadExt: ['jpg','jpeg','png'],
       photowallColumns: [{
           type: 'selection',
           key: '_id',
@@ -192,20 +200,28 @@ export default {
       })
       return true
     },
+    uploadFormatError() {
+      this.closeUploadTip()
+      this.$Message.error(`只能上传 ${this.allowUploadExt.join('、')} 格式的文件`)
+    },
+    uploadFileSizeError() {
+      this.closeUploadTip()
+      this.$Message.error(`只能上传不超过10MB的文件`)
+    },
     uploadSuccess() {
-      if(typeof closeUploadTip === 'function') {
-        closeUploadTip.call(this)
-        closeUploadTip = null
-      }
+      this.closeUploadTip()
       this.$Message.success('上传成功')
       this.loadData()
     },
     uploadError() {
+      this.closeUploadTip()
+      this.$Message.error('上传失败')
+    },
+    closeUploadTip() {
       if(typeof closeUploadTip === 'function') {
         closeUploadTip.call(this)
         closeUploadTip = null
       }
-      this.$Message.error('上传失败')
     },
     preview(row) {
       let previewHeight = Math.floor(row.height * (500 / row.width))
