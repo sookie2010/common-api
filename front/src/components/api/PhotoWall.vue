@@ -208,10 +208,14 @@ export default {
       this.closeUploadTip()
       this.$Message.error(`只能上传不超过10MB的文件`)
     },
-    uploadSuccess() {
+    uploadSuccess(response) {
       this.closeUploadTip()
-      this.$Message.success('上传成功')
-      this.loadData()
+      if(response.status) {
+        this.$Message.success(response.msg)
+        this.loadData()
+      } else {
+        this.$Message.warning(response.msg)
+      }
     },
     uploadError() {
       this.closeUploadTip()

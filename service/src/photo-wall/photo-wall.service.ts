@@ -85,7 +85,7 @@ export default class PhotoWallService {
    * 保存照片信息
    * @param photowall 照片信息
    */
-  async save(image: FileDto): Promise<string> {
+  async save(image: FileDto): Promise<object> {
     const ext = image.originalname.substr(image.originalname.indexOf('.') + 1) // 文件扩展名
     const photowall: PhotoWall = {}
     photowall._id = new Types.ObjectId()
@@ -98,51 +98,49 @@ export default class PhotoWallService {
     const fsHash = crypto.createHash('md5')
     fsHash.update(image.buffer)
     photowall.md5 = fsHash.digest('hex')
-
+    
+    const md5Check: number = await this.photoWallModel.countDocuments({md5: photowall.md5}).exec()
+    if(md5Check > 0) {
+      return Promise.resolve({status: false, msg: '图片已存在'})
+    }
+    const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
     // 生成缩略图
-    let thumbnailBuffer = null
-    return this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec().then((systemConfig: SystemConfig) => {
-      img.resize(systemConfig.value)
-      thumbnailBuffer = img.encode(ext, {operation: 50})
-      return this.photoWallModel.aggregate([{$group: {
-        _id: 'max_index',
-        index: { $max: '$index' },
-      }}])
-    }).then((maxIndex: PhotoWall[]) => {
-      const lastIndex = maxIndex[0].index
-      const groupId = Math.floor(lastIndex / 50) + 1 // 当前分组
-      const len = (lastIndex + 1).toString().length // 编号
-      let num = ''
-      for (let i = 0 ; i < 5 - len ; i++) {
-        num += '0'
-      }
-      photowall.name = `photo-wall/${groupId}/pic_${num}${lastIndex + 1}.${ext}`
-      photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${lastIndex + 1}_thumbnail.${ext}`
-      photowall.index = lastIndex + 1
-      // 上传原图到对象存储仓库
-      return this.client.putObject({
-        objectKey: photowall.name,
-        body: image.buffer,
-      })
-    }).then(result => {
-      // eTag是上传后远端校验的md5值, 用于和本地进行比对
-      const eTag = result.eTag.replace(/"/g, '')
-      if (photowall.md5 === eTag) {
-        console.log(`${photowall.name} 上传成功, md5:${eTag}`)
-        // 上传缩略图
-        return this.client.putObject({
-          objectKey: photowall.thumbnail,
-          body: thumbnailBuffer,
-        })
-      } else {
-        console.warn(`${photowall.name} 上传出错, md5值不一致`)
-        console.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
-        return Promise.reject(`${photowall.name} 上传出错, md5值不一致`)
-      }
-    }).then(() => {
-      console.log(`缩略图 ${photowall.thumbnail} 上传成功`)
-      return this.photoWallModel.create(photowall)
+    img.resize(thumbnailWidth.value)
+    const thumbnailBuffer = img.encode(ext, {operation: 50})
+    const maxIndex: PhotoWall[] = await this.photoWallModel.aggregate([{$group: {
+      _id: 'max_index',
+      index: { $max: '$index' },
+    }}])
+    const lastIndex = maxIndex[0].index,
+      groupId = Math.floor(lastIndex / 50) + 1, // 当前分组
+      len = (lastIndex + 1).toString().length // 编号
+    let num = ''
+    for (let i = 0 ; i < 5 - len ; i++) {
+      num += '0'
+    }
+    photowall.name = `photo-wall/${groupId}/pic_${num}${lastIndex + 1}.${ext}`
+    photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${lastIndex + 1}_thumbnail.${ext}`
+    photowall.index = lastIndex + 1
+
+    const putResult:{eTag?: string} = await this.client.putObject({
+      objectKey: photowall.name,
+      body: image.buffer,
     })
+    const eTag = putResult.eTag.replace(/"/g, '')
+    if (photowall.md5 === eTag) {
+      console.log(`${photowall.name} 上传成功, md5:${eTag}`)
+      // 上传缩略图
+      await this.client.putObject({
+        objectKey: photowall.thumbnail,
+        body: thumbnailBuffer,
+      })
+    } else {
+      console.warn(`${photowall.name} 上传出错, md5值不一致`)
+      console.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
+      return Promise.resolve({status: false, msg: `${photowall.name} 上传出错, md5值不一致`})
+    }
+    await this.photoWallModel.create(photowall)
+    return Promise.resolve({status: true, msg: '上传成功'})
   }
 
   /**
@@ -166,8 +164,7 @@ export default class PhotoWallService {
    * 获取图片存储CDN地址
    */
   async getPictureCdn(): Promise<string> {
-    return this.systemConfigModel.findOne({name: 'picture_cdn'}).exec().then((systemConfig: SystemConfig) => {
-      return Promise.resolve(systemConfig.value)
-    })
+    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'picture_cdn'}).exec()
+    return Promise.resolve(pictureCdnConfig.value.toString())
   }
 }
