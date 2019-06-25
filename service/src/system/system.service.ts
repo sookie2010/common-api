@@ -11,11 +11,11 @@ export default class SystemService {
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {}
 
   async listConfig(systemConfig: SystemConfig): Promise<SystemConfig[]> {
-    const qc : BaseQc = {}
-    if(systemConfig.name) {
+    const qc: BaseQc = {}
+    if (systemConfig.name) {
       qc.$or = [
         {name: new RegExp(systemConfig.name)},
-        {description: new RegExp(systemConfig.name)}
+        {description: new RegExp(systemConfig.name)},
       ]
     }
     return this.systemConfigModel.find(qc).exec()

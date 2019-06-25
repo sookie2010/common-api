@@ -19,10 +19,10 @@ export default class AppController {
   login(@Body() systemUser: SystemUser): Promise<object> {
     return this.appService.login(systemUser)
   }
-  
+
   @Post('/verifyToken')
-  verifyToken(@Body() tokenObj: {token: string}) : Promise<object> {
-    if(!tokenObj.token) {
+  verifyToken(@Body() tokenObj: {token: string}): Promise<object> {
+    if (!tokenObj.token) {
       return Promise.resolve({status: false, msg: '未获得Token'})
     }
     return this.appService.verifyToken(tokenObj.token)

@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
 import { PhotoWall } from './photo-wall.interface'
@@ -13,8 +13,8 @@ const crypto = require('crypto')
 @Injectable()
 export default class PhotoWallService {
   client: {
-    putObject({objectKey: string, body: Buffer}) : Promise<object>
-    deleteMultiObject({objectKeys: any}) : Promise<object>}
+    putObject({objectKey: string, body: Buffer}): Promise<object>
+    deleteMultiObject({objectKeys: any}): Promise<object>}
 
   constructor(@InjectModel('PhotoWall') private readonly photoWallModel: Model<PhotoWall>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
@@ -98,9 +98,9 @@ export default class PhotoWallService {
     const fsHash = crypto.createHash('md5')
     fsHash.update(image.buffer)
     photowall.md5 = fsHash.digest('hex')
-    
+
     const md5Check: number = await this.photoWallModel.countDocuments({md5: photowall.md5}).exec()
-    if(md5Check > 0) {
+    if (md5Check > 0) {
       return Promise.resolve({status: false, msg: '图片已存在'})
     }
     const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
@@ -111,9 +111,9 @@ export default class PhotoWallService {
       _id: 'max_index',
       index: { $max: '$index' },
     }}])
-    const lastIndex = maxIndex[0].index,
-      groupId = Math.floor(lastIndex / 50) + 1, // 当前分组
-      len = (lastIndex + 1).toString().length // 编号
+    const lastIndex = maxIndex[0].index
+    const groupId = Math.floor(lastIndex / 50) + 1 // 当前分组
+    const len = (lastIndex + 1).toString().length // 编号
     let num = ''
     for (let i = 0 ; i < 5 - len ; i++) {
       num += '0'
@@ -122,21 +122,21 @@ export default class PhotoWallService {
     photowall.thumbnail = `photo-wall/${groupId}/pic_${num}${lastIndex + 1}_thumbnail.${ext}`
     photowall.index = lastIndex + 1
 
-    const putResult:{eTag?: string} = await this.client.putObject({
+    const putResult: {eTag?: string} = await this.client.putObject({
       objectKey: photowall.name,
       body: image.buffer,
     })
     const eTag = putResult.eTag.replace(/"/g, '')
     if (photowall.md5 === eTag) {
-      console.log(`${photowall.name} 上传成功, md5:${eTag}`)
+      Logger.log(`${photowall.name} 上传成功, md5:${eTag}`)
       // 上传缩略图
       await this.client.putObject({
         objectKey: photowall.thumbnail,
         body: thumbnailBuffer,
       })
     } else {
-      console.warn(`${photowall.name} 上传出错, md5值不一致`)
-      console.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
+      Logger.warn(`${photowall.name} 上传出错, md5值不一致`)
+      Logger.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
       return Promise.resolve({status: false, msg: `${photowall.name} 上传出错, md5值不一致`})
     }
     await this.photoWallModel.create(photowall)
@@ -156,7 +156,7 @@ export default class PhotoWallService {
       })
       return this.client.deleteMultiObject({objectKeys: deleteFileNames})
     }).then(err => {
-      if (err) { console.error(err) }
+      if (err) { Logger.error(err) }
       return this.photoWallModel.deleteMany({_id: {$in: ids}}).exec()
     })
   }

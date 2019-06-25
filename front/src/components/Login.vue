@@ -3,10 +3,10 @@
     <div style="width: 400px;margin: 20px auto;">
     <Form ref="userInfo" :model="userInfo" :rules="ruleValidate" :label-width="80">
       <Form-item label="用户名" prop="username">
-        <Input v-model="userInfo.username" />
+        <Input v-model="userInfo.username" @on-enter="login"/>
       </Form-item>
       <Form-item label="密码" prop="password">
-        <Input v-model="userInfo.password" type="password" />
+        <Input v-model="userInfo.password" type="password" @on-enter="login" />
       </Form-item>
     </Form>
     <div style="padding-left:80px">
