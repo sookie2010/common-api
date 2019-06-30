@@ -32,7 +32,7 @@ export interface HitokotoQc extends BaseQc {
 
 export interface HitokotoDto {
   /**
-   * 多个ID, 用于批量删除
+   * 多个ID, 用于批量操作
    */
   _ids: string[]
   /**

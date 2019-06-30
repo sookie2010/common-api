@@ -66,6 +66,9 @@ export default {
         child: [{
           name: '系统配置',
           path: '/system/config'
+        },{
+          name: '博客文章',
+          path: '/system/article'
         }]
       },{
         name: 'API数据',
