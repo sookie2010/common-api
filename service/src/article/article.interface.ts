@@ -19,7 +19,7 @@ export interface ArticleKeys extends Document {
 export interface ArticleQc extends BaseQc {
   title?: {
     $regex?: RegExp}
-  created_date?: {
+  create_date?: {
     $gte: Date
     $lte: Date}
 }

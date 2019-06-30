@@ -77,7 +77,7 @@ export default class AppController {
    */
   @Get('/search')
   search(@Query() articleDto: ArticleDto, @Query() page: Page): Promise<Page | object> {
-    if(!articleDto.words) {
+    if (!articleDto.words) {
       return Promise.resolve(page)
     }
     if (page.pageNum && page.limit) {

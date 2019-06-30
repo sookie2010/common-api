@@ -18,19 +18,19 @@ export default class ArticleService {
    * @param page 分页
    */
   async list(articleDto: ArticleDto, page: Page): Promise<Page> {
-    const searchParam : ArticleQc = {}
+    const searchParam: ArticleQc = {}
     if (articleDto.title) {
       searchParam.title = {$regex: new RegExp(articleDto.title)}
     }
     if (articleDto.createDate && articleDto.createDate[0] && articleDto.createDate[1]) {
-      searchParam.created_date = {
+      searchParam.create_date = {
         $gte: new Date(articleDto.createDate[0]),
         $lte: new Date(articleDto.createDate[1]),
       }
     }
     return this.articleModel.countDocuments(searchParam).exec().then((cnt: number) => {
       page.total = cnt
-      return this.articleModel.find(searchParam, {_id:1, title:1, path:1, create_date:1})
+      return this.articleModel.find(searchParam, {_id: 1, title: 1, path: 1, create_date: 1})
         .sort({create_date: -1})
         .skip(~~page.start)
         .limit(~~page.limit)
@@ -46,11 +46,11 @@ export default class ArticleService {
    */
   async splitWord(ids: string[]): Promise<object> {
     const articles: Article[] = await this.articleModel.find({_id: {$in: ids}}).exec()
-    for(let article of articles) {
+    for (const article of articles) {
       const articleKeys: string[] = nodejieba.cut(article.content, true)
       Logger.log(`${article.title} 分词处理成功, 原文长度${article.content.length}, 分词数量: ${articleKeys.length}`)
-      let cnt = await this.articleKeysModel.countDocuments({article_id: article._id}).exec()
-      if(cnt > 0) {
+      const cnt = await this.articleKeysModel.countDocuments({article_id: article._id}).exec()
+      if (cnt > 0) {
         await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: articleKeys}})
       } else {
         await this.articleKeysModel.create({article_id: article._id, keys: articleKeys})
@@ -75,8 +75,8 @@ export default class ArticleService {
     page.total = articleDtos.length
     const articleIds: Schema.Types.ObjectId[] = articleDtos
       .slice(page.start, page.start + (~~page.limit))
-      .map((articleDtos: ArticleDto) => articleDtos._id)
-    page.data = await this.articleModel.find({_id: {$in: articleIds}}, {title:1, path:1, create_date:1}).exec()
+      .map((articleDto: ArticleDto) => articleDto._id)
+    page.data = await this.articleModel.find({_id: {$in: articleIds}}, {title: 1, path: 1, create_date: 1}).exec()
     return Promise.resolve(page)
   }
 }
