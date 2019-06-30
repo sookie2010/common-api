@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
 import { PhotoWall } from './photo-wall.interface'
 import SystemConfig from '../system/system-config.interface'
-import { FileDto, Page } from '../common/common.dto'
+import { FileDto, Page, MsgResult } from '../common/common.dto'
 
 const images = require('images')
 const nos = require('@xgheaven/nos-node-sdk')
@@ -30,7 +30,7 @@ export default class PhotoWallService {
    * @param start 起始数据行数(第一行是0)
    * @param limit 每页数据条数
    */
-  async queryPage(page: Page): Promise<Page> {
+  async queryPage(page: Page): Promise<Page | MsgResult> {
     return this.photoWallModel.countDocuments({}).exec().then((cnt: number) => {
       if (cnt === 0) {
         throw new Error('没有图片数据')
@@ -41,7 +41,7 @@ export default class PhotoWallService {
       page.data = photoWalls
       return page
     }).catch((err: Error) => {
-      return {msg: err.message}
+      return new MsgResult(false, err.message)
     })
   }
 
@@ -85,7 +85,7 @@ export default class PhotoWallService {
    * 保存照片信息
    * @param photowall 照片信息
    */
-  async save(image: FileDto): Promise<object> {
+  async save(image: FileDto): Promise<MsgResult> {
     const ext = image.originalname.substr(image.originalname.indexOf('.') + 1) // 文件扩展名
     const photowall: PhotoWall = {}
     photowall._id = new Types.ObjectId()
@@ -101,7 +101,7 @@ export default class PhotoWallService {
 
     const md5Check: number = await this.photoWallModel.countDocuments({md5: photowall.md5}).exec()
     if (md5Check > 0) {
-      return Promise.resolve({status: false, msg: '图片已存在'})
+      return Promise.resolve(new MsgResult(false, '图片已存在'))
     }
     const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
     // 生成缩略图
@@ -137,17 +137,17 @@ export default class PhotoWallService {
     } else {
       Logger.warn(`${photowall.name} 上传出错, md5值不一致`)
       Logger.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
-      return Promise.resolve({status: false, msg: `${photowall.name} 上传出错, md5值不一致`})
+      return Promise.resolve(new MsgResult(false, `${photowall.name} 上传出错, md5值不一致`))
     }
     await this.photoWallModel.create(photowall)
-    return Promise.resolve({status: true, msg: '上传成功'})
+    return Promise.resolve(new MsgResult(true, '上传成功'))
   }
 
   /**
    * 批量删除照片信息
    * @param ids 删除数据的ID们
    */
-  async delete(ids: string[]): Promise<string> {
+  async delete(ids: string[]): Promise<MsgResult> {
     return this.photoWallModel.find({_id: {$in: ids}}).exec().then((photoWalls: PhotoWall[]) => {
       const deleteFileNames = []
       photoWalls.forEach((photoWall: PhotoWall) => {
@@ -158,6 +158,8 @@ export default class PhotoWallService {
     }).then(err => {
       if (err) { Logger.error(err) }
       return this.photoWallModel.deleteMany({_id: {$in: ids}}).exec()
+    }).then(() => {
+      return Promise.resolve(new MsgResult(true, '删除成功'))
     })
   }
   /**

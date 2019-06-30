@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Hitokoto } from './hitokoto.interface'
 import SystemConfig from '../system/system-config.interface'
 import { HitokotoDto, HitokotoQc } from './hitokoto.interface'
-import { Page } from '../common/common.dto'
+import { Page, MsgResult } from '../common/common.dto'
 
 @Injectable()
 export default class HitokotoService {
@@ -15,7 +15,7 @@ export default class HitokotoService {
    * 随机获取一条一言
    * @param hitokotoDto 查询条件
    */
-  async findOne(hitokotoDto: HitokotoDto): Promise<Hitokoto> {
+  async findOne(hitokotoDto: HitokotoDto): Promise<Hitokoto | MsgResult> {
     const searchParam: HitokotoQc = {}
     if (hitokotoDto.type) {
       searchParam.type = hitokotoDto.type.length > 1 ? {$in: hitokotoDto.type.split('')} : hitokotoDto.type
@@ -39,7 +39,7 @@ export default class HitokotoService {
           return hitokotos[0]
       }
     }).catch((err: Error) => {
-      return {msg: err.message}
+      return new MsgResult(false, err.message)
     })
   }
   /**

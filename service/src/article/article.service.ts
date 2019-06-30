@@ -1,15 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Model, Schema } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { Page } from '../common/common.dto'
+import { Page, MsgResult } from '../common/common.dto'
 import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
+import SystemConfig from '../system/system-config.interface'
 
 import * as nodejieba from 'nodejieba'
+import * as xmlParser from 'fast-xml-parser'
+import axios from 'axios'
+
+const he = require('he')
 
 @Injectable()
 export default class ArticleService {
   constructor(@InjectModel('Article') private readonly articleModel: Model<Article>,
-              @InjectModel('ArticleKeys') private readonly articleKeysModel: Model<ArticleKeys>) {
+              @InjectModel('ArticleKeys') private readonly articleKeysModel: Model<ArticleKeys>,
+              @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
     nodejieba.load({})
   }
   /**
@@ -44,7 +50,7 @@ export default class ArticleService {
    * 对文章内容执行分词处理
    * @param ids 文章ID们
    */
-  async splitWord(ids: string[]): Promise<object> {
+  async splitWord(ids: string[]): Promise<MsgResult> {
     const articles: Article[] = await this.articleModel.find({_id: {$in: ids}}).exec()
     for (const article of articles) {
       const articleKeys: string[] = nodejieba.cut(article.content, true)
@@ -56,7 +62,7 @@ export default class ArticleService {
         await this.articleKeysModel.create({article_id: article._id, keys: articleKeys})
       }
     }
-    return Promise.resolve({status: true, msg: '分词处理成功'})
+    return Promise.resolve(new MsgResult(true, '分词处理成功'))
   }
   /**
    * 文章内容全文检索
@@ -79,4 +85,44 @@ export default class ArticleService {
     page.data = await this.articleModel.find({_id: {$in: articleIds}}, {title: 1, path: 1, create_date: 1}).exec()
     return Promise.resolve(page)
   }
+  /**
+   * 从主站拉取全部文章(包含正文)
+   */
+  async pullArticles(): Promise<MsgResult> {
+    const blogRootConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'blog_root'}).exec()
+    const response = await axios.get(`${blogRootConfig.value}search.xml`)
+    if(!xmlParser.validate(response.data)) {
+      return new MsgResult(false, '拉取search.xml失败')
+    }
+    const articleJsonObj = xmlParser.parse(response.data, xmlParseOptions)
+
+    // TODO 处理后保存或更新到article
+    articleJsonObj.search.entry.forEach(article => {
+      console.log('标题: ==>', article.title)
+      console.log('URL: ==>', decodeURI(article.url))
+      console.log('内容: ==>', article.content.__cdata.replace(/<[^>]*>/g, '').substr(0,200))
+      console.log('分类: ==>', article.categories) // 可能是数组或字符串
+      console.log('标签: ==>', article.tags) // 可能是数组或字符串
+      console.log('------------------------')
+    })
+    return new MsgResult(true, '拉取成功')
+  }
+}
+
+const xmlParseOptions = {
+  attributeNamePrefix : "@_",
+  attrNodeName: "attr", //default is 'false'
+  textNodeName : "#text",
+  ignoreAttributes : true,
+  ignoreNameSpace : false,
+  allowBooleanAttributes : false,
+  parseNodeValue : true,
+  parseAttributeValue : false,
+  trimValues: true,
+  cdataTagName: "__cdata", //default is 'false'
+  cdataPositionChar: "\\c",
+  localeRange: "", //To support non english character in tag/attribute values.
+  parseTrueNumberOnly: false,
+  attrValueProcessor: (a: any) => he.decode(a, {isAttributeValue: true}),//default is a=>a
+  tagValueProcessor : (a: any) => he.decode(a) //default is a=>a
 }

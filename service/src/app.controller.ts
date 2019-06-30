@@ -5,7 +5,7 @@ import PhotoWallService from './photo-wall/photo-wall.service'
 import ArticleService from './article/article.service'
 import { Hitokoto, HitokotoDto } from './hitokoto/hitokoto.interface'
 import { ArticleDto } from './article/article.interface'
-import { Page } from './common/common.dto'
+import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 
 @Controller('/common')
@@ -32,7 +32,7 @@ export default class AppController {
   @Post('/verifyToken')
   verifyToken(@Body() tokenObj: {token: string}): Promise<object> {
     if (!tokenObj.token) {
-      return Promise.resolve({status: false, msg: '未获得Token'})
+      return Promise.resolve(new MsgResult(false, '未获得Token'))
     }
     return this.appService.verifyToken(tokenObj.token)
   }
@@ -42,7 +42,7 @@ export default class AppController {
    * @param hitokotoDto 筛选条件
    */
   @Get('/hitokoto')
-  getHitokoto(@Query() hitokotoDto: HitokotoDto): Promise<Hitokoto> {
+  getHitokoto(@Query() hitokotoDto: HitokotoDto): Promise<Hitokoto | MsgResult> {
     return this.hitokotoService.findOne(hitokotoDto)
   }
 
@@ -50,7 +50,7 @@ export default class AppController {
    * 分页查询照片
    */
   @Get('/photos')
-  getPhotos(@Query() page: Page): Promise<Page> {
+  getPhotos(@Query() page: Page): Promise<Page | MsgResult> {
     return this.photoWallService.queryPage(page)
   }
 
@@ -76,7 +76,7 @@ export default class AppController {
    * @param page 分页信息
    */
   @Get('/search')
-  search(@Query() articleDto: ArticleDto, @Query() page: Page): Promise<Page | object> {
+  search(@Query() articleDto: ArticleDto, @Query() page: Page): Promise<Page> {
     if (!articleDto.words) {
       return Promise.resolve(page)
     }

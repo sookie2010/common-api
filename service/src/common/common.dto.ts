@@ -14,3 +14,16 @@ export interface Page {
   total: number // 数据总数
   data: object[] // 当前页数据
 }
+
+export class MsgResult {
+  constructor(
+    private readonly status: boolean,
+    private readonly msg: string) { }
+
+  getStatus() {
+    return this.status
+  }
+  getMsg() {
+    return this.msg
+  }
+}

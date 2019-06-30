@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } f
 import { FileInterceptor } from '@nestjs/platform-express/index'
 import PhotoWallService from './photo-wall.service'
 import { PhotoWallDto } from './photo-wall.interface'
-import { FileDto, Page } from '../common/common.dto'
+import { FileDto, Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 
 @UseInterceptors(LoginInterceptor)
@@ -27,7 +27,7 @@ export default class PhotoWallController {
    * @param hitokotoDto 需要删除的多个ID
    */
   @Delete('/delete')
-  delete(@Query() photoWallDto: PhotoWallDto): Promise<string> {
+  delete(@Query() photoWallDto: PhotoWallDto): Promise<MsgResult> {
     return this.photoWallService.delete(photoWallDto._ids)
   }
   /**

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from './system/system-config.interface'
 import SystemUser from './system/system-user.interface'
+import { MsgResult } from './common/common.dto'
 
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
@@ -57,7 +58,7 @@ export default class AppService {
       } else if (err instanceof jwt.JsonWebTokenError) {
         msg = 'Token无效，请重新登录'
       }
-      return {status: false, msg}
+      return new MsgResult(false, msg)
     })
   }
 }
