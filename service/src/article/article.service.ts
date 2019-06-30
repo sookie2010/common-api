@@ -5,7 +5,6 @@ import { Page } from '../common/common.dto'
 import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
 
 import * as nodejieba from 'nodejieba'
-// const nodejieba = require("nodejieba")
 
 @Injectable()
 export default class ArticleService {
@@ -48,7 +47,7 @@ export default class ArticleService {
   async splitWord(ids: string[]): Promise<object> {
     const articles: Article[] = await this.articleModel.find({_id: {$in: ids}}).exec()
     for(let article of articles) {
-      const articleKeys: string[] = nodejieba.cut(article.content)
+      const articleKeys: string[] = nodejieba.cut(article.content, true)
       Logger.log(`${article.title} 分词处理成功, 原文长度${article.content.length}, 分词数量: ${articleKeys.length}`)
       let cnt = await this.articleKeysModel.countDocuments({article_id: article._id}).exec()
       if(cnt > 0) {
@@ -65,7 +64,7 @@ export default class ArticleService {
    * @param page 分页信息
    */
   async search(words: string, page: Page): Promise<Page> {
-    const splitedWords = nodejieba.cut(words)
+    const splitedWords = nodejieba.cut(words, true)
     const articleDtos: ArticleDto[] = await this.articleKeysModel.aggregate([
       {$unwind: '$keys'},
       {$match: {keys: {$in: splitedWords}}},

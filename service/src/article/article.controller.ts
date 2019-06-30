@@ -29,7 +29,6 @@ export default class ArticleController {
    */
   @Put('/splitWord')
   splitWord(@Body() articleDto: ArticleDto): Promise<object> {
-    console.log(articleDto)
     return this.articleService.splitWord(articleDto._ids)
   }
 }
