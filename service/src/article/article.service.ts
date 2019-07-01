@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Model, Schema } from 'mongoose'
+import { Model, Schema, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Page, MsgResult } from '../common/common.dto'
 import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
@@ -10,6 +10,7 @@ import * as xmlParser from 'fast-xml-parser'
 import axios from 'axios'
 
 const he = require('he')
+const crypto = require('crypto')
 
 @Injectable()
 export default class ArticleService {
@@ -90,39 +91,63 @@ export default class ArticleService {
    */
   async pullArticles(): Promise<MsgResult> {
     const blogRootConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'blog_root'}).exec()
-    const response = await axios.get(`${blogRootConfig.value}search.xml`)
-    if(!xmlParser.validate(response.data)) {
-      return new MsgResult(false, '拉取search.xml失败')
+    const response = await axios.get(`${blogRootConfig.value}articles.xml`)
+    if (!xmlParser.validate(response.data)) {
+      return new MsgResult(false, 'articles.xml内容无效')
     }
     const articleJsonObj = xmlParser.parse(response.data, xmlParseOptions)
+    let updateCnt: number = 0 // 更新文章计数
+    let createCnt: number = 0 // 新增文章计数
+    for (const xmlArticle of articleJsonObj.search.entry) {
+      const queryFields: Article = {
+        // 标题
+        title: xmlArticle.title,
+        // 路径
+        path: xmlArticle.path,
+      }
+      // 正文内容
+      const articleContent: string = xmlArticle.content.__cdata.replace(/<[^>]*>/g, '')
+      const updateFields: Article = {
+        content: articleContent,
+        // 内容Hash
+        content_hash: crypto.createHash('sha1').update(articleContent).digest('hex'),
+        // 文章分类
+        categories: typeof xmlArticle.categories === 'string' ? [xmlArticle.categories] : xmlArticle.categories,
+        // 文章标签
+        tags: typeof xmlArticle.tags === 'string' ? [xmlArticle.tags] : xmlArticle.tags,
+        // 文章创建时间
+        create_date: new Date(~~xmlArticle.date),
+      }
 
-    // TODO 处理后保存或更新到article
-    articleJsonObj.search.entry.forEach(article => {
-      console.log('标题: ==>', article.title)
-      console.log('URL: ==>', decodeURI(article.url))
-      console.log('内容: ==>', article.content.__cdata.replace(/<[^>]*>/g, '').substr(0,200))
-      console.log('分类: ==>', article.categories) // 可能是数组或字符串
-      console.log('标签: ==>', article.tags) // 可能是数组或字符串
-      console.log('------------------------')
-    })
-    return new MsgResult(true, '拉取成功')
+      let article: Article = await this.articleModel.findOne(queryFields).exec()
+
+      if (article && article.content_hash !== updateFields.content_hash) { // 更新
+        await this.articleModel.updateOne(queryFields, {$set: updateFields})
+        updateCnt ++
+      } else if (!article) { // 新增
+        article = Object.assign({_id: new Types.ObjectId()}, queryFields, updateFields)
+        await this.articleModel.create(article)
+        createCnt ++
+      }
+    }
+    return new MsgResult(true, `拉取成功，更新 ${updateCnt} 篇，新增 ${createCnt} 篇`)
   }
 }
 
 const xmlParseOptions = {
-  attributeNamePrefix : "@_",
-  attrNodeName: "attr", //default is 'false'
-  textNodeName : "#text",
+  attributeNamePrefix : '@_',
+  attrNodeName: 'attr', // default is 'false'
+  textNodeName : '#text',
   ignoreAttributes : true,
   ignoreNameSpace : false,
   allowBooleanAttributes : false,
   parseNodeValue : true,
   parseAttributeValue : false,
   trimValues: true,
-  cdataTagName: "__cdata", //default is 'false'
-  cdataPositionChar: "\\c",
-  localeRange: "", //To support non english character in tag/attribute values.
+  cdataTagName: '__cdata', // default is 'false'
+  cdataPositionChar: '\\c',
+  localeRange: '', // To support non english character in tag/attribute values.
   parseTrueNumberOnly: false,
-  attrValueProcessor: (a: any) => he.decode(a, {isAttributeValue: true}),//default is a=>a
-  tagValueProcessor : (a: any) => he.decode(a) //default is a=>a
+  attrValueProcessor: (a: any) => he.decode(a, {isAttributeValue: true}), // default is a=>a
+  tagValueProcessor : (a: any) => he.decode(a), // default is a=>a
 }

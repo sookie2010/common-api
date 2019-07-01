@@ -74,28 +74,32 @@ export default class HitokotoService {
    * 保存一言
    * @param hitokoto 一言
    */
-  async save(hitokoto: Hitokoto): Promise<string> {
+  async save(hitokoto: Hitokoto): Promise<MsgResult> {
     hitokoto.created_at = new Date()
     return this.hitokotoModel.aggregate([{$group: {
-        _id: 'max_number',
-        number: { $max: '$number' },
-      }}]).then((hitokotoMax: Hitokoto[]) => {
-        if (hitokotoMax && hitokotoMax.length) {
-          hitokoto.number = hitokotoMax[0].number + 1
-        } else {
-          hitokoto.number = 1
-        }
-        hitokoto._id = new Types.ObjectId()
-        return this.hitokotoModel.create(hitokoto)
-      })
+      _id: 'max_number',
+      number: { $max: '$number' },
+    }}]).then((hitokotoMax: Hitokoto[]) => {
+      if (hitokotoMax && hitokotoMax.length) {
+        hitokoto.number = hitokotoMax[0].number + 1
+      } else {
+        hitokoto.number = 1
+      }
+      hitokoto._id = new Types.ObjectId()
+      return this.hitokotoModel.create(hitokoto)
+    }).then(() => {
+      return new MsgResult(true, '保存成功')
+    })
   }
 
   /**
    * 批量删除一言
    * @param ids 删除数据的ID们
    */
-  async delete(ids: string[]): Promise<string> {
-    return this.hitokotoModel.deleteMany({_id: {$in: ids}}).exec()
+  async delete(ids: string[]): Promise<MsgResult> {
+    return this.hitokotoModel.deleteMany({_id: {$in: ids}}).exec().then(() => {
+      return new MsgResult(true, '删除成功')
+    })
   }
 
   /**

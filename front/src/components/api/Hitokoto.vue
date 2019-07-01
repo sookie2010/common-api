@@ -143,9 +143,9 @@ export default {
       })
     },
     save() {
-      this.$http.post('/hitokoto/save', this.formData).then(() => {
+      this.$http.post('/hitokoto/save', this.formData).then(data => {
         this.addModal = false
-        this.$Message.success('保存成功')
+        this.$Message.success(data.msg)
         this.loadData()
         // 清空表单
         Object.keys(this.formData).forEach(key => {
@@ -163,9 +163,9 @@ export default {
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
         onOk: () => {
-          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
+          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(data => {
             this.$Modal.remove()
-            this.$Message.success('删除成功')
+            this.$Message.success(data.msg)
             this.loadData()
           })
         }

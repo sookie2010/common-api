@@ -4,6 +4,8 @@ export const ArticleSchema = new Schema({
   _id: Schema.Types.ObjectId,
   title: String,
   path: String,
+  categories: Array,
+  tags: Array,
   create_date: Date,
   content: String,
   content_hash: String,

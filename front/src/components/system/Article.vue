@@ -22,6 +22,7 @@
   
   <div class="btn-container">
     <Button @click="splitWord">分词处理</Button>
+    <Button @click="pullArticles">拉取文章</Button>
   </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="articleColumns" :data="articleData" height="520" @on-selection-change="dataSelect"></Table>
@@ -110,6 +111,23 @@ export default {
         loading: true,
         onOk: () => {
           this.$http.put('/article/splitWord', {_ids: selectedData.map(item => item._id)}).then(data => {
+            this.$Modal.remove()
+            if(data.status) {
+              this.$Message.success(data.msg)
+            } else {
+              this.$Message.warning(data.msg)
+            }
+          })
+        }
+      })
+    },
+    pullArticles() {
+      this.$Modal.confirm({
+        title: '操作确认',
+        content: `<p>确认拉取全部文章？</p>`,
+        loading: true,
+        onOk: () => {
+          this.$http.get('/article/pull').then(data => {
             this.$Modal.remove()
             if(data.status) {
               this.$Message.success(data.msg)

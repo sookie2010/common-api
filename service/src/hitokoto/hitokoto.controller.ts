@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@ne
 import HitokotoService from './hitokoto.service'
 import { Hitokoto } from './hitokoto.interface'
 import { HitokotoDto } from './hitokoto.interface'
-import { Page } from '../common/common.dto'
+import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 
 @UseInterceptors(LoginInterceptor)
@@ -28,7 +28,7 @@ export default class HitokotoController {
    * @param hitokoto 一言
    */
   @Post('/save')
-  save(@Body() hitokoto: Hitokoto): Promise<string> {
+  save(@Body() hitokoto: Hitokoto): Promise<MsgResult> {
     return this.hitokotoService.save(hitokoto)
   }
   /**
@@ -36,7 +36,7 @@ export default class HitokotoController {
    * @param hitokotoDto 需要删除的多个ID
    */
   @Delete('/delete')
-  delete(@Query() hitokotoDto: HitokotoDto): Promise<string> {
+  delete(@Query() hitokotoDto: HitokotoDto): Promise<MsgResult> {
     return this.hitokotoService.delete(hitokotoDto._ids)
   }
 }

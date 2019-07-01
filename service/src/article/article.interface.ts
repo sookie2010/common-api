@@ -2,12 +2,14 @@ import { Schema, Document } from 'mongoose'
 import BaseQc from 'src/common/base.qc';
 
 export interface Article extends Document {
-  _id: Schema.Types.ObjectId
-  title: string
-  path: string
-  create_date: Date
-  content: string
-  content_hash: string
+  _id?: Schema.Types.ObjectId
+  title?: string
+  path?: string
+  create_date?: Date
+  categories?: string[]
+  tags?: string[]
+  content?: string
+  content_hash?: string
 }
 
 export interface ArticleKeys extends Document {
