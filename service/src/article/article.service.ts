@@ -35,14 +35,56 @@ export default class ArticleService {
         $lte: new Date(articleDto.createDate[1]),
       }
     }
-    const queryFields = {_id: 1, title: 1, path: 1, categories:1, tags:1, create_date: 1}
-    return this.articleModel.countDocuments(searchParam).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.articleModel.find(searchParam, queryFields)
-        .sort({create_date: -1})
-        .skip(~~page.start)
-        .limit(~~page.limit)
-        .exec()
+    if (articleDto.isSplited === 'true') {
+      searchParam.is_splited = true
+    } else if (articleDto.isSplited === 'false') {
+      searchParam.is_splited = false
+    }
+    return this.articleModel.aggregate([
+      { $lookup: {
+          from: 'article_keys',
+          localField: '_id',
+          foreignField: 'article_id',
+          as: 'article_keys',
+        },
+      }, { $project : {
+          _id: 1,
+          title: 1,
+          path: 1,
+          categories: 1,
+          tags: 1,
+          create_date: 1,
+          content_len: { $strLenCP: '$content' },
+          is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
+        },
+      },
+      { $match: searchParam },
+      { $group: {_id: 1, total: {$sum: 1}} },
+    ]).then((cnt: Array<{ total: number }>) => {
+      page.total = cnt[0].total
+      return this.articleModel.aggregate([
+        { $lookup: {
+            from: 'article_keys',
+            localField: '_id',
+            foreignField: 'article_id',
+            as: 'article_keys',
+          },
+        }, { $project : {
+            _id: 1,
+            title: 1,
+            path: 1,
+            categories: 1,
+            tags: 1,
+            create_date: 1,
+            content_len: { $strLenCP: '$content' },
+            is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
+          },
+        },
+        { $match: searchParam },
+        { $sort: {create_date: -1}},
+        { $skip: ~~page.start },
+        { $limit: ~~page.limit },
+    ])
     }).then((articles: Article[]) => {
       page.data = articles
       return page
@@ -61,7 +103,7 @@ export default class ArticleService {
       if (cnt > 0) {
         await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: articleKeys}})
       } else {
-        await this.articleKeysModel.create({article_id: article._id, keys: articleKeys})
+        await this.articleKeysModel.create({_id: new Types.ObjectId(), article_id: article._id, keys: articleKeys})
       }
     }
     return Promise.resolve(new MsgResult(true, '分词处理成功'))
@@ -112,11 +154,11 @@ export default class ArticleService {
       let categories = null
       // 文章标签
       let tags = null
-      if('categories' in xmlArticle) {
+      if ('categories' in xmlArticle) {
         // 单个子标签为字符串, 多个相同的子标签为数组
         categories = typeof xmlArticle.categories.category === 'string' ? [xmlArticle.categories.category] : xmlArticle.categories.category
       }
-      if('tags' in xmlArticle) {
+      if ('tags' in xmlArticle) {
         tags = typeof xmlArticle.tags.tag === 'string' ? [xmlArticle.tags.tag] : xmlArticle.tags.tag
       }
       const updateParams: Article = {
@@ -126,7 +168,7 @@ export default class ArticleService {
         categories,
         tags,
         // 文章创建时间
-        create_date: new Date(parseInt(xmlArticle.date)),
+        create_date: new Date(parseInt(xmlArticle.date, 10)),
       }
 
       let article: Article = await this.articleModel.findOne(queryParams).exec()

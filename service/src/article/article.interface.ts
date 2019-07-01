@@ -24,6 +24,7 @@ export interface ArticleQc extends BaseQc {
   create_date?: {
     $gte: Date
     $lte: Date}
+  is_splited?: boolean
 }
 
 export interface ArticleDto {
@@ -41,6 +42,10 @@ export interface ArticleDto {
    * 分别是起始时间与结束时间的 UTS 字符串
    */
   createDate: string[]
+  /**
+   * 是否已分词, 'true'已分词, 'false'未分词
+   */
+  isSplited: string
   /**
    * 搜索关键字
    */

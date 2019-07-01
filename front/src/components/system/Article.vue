@@ -14,6 +14,15 @@
     <Col span="4">
       <Date-picker v-model="search.createDate" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
     </Col>
+    <Col span="2">
+      <div class="search-title">已分词：</div>
+    </Col>
+    <Col span="4">
+      <Select v-model="search.isSplited" clearable>
+        <Option value="true" >是</Option>
+        <Option value="false" >否</Option>
+      </Select>
+    </Col>
     <Col span="5" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
       <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
@@ -21,7 +30,7 @@
   </Row>
   
   <div class="btn-container">
-    <Button @click="splitWord">分词处理</Button>
+    <Button type="primary" @click="splitWord">分词处理</Button>
     <Button @click="pullArticles">拉取文章</Button>
   </div>
   <div class="table-container">
@@ -42,11 +51,14 @@ import Input from 'iview/src/components/input'
 import DatePicker from 'iview/src/components/date-picker'
 import Button from 'iview/src/components/button'
 import Page from 'iview/src/components/page'
+import Icon from 'iview/src/components/icon'
+import Select from 'iview/src/components/select'
+import Option from 'iview/src/components/option'
 
 var selectedData = null
 export default {
   components: {
-    Table, Row, Col, Input, DatePicker, Button, Page
+    Table, Row, Col, Input, DatePicker, Button, Page, Icon, Select, Option
   },
   data() {
     return {
@@ -70,7 +82,7 @@ export default {
         },{
           title: '分类',
           key: 'categories',
-          width: 200,
+          width: 150,
           render (h, data) {
             let categories = undefined
             if(typeof data.row.categories === 'string') {
@@ -83,7 +95,7 @@ export default {
         },{
           title: '标签',
           key: 'tags',
-          width: 200,
+          width: 180,
           render (h, data) {
             let tags = undefined
             if(typeof data.row.tags === 'string') {
@@ -94,11 +106,29 @@ export default {
             return h('span', tags)
           }
         },{
+          title: '正文长度',
+          key: 'content_len',
+          width: 100
+        },{
           title: '创建时间',
           key: 'create_date',
-          width: 200,
+          width: 180,
           render (h, data) {
             return h('span', new Date(data.row.create_date).Format('yyyy-MM-dd hh:mm:ss'))
+          }
+        },{
+          title: '是否已分词',
+          key: 'is_splited',
+          width: 100,
+          align: 'center',
+          render (h, data) {
+            return h(Icon, {
+              props: {
+                size: 20,
+                type: data.row.is_splited ? 'md-checkmark' : 'md-close'
+              }
+            })
+            // return h('span', data.row.is_splited ? '是' : '否')
           }
         }],
       articleData: []
