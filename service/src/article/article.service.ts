@@ -61,6 +61,11 @@ export default class ArticleService {
       { $match: searchParam },
       { $group: {_id: 1, total: {$sum: 1}} },
     ]).then((cnt: Array<{ total: number }>) => {
+      if(!cnt.length) {
+        page.total = 0
+        page.data = []
+        return page
+      }
       page.total = cnt[0].total
       return this.articleModel.aggregate([
         { $lookup: {
