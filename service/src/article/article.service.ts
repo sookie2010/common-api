@@ -35,9 +35,10 @@ export default class ArticleService {
         $lte: new Date(articleDto.createDate[1]),
       }
     }
+    const queryFields = {_id: 1, title: 1, path: 1, categories:1, tags:1, create_date: 1}
     return this.articleModel.countDocuments(searchParam).exec().then((cnt: number) => {
       page.total = cnt
-      return this.articleModel.find(searchParam, {_id: 1, title: 1, path: 1, create_date: 1})
+      return this.articleModel.find(searchParam, queryFields)
         .sort({create_date: -1})
         .skip(~~page.start)
         .limit(~~page.limit)
@@ -99,7 +100,7 @@ export default class ArticleService {
     let updateCnt: number = 0 // 更新文章计数
     let createCnt: number = 0 // 新增文章计数
     for (const xmlArticle of articleJsonObj.search.entry) {
-      const queryFields: Article = {
+      const queryParams: Article = {
         // 标题
         title: xmlArticle.title,
         // 路径
@@ -107,25 +108,34 @@ export default class ArticleService {
       }
       // 正文内容
       const articleContent: string = xmlArticle.content.__cdata.replace(/<[^>]*>/g, '')
-      const updateFields: Article = {
+      // 文章分类
+      let categories = null
+      // 文章标签
+      let tags = null
+      if('categories' in xmlArticle) {
+        // 单个子标签为字符串, 多个相同的子标签为数组
+        categories = typeof xmlArticle.categories.category === 'string' ? [xmlArticle.categories.category] : xmlArticle.categories.category
+      }
+      if('tags' in xmlArticle) {
+        tags = typeof xmlArticle.tags.tag === 'string' ? [xmlArticle.tags.tag] : xmlArticle.tags.tag
+      }
+      const updateParams: Article = {
         content: articleContent,
         // 内容Hash
         content_hash: crypto.createHash('sha1').update(articleContent).digest('hex'),
-        // 文章分类
-        categories: typeof xmlArticle.categories === 'string' ? [xmlArticle.categories] : xmlArticle.categories,
-        // 文章标签
-        tags: typeof xmlArticle.tags === 'string' ? [xmlArticle.tags] : xmlArticle.tags,
+        categories,
+        tags,
         // 文章创建时间
-        create_date: new Date(~~xmlArticle.date),
+        create_date: new Date(parseInt(xmlArticle.date)),
       }
 
-      let article: Article = await this.articleModel.findOne(queryFields).exec()
+      let article: Article = await this.articleModel.findOne(queryParams).exec()
 
-      if (article && article.content_hash !== updateFields.content_hash) { // 更新
-        await this.articleModel.updateOne(queryFields, {$set: updateFields})
+      if (article && article.content_hash !== updateParams.content_hash) { // 更新
+        await this.articleModel.updateOne(queryParams, {$set: updateParams})
         updateCnt ++
       } else if (!article) { // 新增
-        article = Object.assign({_id: new Types.ObjectId()}, queryFields, updateFields)
+        article = Object.assign({_id: new Types.ObjectId()}, queryParams, updateParams)
         await this.articleModel.create(article)
         createCnt ++
       }

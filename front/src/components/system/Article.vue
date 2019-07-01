@@ -68,6 +68,32 @@ export default {
           title: '路径',
           key: 'path'
         },{
+          title: '分类',
+          key: 'categories',
+          width: 200,
+          render (h, data) {
+            let categories = undefined
+            if(typeof data.row.categories === 'string') {
+              categories = data.row.categories
+            } else if(Array.isArray(data.row.categories)) {
+              categories = data.row.categories.join('，')
+            }
+            return h('span', categories)
+          }
+        },{
+          title: '标签',
+          key: 'tags',
+          width: 200,
+          render (h, data) {
+            let tags = undefined
+            if(typeof data.row.tags === 'string') {
+              tags = data.row.tags
+            } else if(Array.isArray(data.row.tags)) {
+              tags = data.row.tags.join('，')
+            }
+            return h('span', tags)
+          }
+        },{
           title: '创建时间',
           key: 'create_date',
           width: 200,
