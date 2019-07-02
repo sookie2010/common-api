@@ -3,13 +3,14 @@ import BaseQc from 'src/common/base.qc';
 
 export interface Article extends Document {
   _id?: Schema.Types.ObjectId
-  title?: string
-  path?: string
-  create_date?: Date
-  categories?: string[]
-  tags?: string[]
-  content?: string
-  content_hash?: string
+  title?: string // 文章标题
+  path?: string // 文章访问路径
+  create_date?: Date // 创建时间
+  categories?: string[] // 分类
+  tags?: string[] // 标签
+  content?: string // 正文内容
+  content_hash?: string // 正文内容Hash(SHA1)
+  summary?: string // 搜索结果摘要
 }
 
 export interface ArticleKeys extends Document {

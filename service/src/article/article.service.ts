@@ -45,7 +45,7 @@ export default class ArticleService {
         localField: '_id',
         foreignField: 'article_id',
         as: 'article_keys',
-      }
+      },
     }
     const project = { $project : {
         _id: 1,
@@ -56,7 +56,7 @@ export default class ArticleService {
         create_date: 1,
         content_len: { $strLenCP: '$content' },
         is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
-      }
+      },
     }
     return this.articleModel.aggregate([
       lookup,
@@ -64,7 +64,7 @@ export default class ArticleService {
       { $match: searchParam },
       { $group: {_id: 1, total: {$sum: 1}} },
     ]).then((cnt: Array<{ total: number }>) => {
-      if(!cnt.length) {
+      if (!cnt.length) {
         page.total = 0
         return []
       }
@@ -98,7 +98,7 @@ export default class ArticleService {
         await this.articleKeysModel.create({_id: new Types.ObjectId(), article_id: article._id, keys: articleKeys})
       }
     }
-    return Promise.resolve(new MsgResult(true, '分词处理成功'))
+    return Promise.resolve(new MsgResult(true, `${articles.length} 篇文章分词处理成功`))
   }
   /**
    * 文章内容全文检索
@@ -106,7 +106,10 @@ export default class ArticleService {
    * @param page 分页信息
    */
   async search(words: string, page: Page): Promise<Page> {
-    const splitedWords = nodejieba.cut(words, true)
+    const splitedWords: string[] = []
+    for (const whiteSpaceSplited of words.split(/\s+/)) {
+      splitedWords.push(...nodejieba.cut(whiteSpaceSplited, true))
+    }
     const articleDtos: ArticleDto[] = await this.articleKeysModel.aggregate([
       {$unwind: '$keys'},
       {$match: {keys: {$in: splitedWords}}},
@@ -118,7 +121,12 @@ export default class ArticleService {
     const articleIds: Schema.Types.ObjectId[] = articleDtos
       .slice(page.start, page.start + (~~page.limit))
       .map((articleDto: ArticleDto) => articleDto._id)
-    page.data = await this.articleModel.find({_id: {$in: articleIds}}, {title: 1, path: 1, create_date: 1}).exec()
+    page.total = articleIds.length
+    page.data = await this.articleModel.find({_id: {$in: articleIds}}).exec()
+    page.data.forEach((article: Article) => {
+      // 提取摘要 高亮关键词
+      article.summary = this.createSummary(article.content, splitedWords, 30)
+    })
     return Promise.resolve(page)
   }
   /**
@@ -163,10 +171,10 @@ export default class ArticleService {
         create_date: new Date(parseInt(xmlArticle.date, 10)),
       }
 
-      let article: Article = await this.articleModel.findOne(queryParams).exec()
+      let article: Article = await this.articleModel.findOne(queryParams, {_id: 1, content_hash: 1}).exec()
 
       if (article && article.content_hash !== updateParams.content_hash) { // 更新
-        await this.articleModel.updateOne(queryParams, {$set: updateParams})
+        await this.articleModel.updateOne({_id: article._id}, {$set: updateParams})
         updateCnt ++
       } else if (!article) { // 新增
         article = Object.assign({_id: new Types.ObjectId()}, queryParams, updateParams)
@@ -175,6 +183,56 @@ export default class ArticleService {
       }
     }
     return new MsgResult(true, `拉取成功，更新 ${updateCnt} 篇，新增 ${createCnt} 篇`)
+  }
+  /**
+   * 创建文章搜索结果摘要, 使用<strong>标签高亮关键词
+   * @param content 文章正文内容
+   * @param keyWords 关键词们
+   * @param cutLen 每个关键词所在位置的截取区域长度
+   * @returns 文章摘要信息
+   */
+  private createSummary(content: string, keyWords: string[], cutLen: number): string {
+    const cutRanges: number[][] = []
+    keyWords.forEach((keyWord: string) => {
+      const keyWordIndex: number = content.indexOf(keyWord)
+      const start: number = keyWordIndex - cutLen / 2 < 0 ? 0 : keyWordIndex - cutLen / 2
+      const end: number = keyWordIndex + cutLen / 2 > content.length ? content.length : keyWordIndex + cutLen / 2
+      cutRanges.push([start, end])
+    })
+    cutRanges.sort((item1: number[], item2: number[]) => {
+      if (item1[0] > item2[0]) {
+        return 1
+      } else if (item1[0] < item2[0]) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    let summary = ''
+    let lastCutEnd = 0
+    for (let index = 0 ; index < cutRanges.length ; index++) {
+      const cutStart: number = cutRanges[index][0]
+      let cutEnd: number = cutRanges[index][1]
+      // 如果当前范围的末尾达到或超过下一个范围的开头
+      while (index < cutRanges.length - 1 && cutRanges[index][1] >= cutRanges[index + 1][0]) {
+        // 则把范围扩大到下一个范围的末尾
+        cutEnd = cutRanges[index + 1][1]
+        // 并将索引向前推进
+        index ++
+      }
+      if (summary.length) {
+        summary += ' ... '
+      }
+      summary += content.substring(cutStart, cutEnd)
+      lastCutEnd = cutEnd
+      if (summary.length > 150) { break }
+    }
+    summary = cutRanges[0][0] > 0 ? ('... ' + summary) : summary
+    summary += lastCutEnd < content.length ? ' ...' : ''
+    keyWords.forEach(keyWord => {
+      summary = summary.replace(new RegExp(keyWord, 'g'), `<strong>${keyWord}</strong>`)
+    })
+    return summary
   }
 }
 
