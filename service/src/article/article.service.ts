@@ -40,51 +40,38 @@ export default class ArticleService {
     } else if (articleDto.isSplited === 'false') {
       searchParam.is_splited = false
     }
+    const lookup = { $lookup: {
+        from: 'article_keys',
+        localField: '_id',
+        foreignField: 'article_id',
+        as: 'article_keys',
+      }
+    }
+    const project = { $project : {
+        _id: 1,
+        title: 1,
+        path: 1,
+        categories: 1,
+        tags: 1,
+        create_date: 1,
+        content_len: { $strLenCP: '$content' },
+        is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
+      }
+    }
     return this.articleModel.aggregate([
-      { $lookup: {
-          from: 'article_keys',
-          localField: '_id',
-          foreignField: 'article_id',
-          as: 'article_keys',
-        },
-      }, { $project : {
-          _id: 1,
-          title: 1,
-          path: 1,
-          categories: 1,
-          tags: 1,
-          create_date: 1,
-          content_len: { $strLenCP: '$content' },
-          is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
-        },
-      },
+      lookup,
+      project,
       { $match: searchParam },
       { $group: {_id: 1, total: {$sum: 1}} },
     ]).then((cnt: Array<{ total: number }>) => {
       if(!cnt.length) {
         page.total = 0
-        page.data = []
-        return page
+        return []
       }
       page.total = cnt[0].total
       return this.articleModel.aggregate([
-        { $lookup: {
-            from: 'article_keys',
-            localField: '_id',
-            foreignField: 'article_id',
-            as: 'article_keys',
-          },
-        }, { $project : {
-            _id: 1,
-            title: 1,
-            path: 1,
-            categories: 1,
-            tags: 1,
-            create_date: 1,
-            content_len: { $strLenCP: '$content' },
-            is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
-          },
-        },
+        lookup,
+        project,
         { $match: searchParam },
         { $sort: {create_date: -1}},
         { $skip: ~~page.start },
