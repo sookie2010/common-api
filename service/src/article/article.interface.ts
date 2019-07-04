@@ -10,7 +10,6 @@ export interface Article extends Document {
   tags?: string[] // 标签
   content?: string // 正文内容
   content_hash?: string // 正文内容Hash(SHA1)
-  summary?: string // 搜索结果摘要
 }
 
 export interface ArticleKeys extends Document {

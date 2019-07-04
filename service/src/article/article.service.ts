@@ -125,7 +125,7 @@ export default class ArticleService {
     page.data = await this.articleModel.find({_id: {$in: articleIds}}).exec()
     page.data.forEach((article: Article) => {
       // 提取摘要 高亮关键词
-      article.summary = this.createSummary(article.content, splitedWords, 30)
+      article.content = this.createSummary(article.content, splitedWords, 30)
     })
     return Promise.resolve(page)
   }
