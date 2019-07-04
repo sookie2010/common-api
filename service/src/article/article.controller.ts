@@ -39,4 +39,20 @@ export default class ArticleController {
   pull(): Promise<MsgResult> {
     return this.articleService.pullArticles()
   }
+
+  /**
+   * 列出所有标签
+   */
+  @Get('/listTags')
+  listTags(): Promise<string[]> {
+    return this.articleService.listAttrs('$tags')
+  }
+
+  /**
+   * 列出所有标签
+   */
+  @Get('/listCategories')
+  listCategories(): Promise<string[]> {
+    return this.articleService.listAttrs('$categories')
+  }
 }

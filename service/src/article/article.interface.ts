@@ -1,5 +1,6 @@
 import { Schema, Document } from 'mongoose'
 import BaseQc from 'src/common/base.qc';
+import { totalmem } from 'os';
 
 export interface Article extends Document {
   _id?: Schema.Types.ObjectId
@@ -54,4 +55,12 @@ export interface ArticleDto {
    * 关键字匹配数量
    */
   num: number
+  /**
+   * 数据总数
+   */
+  total: number
+  /**
+   * 匹配到的文章信息
+   */
+  articles: Article[][]
 }

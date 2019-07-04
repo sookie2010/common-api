@@ -76,7 +76,7 @@ export default class ArticleService {
         { $sort: {create_date: -1}},
         { $skip: ~~page.start },
         { $limit: ~~page.limit },
-    ])
+      ])
     }).then((articles: Article[]) => {
       page.data = articles
       return page
@@ -110,22 +110,31 @@ export default class ArticleService {
     for (const whiteSpaceSplited of words.split(/\s+/)) {
       splitedWords.push(...nodejieba.cut(whiteSpaceSplited, true))
     }
-    const articleDtos: ArticleDto[] = await this.articleKeysModel.aggregate([
+    const [ searchResult ]: ArticleDto[] = await this.articleKeysModel.aggregate([
       {$unwind: '$keys'},
       {$match: {keys: {$in: splitedWords}}},
       {$group: {_id: '$article_id', num: {$sum: 1}}},
       {$sort: {num: -1}},
-      // {$group: {_id: 1, articles: {$push: '$_id'}}}
+      { $lookup: {
+          from: 'article',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'articles',
+        },
+      },
+      { $group: {_id: 1, articles: {$push: '$articles'}, total: {$sum: 1}}},
+      { $project : {
+          _id: 1,
+          total: 1,
+          articles: { $slice: ['$articles', page.start, page.start + (~~page.limit)] },
+        },
+      },
     ])
-    page.total = articleDtos.length
-    const articleIds: Schema.Types.ObjectId[] = articleDtos
-      .slice(page.start, page.start + (~~page.limit))
-      .map((articleDto: ArticleDto) => articleDto._id)
-    page.total = articleIds.length
-    page.data = await this.articleModel.find({_id: {$in: articleIds}}).exec()
-    page.data.forEach((article: Article) => {
+    page.total = searchResult.total
+    page.data = searchResult.articles.map((articleArr: Article[]) => {
       // 提取摘要 高亮关键词
-      article.content = this.createSummary(article.content, splitedWords, 30)
+      articleArr[0].content = this.createSummary(articleArr[0].content, splitedWords, 30)
+      return articleArr[0]
     })
     return Promise.resolve(page)
   }
@@ -195,8 +204,11 @@ export default class ArticleService {
     const cutRanges: number[][] = []
     keyWords.forEach((keyWord: string) => {
       const keyWordIndex: number = content.indexOf(keyWord)
+      if (keyWordIndex === -1) {
+        return
+      }
       const start: number = keyWordIndex - cutLen / 2 < 0 ? 0 : keyWordIndex - cutLen / 2
-      const end: number = keyWordIndex + cutLen / 2 > content.length ? content.length : keyWordIndex + cutLen / 2
+      const end: number = keyWordIndex + cutLen / 2 + keyWord.length > content.length ? content.length : keyWordIndex + cutLen / 2 + keyWord.length
       cutRanges.push([start, end])
     })
     cutRanges.sort((item1: number[], item2: number[]) => {
@@ -233,6 +245,15 @@ export default class ArticleService {
       summary = summary.replace(new RegExp(keyWord, 'g'), `<strong>${keyWord}</strong>`)
     })
     return summary
+  }
+  /**
+   * 获取所有标签/分类
+   */
+  async listAttrs(attr: string): Promise<string[]> {
+    return (await this.articleModel.aggregate([
+      {$unwind: attr},
+      {$group:{_id: attr}},
+    ])).map((item: {_id: string}) => item._id)
   }
 }
 
