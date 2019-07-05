@@ -1,5 +1,6 @@
 import { Schema, Document } from 'mongoose'
 import BaseQc from '../common/base.qc'
+import CommonUtils from '../common/common.util'
 
 export interface PhotoWall extends Document {
   _id?: Schema.Types.ObjectId
@@ -22,7 +23,7 @@ export class PhotoWallQc extends BaseQc {
   constructor(photoWallDto: PhotoWallDto) {
     super()
     if (photoWallDto.name) { // mongodb的模糊搜索使用正则形式
-      this.name = {$regex: new RegExp(photoWallDto.name)}
+      this.name = {$regex: new RegExp(CommonUtils.escapeRegexStr(photoWallDto.name))}
     }
     if (~~photoWallDto.widthMin || ~~photoWallDto.widthMax) {
       this.width = {}

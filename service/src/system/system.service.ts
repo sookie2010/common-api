@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../system/system-config.interface'
 import SystemUser from './system-user.interface'
 import BaseQc from '../common/base.qc';
+import CommonUtils from '../common/common.util'
 
 @Injectable()
 export default class SystemService {
@@ -14,8 +15,8 @@ export default class SystemService {
     const qc: BaseQc = {}
     if (systemConfig.name) {
       qc.$or = [
-        {name: new RegExp(systemConfig.name)},
-        {description: new RegExp(systemConfig.name)},
+        {name: new RegExp(CommonUtils.escapeRegexStr(systemConfig.name))},
+        {description: new RegExp(CommonUtils.escapeRegexStr(systemConfig.name))},
       ]
     }
     return this.systemConfigModel.find(qc).exec()

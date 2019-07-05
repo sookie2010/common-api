@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Page, MsgResult } from '../common/common.dto'
+import CommonUtils from '../common/common.util'
 import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
 import SystemConfig from '../system/system-config.interface'
 
@@ -116,13 +117,19 @@ export default class ArticleService {
         },
       },
     ])
+    if (!searchResult) {
+      // 未查询到匹配的文章
+      page.total = 0
+      page.data = []
+      return page
+    }
     page.total = searchResult.total
     page.data = searchResult.articles.map((articleArr: Article[]) => {
       // 提取摘要 高亮关键词
       articleArr[0].content = this.createSummary(articleArr[0].content, splitedWords, 30)
       return articleArr[0]
     })
-    return Promise.resolve(page)
+    return page
   }
   /**
    * 从主站拉取全部文章(包含正文)
@@ -228,7 +235,7 @@ export default class ArticleService {
     summary = cutRanges[0][0] > 0 ? ('... ' + summary) : summary
     summary += lastCutEnd < content.length ? ' ...' : ''
     keyWords.forEach(keyWord => {
-      summary = summary.replace(new RegExp(keyWord, 'g'), `<strong>${keyWord}</strong>`)
+      summary = summary.replace(new RegExp(CommonUtils.escapeRegexStr(keyWord), 'g'), `<strong>${keyWord}</strong>`)
     })
     return summary
   }

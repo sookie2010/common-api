@@ -1,5 +1,6 @@
 import { Schema, Document } from 'mongoose'
 import BaseQc from '../common/base.qc'
+import CommonUtils from '../common/common.util'
 
 export interface Hitokoto extends Document {
   _id: Schema.Types.ObjectId
@@ -34,7 +35,7 @@ export class HitokotoQc extends BaseQc {
       this.type = hitokotoDto.type.length > 1 ? {$in: hitokotoDto.type.split('')} : hitokotoDto.type
     }
     if (hitokotoDto.content) { // mongodb的模糊搜索使用正则形式
-      this.hitokoto = {$regex: new RegExp(hitokotoDto.content)}
+      this.hitokoto = {$regex: new RegExp(CommonUtils.escapeRegexStr(hitokotoDto.content))}
     }
     if (hitokotoDto.createAt && hitokotoDto.createAt[0] && hitokotoDto.createAt[1]) {
       this.created_at = {

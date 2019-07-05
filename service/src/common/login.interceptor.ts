@@ -30,7 +30,7 @@ export default class LoginInterceptor implements NestInterceptor {
     })
   }
 
-  responseHandler(response: ServerResponse, statusCode: number, msg: string): void {
+  private responseHandler(response: ServerResponse, statusCode: number, msg: string): void {
     try {
       response.statusCode = statusCode
       response.setHeader('Content-Type', 'application/json')

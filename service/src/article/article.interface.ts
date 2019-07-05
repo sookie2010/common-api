@@ -1,5 +1,6 @@
 import { Schema, Document } from 'mongoose'
 import BaseQc from '../common/base.qc';
+import CommonUtils from '../common/common.util'
 
 export interface Article extends Document {
   _id?: Schema.Types.ObjectId
@@ -30,7 +31,7 @@ export class ArticleQc extends BaseQc {
   constructor(articleDto: ArticleDto) {
     super()
     if (articleDto.title) {
-      this.title = {$regex: new RegExp(articleDto.title)}
+      this.title = {$regex: new RegExp(CommonUtils.escapeRegexStr(articleDto.title))}
     }
     if (articleDto.createDate && articleDto.createDate[0] && articleDto.createDate[1]) {
       this.create_date = {
