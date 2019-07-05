@@ -1,6 +1,5 @@
 import { Schema, Document } from 'mongoose'
 import BaseQc from 'src/common/base.qc';
-import { totalmem } from 'os';
 
 export interface Article extends Document {
   _id?: Schema.Types.ObjectId
@@ -39,7 +38,7 @@ export class ArticleQc extends BaseQc {
         $lte: new Date(articleDto.createDate[1]),
       }
     }
-    switch(articleDto.isSplited) {
+    switch (articleDto.isSplited) {
       case 'true':
         this.is_splited = true
         break
@@ -47,10 +46,10 @@ export class ArticleQc extends BaseQc {
         this.is_splited = false
         break
     }
-    if(articleDto.category) {
+    if (articleDto.category) {
       this.categories = articleDto.category
     }
-    if(articleDto.tag) {
+    if (articleDto.tag) {
       this.tags = articleDto.tag
     }
   }

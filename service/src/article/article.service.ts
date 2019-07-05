@@ -238,7 +238,7 @@ export default class ArticleService {
   async listAttrs(attr: string): Promise<string[]> {
     return (await this.articleModel.aggregate([
       {$unwind: attr},
-      {$group:{_id: attr}},
+      {$group: {_id: attr}},
     ])).map((item: {_id: string}) => item._id)
   }
 }
