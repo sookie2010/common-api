@@ -206,4 +206,7 @@ export default {
     height: 500px;
     width: auto;
   }
+  .main-view .search-row:not(:last-child) {
+    margin-bottom: 10px;
+  }
 </style>

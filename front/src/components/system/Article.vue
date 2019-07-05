@@ -1,34 +1,57 @@
 <template>
 <div>
-  <Row>
+  <div class="search-panel">
+  <Row class-name="search-row">
     <Col span="2">
       <div class="search-title">标题：</div>
     </Col>
-    <Col span="4">
+    <Col span="3">
       <Input v-model="search.title" @on-enter="loadData" />
     </Col>
 
     <Col span="2">
       <div class="search-title">创建时间：</div>
     </Col>
-    <Col span="4">
+    <Col span="3">
       <Date-picker v-model="search.createDate" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
     </Col>
+
     <Col span="2">
+      <div class="search-title">分类：</div>
+    </Col>
+    <Col span="3">
+      <Select v-model="search.category" filterable clearable>
+        <Option v-for="item in categories" :value="item" :key="item">{{ item }}</Option>
+      </Select>
+    </Col>
+
+    <Col span="2">
+      <div class="search-title">标签：</div>
+    </Col>
+    <Col span="3">
+      <Select v-model="search.tag" filterable clearable>
+        <Option v-for="item in tags" :value="item" :key="item">{{ item }}</Option>
+      </Select>
+    </Col>
+    
+  </Row>
+  <Row class-name="search-row">
+    <Col span="2" >
       <div class="search-title">已分词：</div>
     </Col>
-    <Col span="4">
+    <Col span="3">
       <Select v-model="search.isSplited" clearable>
         <Option value="true" >是</Option>
         <Option value="false" >否</Option>
       </Select>
     </Col>
-    <Col span="5" offset="1">
+
+    <Col span="3" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
       <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
-  
+  </div>
   <div class="btn-container">
     <Button type="primary" @click="splitWord">分词处理</Button>
     <Button @click="pullArticles">拉取文章</Button>
@@ -58,7 +81,7 @@ import Option from 'iview/src/components/option'
 var selectedData = null
 export default {
   components: {
-    Table, Row, Col, Input, DatePicker, Button, Page, Icon, Select, Option
+    Table, Row, Col, Input, DatePicker, Button, Page, Select, Option
   },
   data() {
     return {
@@ -131,7 +154,9 @@ export default {
             // return h('span', data.row.is_splited ? '是' : '否')
           }
         }],
-      articleData: []
+      articleData: [],
+      tags: [], // 所有标签
+      categories: [] // 所有分类
     }
   },
   methods: {
@@ -208,6 +233,12 @@ export default {
   },
   created() {
     this.loadData()
+    this.$http.get('/article/listCategories').then(data => {
+      this.categories = data
+    })
+    this.$http.get('/article/listTags').then(data => {
+      this.tags = data
+    })
   }
 }
 </script>
