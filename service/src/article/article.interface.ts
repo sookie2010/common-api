@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose'
-import BaseQc from 'src/common/base.qc';
+import BaseQc from '../common/base.qc';
 
 export interface Article extends Document {
   _id?: Schema.Types.ObjectId
