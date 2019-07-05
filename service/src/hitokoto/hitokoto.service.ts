@@ -16,14 +16,7 @@ export default class HitokotoService {
    * @param hitokotoDto 查询条件
    */
   async findOne(hitokotoDto: HitokotoDto): Promise<Hitokoto | MsgResult> {
-    const searchParam: HitokotoQc = {}
-    if (hitokotoDto.type) {
-      searchParam.type = hitokotoDto.type.length > 1 ? {$in: hitokotoDto.type.split('')} : hitokotoDto.type
-    }
-    if (~~hitokotoDto.length > 0) {
-      searchParam.hitokoto = { $exists: true }
-      searchParam.$expr = { $lte: [{ $strLenCP: '$hitokoto' }, ~~hitokotoDto.length ]}
-    }
+    const searchParam = new HitokotoQc(hitokotoDto)
     return this.hitokotoModel.countDocuments(searchParam).exec().then((cnt: number) => {
       if (cnt === 0) {
         throw new Error('没有匹配的一言')
@@ -48,22 +41,10 @@ export default class HitokotoService {
    * @param page 分页
    */
   async list(hitokotoDto: HitokotoDto, page: Page): Promise<Page> {
-    const searchParam: HitokotoQc = {}
-    if (hitokotoDto.type) {
-      searchParam.type = hitokotoDto.type
-    }
-    if (hitokotoDto.content) { // mongodb的模糊搜索使用正则形式
-      searchParam.hitokoto = {$regex: new RegExp(hitokotoDto.content)}
-    }
-    if (hitokotoDto.createAt && hitokotoDto.createAt[0] && hitokotoDto.createAt[1]) {
-      searchParam.created_at = {
-        $gte: new Date(hitokotoDto.createAt[0]),
-        $lte: new Date(hitokotoDto.createAt[1]),
-      }
-    }
+    const searchParam = new HitokotoQc(hitokotoDto)
     return this.hitokotoModel.countDocuments(searchParam).exec().then((cnt: number) => {
       page.total = cnt
-      return this.hitokotoModel.find(searchParam).skip(~~page.start).limit(~~page.limit).exec()
+      return this.hitokotoModel.find(searchParam).skip(page.start).limit(page.limit).exec()
     }).then((hitokotos: Hitokoto[]) => {
       page.data = hitokotos
       return page

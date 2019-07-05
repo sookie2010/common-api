@@ -20,7 +20,7 @@ export interface Hitokoto extends Document {
   number: number
 }
 
-export interface HitokotoQc extends BaseQc {
+export class HitokotoQc extends BaseQc {
   type?: string | {$in: string[]}
   hitokoto?: {
     $exists?: boolean
@@ -28,6 +28,25 @@ export interface HitokotoQc extends BaseQc {
   created_at?: {
     $gte: Date
     $lte: Date}
+  constructor(hitokotoDto: HitokotoDto) {
+    super()
+    if (hitokotoDto.type) {
+      this.type = hitokotoDto.type.length > 1 ? {$in: hitokotoDto.type.split('')} : hitokotoDto.type
+    }
+    if (hitokotoDto.content) { // mongodb的模糊搜索使用正则形式
+      this.hitokoto = {$regex: new RegExp(hitokotoDto.content)}
+    }
+    if (hitokotoDto.createAt && hitokotoDto.createAt[0] && hitokotoDto.createAt[1]) {
+      this.created_at = {
+        $gte: new Date(hitokotoDto.createAt[0]),
+        $lte: new Date(hitokotoDto.createAt[1]),
+      }
+    }
+    if (~~hitokotoDto.length > 0) {
+      this.hitokoto = { $exists: true }
+      this.$expr = { $lte: [{ $strLenCP: '$hitokoto' }, ~~hitokotoDto.length ]}
+    }
+  }
 }
 
 export interface HitokotoDto {

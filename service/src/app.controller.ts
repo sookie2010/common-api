@@ -7,6 +7,7 @@ import { Hitokoto, HitokotoDto } from './hitokoto/hitokoto.interface'
 import { ArticleDto } from './article/article.interface'
 import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
+import PageTransform from './common/page.transform'
 
 @Controller('/common')
 export default class AppController {
@@ -50,7 +51,7 @@ export default class AppController {
    * 分页查询照片
    */
   @Get('/photos')
-  getPhotos(@Query() page: Page): Promise<Page | MsgResult> {
+  getPhotos(@Query(PageTransform) page: Page): Promise<Page | MsgResult> {
     return this.photoWallService.queryPage(page)
   }
 
@@ -76,12 +77,9 @@ export default class AppController {
    * @param page 分页信息
    */
   @Get('/search')
-  search(@Query() articleDto: ArticleDto, @Query() page: Page): Promise<Page> {
+  search(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<Page> {
     if (!articleDto.words) {
       return Promise.resolve(page)
-    }
-    if (page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1)
     }
     return this.articleService.search(articleDto.words, page)
   }

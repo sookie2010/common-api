@@ -4,6 +4,7 @@ import PhotoWallService from './photo-wall.service'
 import { PhotoWallDto } from './photo-wall.interface'
 import { FileDto, Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
+import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/photowall')
@@ -16,10 +17,7 @@ export default class PhotoWallController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() photoWallDto: PhotoWallDto, @Query() page: Page): Promise<Page> {
-    if (page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1)
-    }
+  list(@Query() photoWallDto: PhotoWallDto, @Query(PageTransform) page: Page): Promise<Page> {
     return this.photoWallService.list(photoWallDto, page)
   }
   /**

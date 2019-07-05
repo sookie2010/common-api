@@ -11,7 +11,7 @@ export interface PhotoWall extends Document {
   index?: number // 序号
 }
 
-export interface PhotoWallQc extends BaseQc {
+export class PhotoWallQc extends BaseQc {
   name?: object
   width?: {
     $gte?: number
@@ -19,6 +19,30 @@ export interface PhotoWallQc extends BaseQc {
   height?: {
     $gte?: number
     $lte?: number}
+  constructor(photoWallDto: PhotoWallDto) {
+    super()
+    if (photoWallDto.name) { // mongodb的模糊搜索使用正则形式
+      this.name = {$regex: new RegExp(photoWallDto.name)}
+    }
+    if (~~photoWallDto.widthMin || ~~photoWallDto.widthMax) {
+      this.width = {}
+      if (~~photoWallDto.widthMin) {
+        this.width.$gte = ~~photoWallDto.widthMin
+      }
+      if (~~photoWallDto.widthMax) {
+        this.width.$lte = ~~photoWallDto.widthMax
+      }
+    }
+    if (~~photoWallDto.heightMin || ~~photoWallDto.heightMax) {
+      this.height = {}
+      if (~~photoWallDto.heightMin) {
+        this.height.$gte = ~~photoWallDto.heightMin
+      }
+      if (~~photoWallDto.heightMax) {
+        this.height.$lte = ~~photoWallDto.heightMax
+      }
+    }
+  }
 }
 
 export interface PhotoWallDto {

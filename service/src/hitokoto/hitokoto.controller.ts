@@ -4,6 +4,7 @@ import { Hitokoto } from './hitokoto.interface'
 import { HitokotoDto } from './hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
+import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/hitokoto')
@@ -17,10 +18,7 @@ export default class HitokotoController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() hitokotoDto: HitokotoDto, @Query() page: Page): Promise<Page> {
-    if (page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1)
-    }
+  list(@Query() hitokotoDto: HitokotoDto, @Query(PageTransform) page: Page): Promise<Page> {
     return this.hitokotoService.list(hitokotoDto, page)
   }
   /**

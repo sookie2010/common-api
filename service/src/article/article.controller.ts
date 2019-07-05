@@ -3,6 +3,7 @@ import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import ArticleService from './article.service';
 import { ArticleDto } from './article.interface'
+import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/article')
@@ -17,10 +18,7 @@ export default class ArticleController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() articleDto: ArticleDto, @Query() page: Page): Promise<Page> {
-    if (page.pageNum && page.limit) {
-      page.start = ~~page.limit * (~~page.pageNum - 1)
-    }
+  list(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<Page> {
     return this.articleService.list(articleDto, page)
   }
   /**

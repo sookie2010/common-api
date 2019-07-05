@@ -19,13 +19,41 @@ export interface ArticleKeys extends Document {
   keys: string[]
 }
 
-export interface ArticleQc extends BaseQc {
+export class ArticleQc extends BaseQc {
   title?: {
     $regex?: RegExp}
   create_date?: {
     $gte: Date
     $lte: Date}
   is_splited?: boolean
+  categories?: string
+  tags?: string
+  constructor(articleDto: ArticleDto) {
+    super()
+    if (articleDto.title) {
+      this.title = {$regex: new RegExp(articleDto.title)}
+    }
+    if (articleDto.createDate && articleDto.createDate[0] && articleDto.createDate[1]) {
+      this.create_date = {
+        $gte: new Date(articleDto.createDate[0]),
+        $lte: new Date(articleDto.createDate[1]),
+      }
+    }
+    switch(articleDto.isSplited) {
+      case 'true':
+        this.is_splited = true
+        break
+      case 'false':
+        this.is_splited = false
+        break
+    }
+    if(articleDto.category) {
+      this.categories = articleDto.category
+    }
+    if(articleDto.tag) {
+      this.tags = articleDto.tag
+    }
+  }
 }
 
 export interface ArticleDto {
@@ -43,6 +71,14 @@ export interface ArticleDto {
    * 分别是起始时间与结束时间的 UTS 字符串
    */
   createDate: string[]
+  /**
+   * 分类
+   */
+  category: string
+  /**
+   * 标签
+   */
+  tag: string
   /**
    * 是否已分词, 'true'已分词, 'false'未分词
    */

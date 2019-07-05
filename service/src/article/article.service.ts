@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Model, Schema, Types } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Page, MsgResult } from '../common/common.dto'
 import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
@@ -25,21 +25,7 @@ export default class ArticleService {
    * @param page 分页
    */
   async list(articleDto: ArticleDto, page: Page): Promise<Page> {
-    const searchParam: ArticleQc = {}
-    if (articleDto.title) {
-      searchParam.title = {$regex: new RegExp(articleDto.title)}
-    }
-    if (articleDto.createDate && articleDto.createDate[0] && articleDto.createDate[1]) {
-      searchParam.create_date = {
-        $gte: new Date(articleDto.createDate[0]),
-        $lte: new Date(articleDto.createDate[1]),
-      }
-    }
-    if (articleDto.isSplited === 'true') {
-      searchParam.is_splited = true
-    } else if (articleDto.isSplited === 'false') {
-      searchParam.is_splited = false
-    }
+    const searchParam = new ArticleQc(articleDto)
     const lookup = { $lookup: {
         from: 'article_keys',
         localField: '_id',
@@ -74,8 +60,8 @@ export default class ArticleService {
         project,
         { $match: searchParam },
         { $sort: {create_date: -1}},
-        { $skip: ~~page.start },
-        { $limit: ~~page.limit },
+        { $skip: page.start },
+        { $limit: page.limit },
       ])
     }).then((articles: Article[]) => {
       page.data = articles
@@ -126,7 +112,7 @@ export default class ArticleService {
       { $project : {
           _id: 1,
           total: 1,
-          articles: { $slice: ['$articles', page.start, page.start + (~~page.limit)] },
+          articles: { $slice: ['$articles', page.start, page.start + page.limit] },
         },
       },
     ])

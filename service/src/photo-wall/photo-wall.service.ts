@@ -36,7 +36,7 @@ export default class PhotoWallService {
         throw new Error('没有图片数据')
       }
       page.total = cnt
-      return this.photoWallModel.find({}).skip(~~page.start).limit(~~page.limit).exec()
+      return this.photoWallModel.find({}).skip(page.start).limit(page.limit).exec()
     }).then((photoWalls: PhotoWall[]) => {
       page.data = photoWalls
       return page
@@ -51,31 +51,10 @@ export default class PhotoWallService {
    * @param page 分页信息
    */
   async list(photoWallDto: PhotoWallDto, page: Page): Promise<Page> {
-    const searchParam: PhotoWallQc = {}
-    if (photoWallDto.name) { // mongodb的模糊搜索使用正则形式
-      searchParam.name = {$regex: new RegExp(photoWallDto.name)}
-    }
-    if (~~photoWallDto.widthMin || ~~photoWallDto.widthMax) {
-      searchParam.width = {}
-      if (~~photoWallDto.widthMin) {
-        searchParam.width.$gte = ~~photoWallDto.widthMin
-      }
-      if (~~photoWallDto.widthMax) {
-        searchParam.width.$lte = ~~photoWallDto.widthMax
-      }
-    }
-    if (~~photoWallDto.heightMin || ~~photoWallDto.heightMax) {
-      searchParam.height = {}
-      if (~~photoWallDto.heightMin) {
-        searchParam.height.$gte = ~~photoWallDto.heightMin
-      }
-      if (~~photoWallDto.heightMax) {
-        searchParam.height.$lte = ~~photoWallDto.heightMax
-      }
-    }
+    const searchParam = new PhotoWallQc(photoWallDto)
     return this.photoWallModel.countDocuments(searchParam).exec().then((cnt: number) => {
       page.total = cnt
-      return this.photoWallModel.find(searchParam).skip(~~page.start).limit(~~page.limit).exec()
+      return this.photoWallModel.find(searchParam).skip(page.start).limit(page.limit).exec()
     }).then((photoWalls: PhotoWall[]) => {
       page.data = photoWalls
       return page
