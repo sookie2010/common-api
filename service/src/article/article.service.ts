@@ -113,7 +113,7 @@ export default class ArticleService {
       { $project : {
           _id: 1,
           total: 1,
-          articles: { $slice: ['$articles', page.start, page.start + page.limit] },
+          articles: { $slice: ['$articles', page.start, page.limit] },
         },
       },
     ])
