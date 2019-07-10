@@ -26,13 +26,13 @@
     "@nestjs/platform-express": "^6.3.1",
     "@xgheaven/nos-node-sdk": "^0.2.5",
     "he": "^1.2.0",
-    "images": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.9",
     "nodejieba": "^2.3.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
-    "rxjs": "^6.3.3"
+    "rxjs": "^6.3.3",
+    "sharp": "^0.22.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.0.0",

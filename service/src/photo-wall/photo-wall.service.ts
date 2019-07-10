@@ -6,7 +6,7 @@ import { PhotoWall } from './photo-wall.interface'
 import SystemConfig from '../system/system-config.interface'
 import { FileDto, Page, MsgResult } from '../common/common.dto'
 
-const images = require('images')
+const sharp = require('sharp')
 const nos = require('@xgheaven/nos-node-sdk')
 const crypto = require('crypto')
 
@@ -65,14 +65,15 @@ export default class PhotoWallService {
    * @param photowall 照片信息
    */
   async save(image: FileDto): Promise<MsgResult> {
-    const ext = image.originalname.substr(image.originalname.indexOf('.') + 1) // 文件扩展名
-    const photowall: PhotoWall = {}
-    photowall._id = new Types.ObjectId()
-    const img = images(image.buffer)
+    const imgSharp = sharp(image.buffer)
+    const imgMeta = await imgSharp.metadata()
+    const ext = imgMeta.format // 文件扩展名
     // 获取图片宽高
-    photowall.width = img.width()
-    photowall.height = img.height()
-
+    const photowall: PhotoWall = {
+      _id: new Types.ObjectId(),
+      width: imgMeta.width,
+      height: imgMeta.height,
+    }
     // 获取图片MD5值
     const fsHash = crypto.createHash('md5')
     fsHash.update(image.buffer)
@@ -84,8 +85,12 @@ export default class PhotoWallService {
     }
     const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
     // 生成缩略图
-    img.resize(thumbnailWidth.value)
-    const thumbnailBuffer = img.encode(ext, {operation: 50})
+    let thumbnailBuffer: Buffer
+    if (photowall.width > ~~thumbnailWidth.value) {
+      thumbnailBuffer = await imgSharp.resize(thumbnailWidth.value).toBuffer()
+    } else {
+      thumbnailBuffer = image.buffer
+    }
     const maxIndex: PhotoWall[] = await this.photoWallModel.aggregate([{$group: {
       _id: 'max_index',
       index: { $max: '$index' },
