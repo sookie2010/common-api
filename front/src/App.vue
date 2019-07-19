@@ -69,6 +69,9 @@ export default {
         },{
           name: '博客文章',
           path: '/system/article'
+        },{
+          name: '分析统计',
+          path: '/system/statistics'
         }]
       },{
         name: 'API数据',
@@ -205,6 +208,10 @@ export default {
     translateX(-50%);
     height: 500px;
     width: auto;
+  }
+  .main-view {
+    position: relative;
+    height: 100%;
   }
   .main-view .search-row:not(:last-child) {
     margin-bottom: 10px;

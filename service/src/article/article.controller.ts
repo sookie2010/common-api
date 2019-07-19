@@ -53,4 +53,13 @@ export default class ArticleController {
   listCategories(): Promise<string[]> {
     return this.articleService.listAttrs('$categories')
   }
+
+  /**
+   * 文章分析统计
+   * @param articleDto 查询条件
+   */
+  @Get('/statistics')
+  statistics(@Query() articleDto: ArticleDto): Promise<{categories: [], timeline: []}> {
+    return this.articleService.statistics(articleDto)
+  }
 }

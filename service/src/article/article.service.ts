@@ -178,10 +178,19 @@ export default class ArticleService {
       if (article && article.content_hash !== updateParams.content_hash) { // 更新
         await this.articleModel.updateOne({_id: article._id}, {$set: updateParams})
         updateCnt ++
+        // 更新文章分词
+        await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: nodejieba.cut(articleContent, true)}})
       } else if (!article) { // 新增
-        article = Object.assign({_id: new Types.ObjectId()}, queryParams, updateParams)
+        let articleId = new Types.ObjectId()
+        article = Object.assign({_id: articleId}, queryParams, updateParams)
         await this.articleModel.create(article)
         createCnt ++
+        // 保存文章分词
+        await this.articleKeysModel.create({
+          _id: new Types.ObjectId(),
+          article_id: articleId, 
+          keys: nodejieba.cut(article.content, true)
+        })
       }
     }
     return new MsgResult(true, `拉取成功，更新 ${updateCnt} 篇，新增 ${createCnt} 篇`)
@@ -241,12 +250,35 @@ export default class ArticleService {
   }
   /**
    * 获取所有标签/分类
+   * @param attr $tags或者$categories
    */
   async listAttrs(attr: string): Promise<string[]> {
     return (await this.articleModel.aggregate([
       {$unwind: attr},
       {$group: {_id: attr}},
     ])).map((item: {_id: string}) => item._id)
+  }
+
+  /**
+   * 文章统计分析
+   * @param articleDto 查询条件
+   */
+  async statistics(articleDto: ArticleDto): Promise<{categories: [], timeline: []}> {
+    const searchParam = new ArticleQc(articleDto)
+    // 文章分类统计
+    const categories = await this.articleModel.aggregate([
+      {$match: searchParam},
+      {$unwind: '$categories'},
+      {$group: {_id: '$categories', cnt:{$sum:1}}},
+    ])
+    // 文章发布时间统计
+    const timeline = await this.articleModel.aggregate([
+      {$match: searchParam},
+      {$project: {create_date_str:{$dateToString: {format:'%Y-%m', date:'$create_date', timezone:'+08'}}}},
+      {$group: {_id: '$create_date_str', cnt:{$sum:1}}},
+      {$sort: {_id: 1}},
+    ])
+    return { categories, timeline }
   }
 }
 

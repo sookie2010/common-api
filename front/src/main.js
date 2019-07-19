@@ -4,15 +4,17 @@ import App from './App.vue'
 import { router, routePathes, filterExclude} from './router'
 import store from './store'
 
-// iview
+Vue.config.productionTip = false
+
+/*------iview start------*/
 import 'iview/dist/styles/iview.css'
 import Message from 'iview/src/components/message'
 import Modal from 'iview/src/components/modal'
 Vue.prototype.$Message = Message
 Vue.prototype.$Modal = Modal
+/*------iview end------*/
 
-Vue.config.productionTip = false
-
+/*------axios start------*/
 import axios from 'axios'
 // 配置默认axios参数
 axios.defaults.baseURL = process.env.VUE_APP_BASEURL
@@ -54,13 +56,13 @@ axios.interceptors.response.use(res=> {
   return Promise.resolve(err);
 })
 Vue.prototype.$http = axios
+/*------axios end------*/
 
 const vm = new Vue({
   render: h => h(App),
   router,
   store
 }).$mount('#app')
-
 
 // 全局路由导航前置守卫
 router.beforeEach((function (to, from, next) {
