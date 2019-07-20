@@ -56,10 +56,10 @@ export default class ArticleController {
 
   /**
    * 文章分析统计
-   * @param articleDto 查询条件
+   * @param type 查询的种类(normal 或 timelineWords)
    */
   @Get('/statistics')
-  statistics(@Query() articleDto: ArticleDto): Promise<{categories: [], timeline: []}> {
-    return this.articleService.statistics(articleDto)
+  statistics(@Query('type') type: string): Promise<{categories?: [], publishDates?: [], timelineWords?: []}> {
+    return this.articleService.statistics(type)
   }
 }

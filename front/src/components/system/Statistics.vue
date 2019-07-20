@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="echarts-container">
-    <v-chart :options="categoriesChart" />
-    <v-chart :options="timelineChart" />
-    <!-- <v-chart :options="categoriesChart" /> -->
-    <!-- <v-chart :options="categoriesChart" /> -->
+    <v-chart :options="categoriesChart" ref="categoriesChart" />
+    <v-chart :options="publishDatesChart" ref="publishDatesChart" />
+    <v-chart :options="timelineWordsChart" class="timeline-chart" ref="timelineWordsChart" />
     </div>
   </div>
 </template>
@@ -12,6 +11,7 @@
 import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/line' // 折线图
 import 'echarts/lib/chart/pie' // 饼图
+import 'echarts/lib/chart/bar' //柱状图
 
 /* Echarts组件 */
 import 'echarts/lib/component/title' // 标题
@@ -19,18 +19,35 @@ import 'echarts/lib/component/tooltip' // 浮动提示
 import 'echarts/lib/component/legendScroll' // 图例
 import 'echarts/lib/component/dataZoom' // 数据范围选择
 import 'echarts/lib/component/toolbox' // 工具条
+import 'echarts/lib/component/timeline' // 时间轴
 
 export default {
   components: {'v-chart': ECharts},
-  created() {
-    this.$http.get('/article/statistics').then(data => {
+  mounted() {
+    this.$refs.categoriesChart.showLoading()
+    this.$refs.publishDatesChart.showLoading()
+    this.$refs.timelineWordsChart.showLoading()
+    this.$http.get('/article/statistics', {params:{type:'normal'}}).then(data => {
       this.categoriesChart.legend.data = data.categories.map(item => item._id)
       this.categoriesChart.series[0].data = data.categories.map(item => {
         return {name: item._id, value: item.cnt}
       })
-
-      this.timelineChart.xAxis.data = data.timeline.map(item => item._id)
-      this.timelineChart.series[0].data = data.timeline.map(item => item.cnt)
+      this.publishDatesChart.xAxis.data = data.publishDates.map(item => item._id)
+      this.publishDatesChart.series[0].data = data.publishDates.map(item => item.cnt)
+      this.$refs.categoriesChart.hideLoading()
+      this.$refs.publishDatesChart.hideLoading()
+    })
+    this.$http.get('/article/statistics', {params:{type:'timelineWords'}}).then(data => {
+      this.timelineWordsChart.baseOption.timeline.data = data.timelineWords.map(item => item._id)
+      this.timelineWordsChart.options.length = 0
+      data.timelineWords.forEach(item => {
+        this.timelineWordsChart.options.push({
+          title: {text: `${item._id}年发布的文章`},
+          xAxis: { data: item.keys.map(keyItem => keyItem.key) },
+          series: [{data: item.keys.map(keyItem => keyItem.total)}]
+        })
+      })
+      this.$refs.timelineWordsChart.hideLoading()
     })
   },
   data() {
@@ -78,7 +95,7 @@ export default {
           }
         }]
       },
-      timelineChart: {
+      publishDatesChart: {
         title: {
           left: 'center',
           text: '文章发布时间',
@@ -114,11 +131,13 @@ export default {
           right: 15
         },
         xAxis: {
+          name: '发布时间',
           type: 'category',
           boundaryGap: false,
           data: []
         },
         yAxis: {
+          name: '文章数量',
           type: 'value',
           max: function(value) {
             return value.max + 10
@@ -152,6 +171,42 @@ export default {
           },
           data: []
         }]
+      },
+      timelineWordsChart: {
+        baseOption: {
+          timeline: {
+            axisType: 'category',
+            autoPlay: false,
+            playInterval: 1000,
+            data: [],
+          },
+          title: {
+            left: 'center',
+            subtext: '数据来自文章分词结果'
+          },
+          calculable : true,
+          grid: {
+            top: 80,
+            bottom: 80
+          },
+          xAxis: {
+            name: '高频词汇',
+            type: 'category',
+            splitLine: {show: false}
+          },
+          yAxis: {
+            name: '词汇出现次数',
+            type: 'value'
+          },
+          tooltip : {
+            trigger: 'axis',
+            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+              type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
+          },
+          series: {type: 'bar'}
+        },
+        options: []
       }
     }
   }
@@ -168,5 +223,9 @@ export default {
   border: 1px solid #ccc;
   width: auto;
   height: auto;
+}
+.timeline-chart {
+  grid-column-start: 1;
+  grid-column-end: 3;
 }
 </style>

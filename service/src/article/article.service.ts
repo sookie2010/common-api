@@ -261,24 +261,56 @@ export default class ArticleService {
 
   /**
    * 文章统计分析
-   * @param articleDto 查询条件
+   * @param type 查询的种类(normal 或 timelineWords)
    */
-  async statistics(articleDto: ArticleDto): Promise<{categories: [], timeline: []}> {
-    const searchParam = new ArticleQc(articleDto)
-    // 文章分类统计
-    const categories = await this.articleModel.aggregate([
-      {$match: searchParam},
-      {$unwind: '$categories'},
-      {$group: {_id: '$categories', cnt:{$sum:1}}},
-    ])
-    // 文章发布时间统计
-    const timeline = await this.articleModel.aggregate([
-      {$match: searchParam},
-      {$project: {create_date_str:{$dateToString: {format:'%Y-%m', date:'$create_date', timezone:'+08'}}}},
-      {$group: {_id: '$create_date_str', cnt:{$sum:1}}},
-      {$sort: {_id: 1}},
-    ])
-    return { categories, timeline }
+  async statistics(type: string): Promise<{categories?: [], publishDates?: [], timelineWords?: []}> {
+    const result: {categories?: [], publishDates?: [], timelineWords?: []} = {}
+    switch(type) {
+      case 'normal': 
+        // 文章分类统计
+        result.categories = await this.articleModel.aggregate([
+          {$unwind: '$categories'},
+          {$group: {_id: '$categories', cnt:{$sum:1}}},
+        ])
+        // 文章发布时间统计
+        result.publishDates = await this.articleModel.aggregate([
+          {$project: {create_date_str:{$dateToString: {format:'%Y-%m', date:'$create_date', timezone:'+08'}}}},
+          {$group: {_id: '$create_date_str', cnt:{$sum:1}}},
+          {$sort: {_id: 1}},
+        ])
+        break
+      case 'timelineWords':
+        // 时间线高频词汇统计
+        result.timelineWords = await this.articleKeysModel.aggregate([
+          { $lookup: {
+              from: 'article',
+              localField: 'article_id',
+              foreignField: '_id',
+              as: 'article',
+            },
+          },
+          {$unwind: '$article'},
+          {$group: {
+              _id: {$dateToString: {format:'%Y', date:'$article.create_date', timezone:'+08'}},
+              keys: {$push: '$keys'}
+            }
+          },
+          {$unwind: '$keys'},
+          {$unwind: '$keys'},
+          {$match: {keys:{$regex:/^[^x00-xff]{3,}$/}}}, // 双字节字符 3个字符或以上
+          {$group: {_id: {yearMonth:'$_id', keyWord: '$keys'}, cnt: {$sum: 1}}},
+          {$sort: {'_id.yearMonth':1, cnt: -1}},
+          {$group: {_id: '$_id.yearMonth', keys: {$push: {key:'$_id.keyWord', total:'$cnt'}}}},
+          {$project: {
+              _id:1,
+              keys: {$slice: ['$keys',0, 20]}
+            }
+          },
+          {$sort: {'_id':1}}
+        ])
+        break
+    }
+    return result
   }
 }
 
