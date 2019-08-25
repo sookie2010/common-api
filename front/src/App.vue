@@ -67,6 +67,9 @@ export default {
           name: '系统配置',
           path: '/system/config'
         },{
+          name: '用户管理',
+          path: '/system/user'
+        },{
           name: '博客文章',
           path: '/system/article'
         },{

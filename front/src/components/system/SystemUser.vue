@@ -2,10 +2,10 @@
 <div>
   <Row>
     <Col span="3">
-      <div class="search-title">配置项名称/描述：</div>
+      <div class="search-title">用户名/昵称：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name" @on-enter="loadData" />
+      <Input v-model="search.username" @on-enter="loadData" />
     </Col>
     <Col span="5" offset="12">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
@@ -16,14 +16,24 @@
     <Button type="primary" @click="add">添加</Button>
   </div>
   <div class="table-container">
-    <Table :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>
+    <Table :loading="loading" :columns="systemUserColumns" :data="systemUserData" height="520" ></Table>
   </div>
-  <Modal v-model="addModal" :title="modalTitle" >
-    <SystemConfigAdd :formData="formData" />
-    <div slot="footer">
-      <Button type="text" @click="addModal = false">取消</Button>
-      <Button type="primary" @click="save">保存</Button>
-    </div>
+  <div class="page-container">
+    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+  </div>
+  <Modal v-model="addModal" :title="modalTitle" :loading="true" @on-ok="save">
+    <Form :model="formData" :label-width="80">
+      <Form-item label="用户名">
+        <Input v-model="formData.username" />
+      </Form-item>
+      <Form-item label="密码">
+        <Input v-model="formData.password" type="password" />
+      </Form-item>
+      <Form-item label="昵称">
+        <Input v-model="formData.realname" />
+      </Form-item>
+    </Form>
   </Modal>
 </div>
 </template>
@@ -34,30 +44,34 @@ import Col from 'iview/src/components/col'
 import Input from 'iview/src/components/input'
 import Button from 'iview/src/components/button'
 import Modal from 'iview/src/components/modal'
-
-import SystemConfigAdd from './SystemConfigAdd'
+import Form from 'iview/src/components/form'
+import FormItem from 'iview/src/components/form-item'
+import Page from 'iview/src/components/page'
 
 export default {
   components: {
-    Table, Row, Col, Input, Button, Modal, SystemConfigAdd
+    Table, Row, Col, Input, Button, Modal, Form, FormItem, Page
   },
   data() {
     return {
       loading: false,
-      search: {},
-      systemConfigColumns: [{
-          type: 'expand',
-          width: 50,
-          render: (h, data) => {
-            return h('pre', JSON.stringify(data.row.value, null, ' '))
+      search: {
+        pageNum: 1,
+        limit: 10,
+        total: null
+      },
+      systemUserColumns: [{
+          title: '用户名',
+          key: 'username'
+        },{
+          title: '姓名',
+          key: 'realname'
+        },{
+          title: '创建时间',
+          key: 'created_at',
+          render (h, data) {
+            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
           }
-        },{
-          title: '配置项名称',
-          key: 'name',
-          width: 200
-        },{
-          title: '配置项描述',
-          key: 'description'
         },{
           title: '操作',
           render: (h, data) => {
@@ -74,14 +88,14 @@ export default {
             ])
           }
         }],
-      systemConfigData: [],
+      systemUserData: [],
       addModal: false,
       modalTitle: null,
       formData: {
         _id: null,
-        name: null,
-        value: null,
-        description: null
+        username: null,
+        password: null,
+        realname: null
       }
     }
   },
@@ -92,35 +106,37 @@ export default {
     },
     loadData() {
       this.loading = true
-      this.$http.get('/system/config/list', {params:this.search}).then(data => {
+      this.$http.get('/system/user/list', {params:this.search}).then(data => {
         this.loading = false
-        this.systemConfigData = data
+        this.search.total = data.total
+        this.systemUserData = data.data
       })
+    },
+    pageChange(pageNum) {
+      this.search.pageNum = pageNum
+      this.loadData()
+    },
+    pageSizeChange(pageSize) {
+      this.search.limit = pageSize
+      this.loadData()
     },
     add() {
       // 清空表单
       Object.keys(this.formData).forEach(key => {
         this.formData[key] = null
       })
-      this.modalTitle = '新增配置项'
+      this.modalTitle = '新增用户'
       this.addModal = true
     },
     update(row) {
       this.formData._id = row._id
-      this.formData.name = row.name
-      this.formData.value = JSON.stringify(row.value, null, ' ')
-      this.formData.description = row.description
-      this.modalTitle = '修改配置项'
+      this.formData.username = row.username
+      this.formData.realname = row.realname
+      this.modalTitle = '修改用户'
       this.addModal = true
     },
     save() {
-      try {
-        JSON.parse(this.formData.value)
-      } catch (e) {
-        this.$Message.warning('值不符合JSON字符串格式')
-        return
-      }
-      this.$http.post('/system/config/save', this.formData).then(data => {
+      this.$http.post('/system/user/save', this.formData).then(data => {
         this.addModal = false
         this.$Message.success(data.msg)
         this.loadData()
@@ -133,10 +149,10 @@ export default {
     delete(row) {
       this.$Modal.confirm({
         title: '确认删除',
-        content: `<p>是否确认删除 ${row.name} 配置项？</p>`,
+        content: `<p>是否确认删除 ${row.username} 用户？</p>`,
         loading: true,
         onOk: () => {
-          this.$http.delete('/system/config/delete', {params: {id: row._id}}).then(data => {
+          this.$http.delete('/system/user/delete', {params: {id: row._id}}).then(data => {
             this.$Modal.remove()
             if(data.status) {
               this.$Message.success(data.msg)
