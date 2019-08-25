@@ -82,13 +82,4 @@ export default class HitokotoService {
       return new MsgResult(true, '删除成功')
     })
   }
-
-  /**
-   * 查询系统配置, 获取一言的类型名称与编号的对应关系
-   */
-  async listTypes(): Promise<object[]> {
-    return this.systemConfigModel.findOne({name: 'hitokoto_type'}).exec().then((systemConfig: SystemConfig) => {
-      return Promise.resolve(systemConfig.value)
-    })
-  }
 }

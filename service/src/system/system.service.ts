@@ -52,4 +52,12 @@ export default class SystemService {
     await this.systemConfigModel.deleteOne({_id}).exec()
     return Promise.resolve(new MsgResult(true, '删除成功'))
   }
+
+  /**
+   * 获取单个配置项
+   */
+  async getConfig(name: string): Promise<object> {
+    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name}).exec()
+    return Promise.resolve(pictureCdnConfig.value)
+  }
 }

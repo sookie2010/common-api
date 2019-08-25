@@ -8,6 +8,7 @@ import { ArticleDto } from './article/article.interface'
 import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 import PageTransform from './common/page.transform'
+import SystemService from './system/system.service';
 
 @Controller('/common')
 export default class AppController {
@@ -15,6 +16,7 @@ export default class AppController {
     private readonly hitokotoService: HitokotoService,
     private readonly photoWallService: PhotoWallService,
     private readonly articleService: ArticleService,
+    private readonly systemService: SystemService,
     private readonly appService: AppService,
   ) {}
   /**
@@ -59,16 +61,24 @@ export default class AppController {
    * 获取一言类型
    */
   @Get('/hitokotoTypes')
-  listHitokotoTypes(): Promise<object[]> {
-    return this.hitokotoService.listTypes()
+  listHitokotoTypes(): Promise<object> {
+    return this.systemService.getConfig('hitokoto_type')
   }
 
   /**
    * 获取图片存储CDN地址
    */
   @Get('/pictureCdn')
-  getPictureCdn(): Promise<string> {
-    return this.photoWallService.getPictureCdn()
+  getPictureCdn(): Promise<object> {
+    return this.systemService.getConfig('picture_cdn')
+  }
+
+  /**
+   * 获取Valine评论配置
+   */
+  @Get('/valineConfig')
+  getValineConfig(): Promise<object> {
+    return this.systemService.getConfig('valine_config')
   }
 
   /**

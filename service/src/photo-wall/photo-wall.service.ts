@@ -146,11 +146,4 @@ export default class PhotoWallService {
       return Promise.resolve(new MsgResult(true, '删除成功'))
     })
   }
-  /**
-   * 获取图片存储CDN地址
-   */
-  async getPictureCdn(): Promise<string> {
-    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'picture_cdn'}).exec()
-    return Promise.resolve(pictureCdnConfig.value.toString())
-  }
 }
