@@ -212,6 +212,7 @@ export default {
             this.$Modal.remove()
             if(data.status) {
               this.$Message.success(data.msg)
+              this.loadData()
             } else {
               this.$Message.warning(data.msg)
             }

@@ -114,7 +114,6 @@ export default {
   }
 }
 </script>
-
 <style>
   html,body {
     height: 100%;
@@ -166,6 +165,9 @@ export default {
     position: absolute;
     right: 20px;
   }
+  .layout-header .nav-btns-right > span {
+    margin-right: 10px;
+  }
   .layout-header .nav-btns-left {
     display: inline-block;
     position: absolute;
@@ -215,5 +217,8 @@ export default {
   }
   .main-view .search-row:not(:last-child) {
     margin-bottom: 10px;
+  }
+  td.ivu-table-expanded-cell {
+    padding: 0 20px !important;
   }
 </style>

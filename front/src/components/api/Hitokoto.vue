@@ -40,10 +40,9 @@
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
   </div>
-  <Modal v-model="addModal" title="新增 一言" :loading="true" @on-ok="save">
+  <Modal v-model="addModal" title="新增一言" :loading="true" @on-ok="save">
     <HitokotoAdd :typeList="typeList" :formData="formData" />
   </Modal>
-  
 </div>
 </template>
 <script>
