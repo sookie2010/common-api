@@ -51,10 +51,10 @@ export default class SystemController {
    */
   @Post('/config/save')
   saveConfig(@Body() systemConfig: SystemConfig): Promise<MsgResult> {
-    if(typeof systemConfig.value !== 'object') {
+    if (typeof systemConfig.value !== 'object') {
       try {
         systemConfig.value = JSON.parse(systemConfig.value)
-      } catch(e) {
+      } catch (e) {
         return Promise.resolve(new MsgResult(false, 'value无法解析为JSON格式'))
       }
     }

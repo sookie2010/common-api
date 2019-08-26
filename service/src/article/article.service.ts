@@ -181,15 +181,15 @@ export default class ArticleService {
         // 更新文章分词
         await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: nodejieba.cut(articleContent, true)}})
       } else if (!article) { // 新增
-        let articleId = new Types.ObjectId()
+        const articleId = new Types.ObjectId()
         article = Object.assign({_id: articleId}, queryParams, updateParams)
         await this.articleModel.create(article)
         createCnt ++
         // 保存文章分词
         await this.articleKeysModel.create({
           _id: new Types.ObjectId(),
-          article_id: articleId, 
-          keys: nodejieba.cut(article.content, true)
+          article_id: articleId,
+          keys: nodejieba.cut(article.content, true),
         })
       }
     }
@@ -265,17 +265,17 @@ export default class ArticleService {
    */
   async statistics(type: string): Promise<{categories?: [], publishDates?: [], timelineWords?: []}> {
     const result: {categories?: [], publishDates?: [], timelineWords?: []} = {}
-    switch(type) {
-      case 'normal': 
+    switch (type) {
+      case 'normal':
         // 文章分类统计
         result.categories = await this.articleModel.aggregate([
           {$unwind: '$categories'},
-          {$group: {_id: '$categories', cnt:{$sum:1}}},
+          {$group: {_id: '$categories', cnt: {$sum: 1}}},
         ])
         // 文章发布时间统计
         result.publishDates = await this.articleModel.aggregate([
-          {$project: {create_date_str:{$dateToString: {format:'%Y-%m', date:'$create_date', timezone:'+08'}}}},
-          {$group: {_id: '$create_date_str', cnt:{$sum:1}}},
+          {$project: {create_date_str: {$dateToString: {format: '%Y-%m', date: '$create_date', timezone: '+08'}}}},
+          {$group: {_id: '$create_date_str', cnt: {$sum: 1}}},
           {$sort: {_id: 1}},
         ])
         break
@@ -291,22 +291,22 @@ export default class ArticleService {
           },
           {$unwind: '$article'},
           {$group: {
-              _id: {$dateToString: {format:'%Y', date:'$article.create_date', timezone:'+08'}},
-              keys: {$push: '$keys'}
-            }
+              _id: {$dateToString: {format: '%Y', date: '$article.create_date', timezone: '+08'}},
+              keys: {$push: '$keys'},
+            },
           },
           {$unwind: '$keys'},
           {$unwind: '$keys'},
-          {$match: {keys:{$regex:/^[^x00-xff]{3,}$/}}}, // 双字节字符 3个字符或以上
-          {$group: {_id: {yearMonth:'$_id', keyWord: '$keys'}, cnt: {$sum: 1}}},
-          {$sort: {'_id.yearMonth':1, cnt: -1}},
-          {$group: {_id: '$_id.yearMonth', keys: {$push: {key:'$_id.keyWord', total:'$cnt'}}}},
+          {$match: {keys: {$regex: /^[^x00-xff]{3,}$/}}}, // 双字节字符 3个字符或以上
+          {$group: {_id: {yearMonth: '$_id', keyWord: '$keys'}, cnt: {$sum: 1}}},
+          {$sort: {'_id.yearMonth': 1, 'cnt': -1}},
+          {$group: {_id: '$_id.yearMonth', keys: {$push: {key: '$_id.keyWord', total: '$cnt'}}}},
           {$project: {
-              _id:1,
-              keys: {$slice: ['$keys',0, 20]}
-            }
+              _id: 1,
+              keys: {$slice: ['$keys', 0, 20]},
+            },
           },
-          {$sort: {'_id':1}}
+          {$sort: {_id: 1}},
         ])
         break
     }

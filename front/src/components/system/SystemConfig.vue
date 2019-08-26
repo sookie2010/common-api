@@ -61,7 +61,6 @@ export default {
         },{
           title: '操作',
           render: (h, data) => {
-            //<Button type="error" ghost>Error</Button>
             return h('div', [
               h(Button, {
                 props: {size:'small'},

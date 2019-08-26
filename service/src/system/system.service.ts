@@ -44,8 +44,8 @@ export default class SystemService {
         .update(systemUser.password)
         .digest('hex')
     systemUser.password = pwdHashed
-    if(systemUser._id) { // 更新
-      let userId = systemUser._id
+    if (systemUser._id) { // 更新
+      const userId = systemUser._id
       delete systemUser._id
       await this.systemUserModel.updateOne({_id: userId}, {$set: systemUser})
       return Promise.resolve(new MsgResult(true, '修改成功'))
@@ -61,7 +61,7 @@ export default class SystemService {
    * @param _id 用户ID
    */
   async deleteUser(_id: string): Promise<MsgResult> {
-    if(!_id) {
+    if (!_id) {
       return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
     }
     await this.systemUserModel.deleteOne({_id}).exec()
@@ -86,8 +86,8 @@ export default class SystemService {
    * @param systemConfig 配置项内容
    */
   async saveConfig(systemConfig: SystemConfig): Promise<MsgResult> {
-    if(systemConfig._id) { // 更新
-      let configId = systemConfig._id
+    if (systemConfig._id) { // 更新
+      const configId = systemConfig._id
       delete systemConfig._id
       await this.systemConfigModel.updateOne({_id: configId}, {$set: systemConfig})
       return Promise.resolve(new MsgResult(true, '修改成功'))
@@ -102,7 +102,7 @@ export default class SystemService {
    * @param _id 配置项ID
    */
   async deleteConfig(_id: string): Promise<MsgResult> {
-    if(!_id) {
+    if (!_id) {
       return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
     }
     await this.systemConfigModel.deleteOne({_id}).exec()
