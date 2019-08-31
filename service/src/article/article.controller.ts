@@ -59,7 +59,7 @@ export default class ArticleController {
    * @param type 查询的种类(normal 或 timelineWords)
    */
   @Get('/statistics')
-  statistics(@Query('type') type: string): Promise<{categories?: [], publishDates?: [], timelineWords?: []}> {
+  statistics(@Query('type') type: string): Promise<{categories?: any[], publishDates?: any[], timelineWords?: any[]}> {
     return this.articleService.statistics(type)
   }
 }

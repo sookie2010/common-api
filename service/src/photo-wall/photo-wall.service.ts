@@ -1,27 +1,24 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
-import { PhotoWall } from './photo-wall.interface'
+import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
 import SystemConfig from '../system/system-config.interface'
 import { FileDto, Page, MsgResult } from '../common/common.dto'
 
-const sharp = require('sharp')
-const nos = require('@xgheaven/nos-node-sdk')
-const crypto = require('crypto')
+import { NosClient, NosClientOptions } from '@xgheaven/nos-node-sdk'
+import * as sharp from 'sharp'
+import * as crypto from 'crypto'
 
 @Injectable()
 export default class PhotoWallService {
-  client: {
-    putObject({objectKey: string, body: Buffer}): Promise<object>
-    deleteMultiObject({objectKeys: any}): Promise<object>}
+  private client: NosClient
 
   constructor(@InjectModel('PhotoWall') private readonly photoWallModel: Model<PhotoWall>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
 
     systemConfigModel.findOne({name: 'nos_setting'}).exec().then((systemConfig: SystemConfig) => {
       // 网易云对象存储接口
-      this.client = new nos.NosClient(systemConfig.value)
+      this.client = new NosClient(<NosClientOptions>systemConfig.value)
     })
   }
 
@@ -69,10 +66,10 @@ export default class PhotoWallService {
     const imgMeta = await imgSharp.metadata()
     const ext = imgMeta.format // 文件扩展名
     // 获取图片宽高
-    const photowall: PhotoWall = {
+    const photowall: PhotoWallEntity = {
       _id: new Types.ObjectId(),
       width: imgMeta.width,
-      height: imgMeta.height,
+      height: imgMeta.height
     }
     // 获取图片MD5值
     const fsHash = crypto.createHash('md5')
@@ -87,7 +84,7 @@ export default class PhotoWallService {
     // 生成缩略图
     let thumbnailBuffer: Buffer
     if (photowall.width > ~~thumbnailWidth.value) {
-      thumbnailBuffer = await imgSharp.resize(thumbnailWidth.value).toBuffer()
+      thumbnailBuffer = await imgSharp.resize(~~thumbnailWidth.value).toBuffer()
     } else {
       thumbnailBuffer = image.buffer
     }

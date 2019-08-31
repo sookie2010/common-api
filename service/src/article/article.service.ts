@@ -3,15 +3,15 @@ import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Page, MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
-import { Article, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
+import { Article, ArticleEntity, ArticleKeys, ArticleDto, ArticleQc } from './article.interface'
 import SystemConfig from '../system/system-config.interface'
 
 import * as nodejieba from 'nodejieba'
 import * as xmlParser from 'fast-xml-parser'
 import axios from 'axios'
 
-const he = require('he')
-const crypto = require('crypto')
+import * as he from 'he'
+import * as crypto from 'crypto'
 
 @Injectable()
 export default class ArticleService {
@@ -144,7 +144,7 @@ export default class ArticleService {
     let updateCnt: number = 0 // 更新文章计数
     let createCnt: number = 0 // 新增文章计数
     for (const xmlArticle of articleJsonObj.search.entry) {
-      const queryParams: Article = {
+      const queryParams: ArticleEntity = {
         // 标题
         title: xmlArticle.title,
         // 路径
@@ -163,7 +163,7 @@ export default class ArticleService {
       if ('tags' in xmlArticle) {
         tags = typeof xmlArticle.tags.tag === 'string' ? [xmlArticle.tags.tag] : xmlArticle.tags.tag
       }
-      const updateParams: Article = {
+      const updateParams = {
         content: articleContent,
         // 内容Hash
         content_hash: crypto.createHash('sha1').update(articleContent).digest('hex'),
@@ -173,7 +173,7 @@ export default class ArticleService {
         create_date: new Date(parseInt(xmlArticle.date, 10)),
       }
 
-      let article: Article = await this.articleModel.findOne(queryParams, {_id: 1, content_hash: 1}).exec()
+      const article: Article = await this.articleModel.findOne(queryParams, {_id: 1, content_hash: 1}).exec()
 
       if (article && article.content_hash !== updateParams.content_hash) { // 更新
         await this.articleModel.updateOne({_id: article._id}, {$set: updateParams})
@@ -182,14 +182,14 @@ export default class ArticleService {
         await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: nodejieba.cut(articleContent, true)}})
       } else if (!article) { // 新增
         const articleId = new Types.ObjectId()
-        article = Object.assign({_id: articleId}, queryParams, updateParams)
-        await this.articleModel.create(article)
+        const articleEntity: ArticleEntity = Object.assign({_id: articleId}, queryParams, updateParams)
+        await this.articleModel.create(articleEntity)
         createCnt ++
         // 保存文章分词
         await this.articleKeysModel.create({
           _id: new Types.ObjectId(),
           article_id: articleId,
-          keys: nodejieba.cut(article.content, true),
+          keys: nodejieba.cut(articleEntity.content, true),
         })
       }
     }
@@ -263,8 +263,8 @@ export default class ArticleService {
    * 文章统计分析
    * @param type 查询的种类(normal 或 timelineWords)
    */
-  async statistics(type: string): Promise<{categories?: [], publishDates?: [], timelineWords?: []}> {
-    const result: {categories?: [], publishDates?: [], timelineWords?: []} = {}
+  async statistics(type: string): Promise<{categories?: any[], publishDates?: any[], timelineWords?: any[]}> {
+    const result: {categories?: any[], publishDates?: any[], timelineWords?: any[]} = {}
     switch (type) {
       case 'normal':
         // 文章分类统计

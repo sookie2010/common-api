@@ -1,23 +1,23 @@
 import * as mongoose from 'mongoose'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
-import { Observable } from 'rxjs'
+// import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../system/system-config.interface'
 import { ServerResponse } from 'http'
 
-const jwt = require('jsonwebtoken')
+import * as jwt from 'jsonwebtoken'
 
 @Injectable()
 export default class LoginInterceptor implements NestInterceptor {
   constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: mongoose.Model<SystemConfig>) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
     const token = context.getArgs()[0].headers.token
     if (!token) {
       this.responseHandler(context.switchToHttp().getResponse(), 403, '请先登录')
     }
     return this.systemConfigModel.findOne({name: 'token_private_key'}).exec().then((systemConfig: SystemConfig) => {
-      jwt.verify(token, systemConfig.value)
+      jwt.verify(token, systemConfig.value.toString())
       return next.handle()
     }).catch(err => {
       let msg = null

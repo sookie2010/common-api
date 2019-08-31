@@ -1,9 +1,9 @@
-import { Schema, Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 import BaseQc from '../common/base.qc';
 import CommonUtils from '../common/common.util'
 
-export interface Article extends Document {
-  _id?: Schema.Types.ObjectId
+export interface ArticleEntity {
+  _id?: Types.ObjectId
   title?: string // 文章标题
   path?: string // 文章访问路径
   create_date?: Date // 创建时间
@@ -13,9 +13,13 @@ export interface Article extends Document {
   content_hash?: string // 正文内容Hash(SHA1)
 }
 
+export interface Article extends Document, ArticleEntity {
+  _id: Types.ObjectId
+}
+
 export interface ArticleKeys extends Document {
-  _id: Schema.Types.ObjectId
-  article_id: Schema.Types.ObjectId
+  _id: Types.ObjectId
+  article_id: Types.ObjectId
   keys: string[]
 }
 
@@ -61,7 +65,7 @@ export interface ArticleDto {
    * 多个ID, 用于批量操作
    */
   _ids: string[]
-  _id: Schema.Types.ObjectId
+  _id: Types.ObjectId
   /**
    * 标题模糊搜索
    */

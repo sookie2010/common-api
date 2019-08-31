@@ -2,20 +2,18 @@ import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Hitokoto } from './hitokoto.interface'
-import SystemConfig from '../system/system-config.interface'
 import { HitokotoDto, HitokotoQc } from './hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 
 @Injectable()
 export default class HitokotoService {
-  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: Model<Hitokoto>,
-              @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {}
+  constructor(@InjectModel('Hitokoto') private readonly hitokotoModel: Model<Hitokoto>) {}
 
   /**
    * 随机获取一条一言
    * @param hitokotoDto 查询条件
    */
-  async findOne(hitokotoDto: HitokotoDto): Promise<Hitokoto | MsgResult> {
+  async findOne(hitokotoDto: HitokotoDto): Promise<string | Hitokoto | MsgResult> {
     const searchParam = new HitokotoQc(hitokotoDto)
     return this.hitokotoModel.countDocuments(searchParam).exec().then((cnt: number) => {
       if (cnt === 0) {

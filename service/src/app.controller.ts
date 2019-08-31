@@ -45,7 +45,7 @@ export default class AppController {
    * @param hitokotoDto 筛选条件
    */
   @Get('/hitokoto')
-  getHitokoto(@Query() hitokotoDto: HitokotoDto): Promise<Hitokoto | MsgResult> {
+  getHitokoto(@Query() hitokotoDto: HitokotoDto): Promise<string | Hitokoto | MsgResult> {
     return this.hitokotoService.findOne(hitokotoDto)
   }
 

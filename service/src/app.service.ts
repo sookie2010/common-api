@@ -5,8 +5,8 @@ import SystemConfig from './system/system-config.interface'
 import SystemUser from './system/system-user.interface'
 import { MsgResult } from './common/common.dto'
 
-const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
+import * as jwt from 'jsonwebtoken'
+import * as crypto from 'crypto'
 
 @Injectable()
 export default class AppService {
@@ -35,7 +35,7 @@ export default class AppService {
       }
       return this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     }).then((systemConfig: SystemConfig) => {
-      const token = jwt.sign(signUser, systemConfig.value/*秘钥*/, {
+      const token = jwt.sign(signUser, systemConfig.value.toString()/*秘钥*/, {
         expiresIn: '1h', /*过期时间*/
       })
       return Promise.resolve({token, userInfo: signUser})
@@ -49,7 +49,7 @@ export default class AppService {
    */
   async verifyToken(token: string): Promise<object> {
     return this.systemConfigModel.findOne({name: 'token_private_key'}).exec().then((systemConfig: SystemConfig) => {
-      const userInfo = jwt.verify(token, systemConfig.value)
+      const userInfo = jwt.verify(token, systemConfig.value.toString())
       return {status: true, userInfo}
     }).catch(err => {
       let msg = null

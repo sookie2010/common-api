@@ -1,15 +1,19 @@
-import { Schema, Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 
-export interface PhotoWall extends Document {
-  _id?: Schema.Types.ObjectId
+export interface PhotoWallEntity {
+  _id: Types.ObjectId
   name?: string // 图片文件名
   md5?: string // 文件md5哈希值
   thumbnail?: string // 缩略图名称
   width?: number // 宽度
   height?: number // 高度
   index?: number // 序号
+}
+
+export interface PhotoWall extends Document, PhotoWallEntity {
+  _id: Types.ObjectId
 }
 
 export class PhotoWallQc extends BaseQc {

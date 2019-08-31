@@ -1,9 +1,9 @@
-import { Schema, Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 
 export interface Hitokoto extends Document {
-  _id: Schema.Types.ObjectId
+  _id: Types.ObjectId
   hitokoto: string
   /**
    * a	Anime - 动画
