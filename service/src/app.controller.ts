@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common'
+import { Controller, Get, Query, Post, Body, Res } from '@nestjs/common'
 import AppService from './app.service'
 import HitokotoService from './hitokoto/hitokoto.service'
 import PhotoWallService from './photo-wall/photo-wall.service'
@@ -9,6 +9,10 @@ import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 import PageTransform from './common/page.transform'
 import SystemService from './system/system.service';
+import { Response } from 'express'
+
+import * as fs from 'fs'
+import { Readable } from 'stream'
 
 @Controller('/common')
 export default class AppController {
@@ -92,5 +96,19 @@ export default class AppController {
       return Promise.resolve(page)
     }
     return this.articleService.search(articleDto.words, page)
+  }
+
+  @Get('/randomBg')
+  randomBg(@Res() res: Response): void {
+    const buffer = fs.readFileSync('D:\\64478920_p2_.png')
+    const stream = new Readable();
+
+    stream.push(buffer)
+    stream.push(null)
+    res.set({
+      'Content-Type': 'image/png',
+      'Content-Length': buffer.length,
+    })
+    stream.pipe(res)
   }
 }
