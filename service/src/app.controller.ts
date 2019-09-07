@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Post, Body, Res } from '@nestjs/common'
+import { Controller, Get, Query, Param, Post, Body, Res } from '@nestjs/common'
 import AppService from './app.service'
 import HitokotoService from './hitokoto/hitokoto.service'
 import PhotoWallService from './photo-wall/photo-wall.service'
@@ -62,27 +62,11 @@ export default class AppController {
   }
 
   /**
-   * 获取一言类型
+   * 获取公开的配置项
    */
-  @Get('/hitokotoTypes')
-  listHitokotoTypes(): Promise<object> {
-    return this.systemService.getConfig('hitokoto_type')
-  }
-
-  /**
-   * 获取图片存储CDN地址
-   */
-  @Get('/pictureCdn')
-  getPictureCdn(): Promise<object> {
-    return this.systemService.getConfig('picture_cdn')
-  }
-
-  /**
-   * 获取Valine评论配置
-   */
-  @Get('/valineConfig')
-  getValineConfig(): Promise<object> {
-    return this.systemService.getConfig('valine_config')
+  @Get('/config/:name')
+  getPublicConfig(@Param('name')name: string): Promise<object> {
+    return this.systemService.getConfig(name)
   }
 
   /**
@@ -97,7 +81,7 @@ export default class AppController {
     }
     return this.articleService.search(articleDto.words, page)
   }
-
+/*
   @Get('/randomBg')
   randomBg(@Res() res: Response): void {
     const buffer = fs.readFileSync('D:\\64478920_p2_.png')
@@ -110,5 +94,5 @@ export default class AppController {
       'Content-Length': buffer.length,
     })
     stream.pipe(res)
-  }
+  }*/
 }

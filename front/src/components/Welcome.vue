@@ -27,7 +27,7 @@ export default {
     }
   },
   created() {
-    this.$http.get('/common/pictureCdn').then(data => {
+    this.$http.get('/common/config/picture_cdn').then(data => {
       this.imageSrcs = carouselImages.map(item => data + item)
     })
   }

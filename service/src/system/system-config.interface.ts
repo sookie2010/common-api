@@ -5,4 +5,5 @@ export default interface SystemConfig extends Document {
   name?: string
   value?: object
   description?: string
+  is_public?: boolean
 }

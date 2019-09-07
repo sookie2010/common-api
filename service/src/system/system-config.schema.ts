@@ -5,4 +5,5 @@ export const SystemConfigSchema = new Schema({
   name: String,
   value: Object,
   description: String,
+  is_public: Boolean
 }, { collection: 'system_config', versionKey: false })

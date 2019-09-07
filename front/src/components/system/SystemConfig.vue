@@ -59,6 +59,13 @@ export default {
           title: '配置项描述',
           key: 'description'
         },{
+          title: '是否公开',
+          key: 'is_public',
+          width: 150,
+          render: (h, data) => {
+            return h('span', data.row.is_public ? '是' : '否')
+          }
+        },{
           title: '操作',
           render: (h, data) => {
             return h('div', [
@@ -109,6 +116,7 @@ export default {
       this.formData.name = row.name
       this.formData.value = JSON.stringify(row.value, null, ' ')
       this.formData.description = row.description
+      this.formData.is_public = row.is_public ? 1 : 0
       this.modalTitle = '修改配置项'
       this.addModal = true
     },
@@ -119,6 +127,7 @@ export default {
         this.$Message.warning('值不符合JSON字符串格式')
         return
       }
+      this.formData.is_public = !!this.formData.is_public
       this.$http.post('/system/config/save', this.formData).then(data => {
         this.addModal = false
         this.$Message.success(data.msg)

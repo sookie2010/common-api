@@ -113,7 +113,11 @@ export default class SystemService {
    * 获取单个配置项
    */
   async getConfig(name: string): Promise<object> {
-    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name}).exec()
-    return Promise.resolve(pictureCdnConfig.value)
+    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: true}).exec()
+    if(pictureCdnConfig) {
+      return Promise.resolve(pictureCdnConfig.value)
+    } else {
+      return Promise.resolve({})
+    }
   }
 }
