@@ -229,7 +229,7 @@ export default {
     },
     preview(row) {
       let previewHeight = Math.floor(row.height * (500 / row.width))
-      this.$http.get('/common/pictureCdn').then(data => {
+      this.$http.get('/common/config/picture_cdn').then(data => {
         this.$Modal.info({
           title: '图片预览',
           width: 500 + 100,

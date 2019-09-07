@@ -34,6 +34,8 @@ import Upload from 'iview/src/components/upload'
 import Button from 'iview/src/components/button'
 import Page from 'iview/src/components/page'
 
+const prettyBytes = require('pretty-bytes')
+
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
@@ -62,7 +64,10 @@ export default {
         },{
           title: '文件大小',
           key: 'size',
-          width: 150
+          width: 150,
+          render (h, data) {
+            return h('span', prettyBytes(data.row.size))
+          }
         },{
           title: 'MIME',
           key: 'mime',
