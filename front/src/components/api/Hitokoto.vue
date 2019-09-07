@@ -183,7 +183,7 @@ export default {
     }
   },
   created() {
-    this.$http.get('/common/config/hitokoto_types').then(data => {
+    this.$http.get('/common/config/hitokoto_type').then(data => {
       this.typeList = data
       this.loadData()
     })

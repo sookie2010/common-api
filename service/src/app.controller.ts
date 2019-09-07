@@ -3,15 +3,16 @@ import AppService from './app.service'
 import HitokotoService from './hitokoto/hitokoto.service'
 import PhotoWallService from './photo-wall/photo-wall.service'
 import ArticleService from './article/article.service'
+import BackgroundImgService from './backgroud-img/background-img.service'
 import { Hitokoto, HitokotoDto } from './hitokoto/hitokoto.interface'
 import { ArticleDto } from './article/article.interface'
+import { BackgroundImg } from './backgroud-img/background-img.interface'
 import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 import PageTransform from './common/page.transform'
 import SystemService from './system/system.service';
 import { Response } from 'express'
 
-import * as fs from 'fs'
 import { Readable } from 'stream'
 
 @Controller('/common')
@@ -22,6 +23,7 @@ export default class AppController {
     private readonly articleService: ArticleService,
     private readonly systemService: SystemService,
     private readonly appService: AppService,
+    private readonly backgroundImgService: BackgroundImgService
   ) {}
   /**
    * 登录
@@ -81,18 +83,20 @@ export default class AppController {
     }
     return this.articleService.search(articleDto.words, page)
   }
-/*
+  /**
+   * 随机获取一张背景图
+   */
   @Get('/randomBg')
-  randomBg(@Res() res: Response): void {
-    const buffer = fs.readFileSync('D:\\64478920_p2_.png')
-    const stream = new Readable();
-
-    stream.push(buffer)
-    stream.push(null)
-    res.set({
-      'Content-Type': 'image/png',
-      'Content-Length': buffer.length,
+  randomBg(@Query('id') id: string, @Res() res: Response): void {
+    this.backgroundImgService.findOne(id).then((backgroundImg: BackgroundImg) => {
+      const stream = new Readable();
+      stream.push(backgroundImg.img)
+      stream.push(null)
+      res.set({
+        'Content-Type': backgroundImg.mime,
+        'Content-Length': backgroundImg.size,
+      })
+      stream.pipe(res)
     })
-    stream.pipe(res)
-  }*/
+  }
 }

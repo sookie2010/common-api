@@ -7,7 +7,7 @@ import BaseQc from '../common/base.qc';
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto';
 
-const crypto = require('crypto')
+import * as crypto from 'crypto'
 
 @Injectable()
 export default class SystemService {

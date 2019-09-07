@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common'
 import HitokotoService from './hitokoto.service'
-import { Hitokoto } from './hitokoto.interface'
-import { HitokotoDto } from './hitokoto.interface'
+import { Hitokoto, HitokotoDto } from './hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
@@ -31,10 +30,10 @@ export default class HitokotoController {
   }
   /**
    * 删除一言
-   * @param hitokotoDto 需要删除的多个ID
+   * @param ids 需要删除的多个ID
    */
   @Delete('/delete')
-  delete(@Query() hitokotoDto: HitokotoDto): Promise<MsgResult> {
-    return this.hitokotoService.delete(hitokotoDto._ids)
+  delete(@Query('_ids') ids: string[]): Promise<MsgResult> {
+    return this.hitokotoService.delete(ids)
   }
 }

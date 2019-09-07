@@ -85,6 +85,9 @@ export default {
         },{
           name: '照片墙',
           path: '/api/photoWall'
+        },{
+          name: '背景图',
+          path: '/api/backgroundImg'
         }]
       }]
     }
