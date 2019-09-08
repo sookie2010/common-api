@@ -66,6 +66,18 @@ export default {
             return h('span', data.row.is_public ? '是' : '否')
           }
         },{
+          title: '创建时间',
+          key: 'created_at',
+          render (h, data) {
+            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+          }
+        },{
+          title: '更新时间',
+          key: 'updated_at',
+          render (h, data) {
+            return data.row.updated_at ? h('span', new Date(data.row.updated_at).Format('yyyy-MM-dd hh:mm:ss')) : undefined
+          }
+        },{
           title: '操作',
           render: (h, data) => {
             return h('div', [

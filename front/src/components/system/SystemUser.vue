@@ -16,7 +16,7 @@
     <Button type="primary" @click="add">添加</Button>
   </div>
   <div class="table-container">
-    <Table :loading="loading" :columns="systemUserColumns" :data="systemUserData" height="520" ></Table>
+    <Table border :loading="loading" :columns="systemUserColumns" :data="systemUserData" height="520" ></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -71,6 +71,12 @@ export default {
           key: 'created_at',
           render (h, data) {
             return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+          }
+        },{
+          title: '更新时间',
+          key: 'updated_at',
+          render (h, data) {
+            return data.row.updated_at ? h('span', new Date(data.row.updated_at).Format('yyyy-MM-dd hh:mm:ss')) : undefined
           }
         },{
           title: '操作',

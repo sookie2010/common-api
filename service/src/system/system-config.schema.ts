@@ -6,4 +6,4 @@ export const SystemConfigSchema = new Schema({
   value: Object,
   description: String,
   is_public: Boolean,
-}, { collection: 'system_config', versionKey: false })
+}, { collection: 'system_config', versionKey: false, timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'} })

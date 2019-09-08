@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose'
+import { Model } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
