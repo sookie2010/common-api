@@ -1,4 +1,4 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { BackgroundImg, BackgroundImgEntity } from './background-img.interface'
@@ -50,6 +50,7 @@ export default class BackgroundImgService {
    */
   async save(backgroundImgEntity: BackgroundImgEntity): Promise<MsgResult> {
     backgroundImgEntity.hash = CommonUtils.dataHash(backgroundImgEntity.img, 'md5')
+    backgroundImgEntity._id = new Types.ObjectId()
     return this.backgroundImgModel.create(backgroundImgEntity).then(() => {
       return new MsgResult(true, '保存成功')
     })

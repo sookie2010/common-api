@@ -1,4 +1,4 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
@@ -117,6 +117,7 @@ export default class PhotoWallService {
       Logger.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
       return Promise.resolve(new MsgResult(false, `${photowall.name} 上传出错, md5值不一致`))
     }
+    photowall._id = new Types.ObjectId()
     await this.photoWallModel.create(photowall)
     return Promise.resolve(new MsgResult(true, '上传成功'))
   }

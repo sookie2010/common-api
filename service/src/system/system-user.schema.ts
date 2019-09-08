@@ -1,7 +1,7 @@
 import { Schema, Types } from 'mongoose'
 
 export const SystemUserSchema = new Schema({
-  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
+  _id: Types.ObjectId,
   username: String,
   password: String,
   realname: String,

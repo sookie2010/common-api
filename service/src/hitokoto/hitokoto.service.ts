@@ -1,4 +1,4 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Hitokoto, HitokotoDto, HitokotoQc } from './hitokoto.interface'
@@ -62,6 +62,7 @@ export default class HitokotoService {
       } else {
         hitokoto.number = 1
       }
+      hitokoto._id = new Types.ObjectId()
       return this.hitokotoModel.create(hitokoto)
     }).then(() => {
       return new MsgResult(true, '保存成功')

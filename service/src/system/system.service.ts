@@ -1,4 +1,4 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../system/system-config.interface'
@@ -50,6 +50,7 @@ export default class SystemService {
       await this.systemUserModel.updateOne({_id: userId}, {$set: systemUser})
       return Promise.resolve(new MsgResult(true, '修改成功'))
     } else { // 新增
+      systemUser._id = new Types.ObjectId()
       await this.systemUserModel.create(systemUser)
       return Promise.resolve(new MsgResult(true, '保存成功'))
     }
@@ -90,6 +91,7 @@ export default class SystemService {
       await this.systemConfigModel.updateOne({_id: configId}, {$set: systemConfig})
       return Promise.resolve(new MsgResult(true, '修改成功'))
     } else { // 新增
+      systemConfig._id = new Types.ObjectId()
       await this.systemConfigModel.create(systemConfig)
       return Promise.resolve(new MsgResult(true, '保存成功'))
     }

@@ -187,6 +187,7 @@ export default class ArticleService {
         createCnt ++
         // 保存文章分词
         await this.articleKeysModel.create({
+          _id: new Types.ObjectId(),
           article_id: articleId,
           keys: nodejieba.cut(articleEntity.content, true),
         })
