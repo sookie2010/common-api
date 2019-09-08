@@ -50,8 +50,6 @@ export default class SystemService {
       await this.systemUserModel.updateOne({_id: userId}, {$set: systemUser})
       return Promise.resolve(new MsgResult(true, '修改成功'))
     } else { // 新增
-      systemUser._id = new Types.ObjectId()
-      systemUser.created_at = new Date()
       await this.systemUserModel.create(systemUser)
       return Promise.resolve(new MsgResult(true, '保存成功'))
     }
@@ -92,7 +90,6 @@ export default class SystemService {
       await this.systemConfigModel.updateOne({_id: configId}, {$set: systemConfig})
       return Promise.resolve(new MsgResult(true, '修改成功'))
     } else { // 新增
-      systemConfig._id = new Types.ObjectId()
       await this.systemConfigModel.create(systemConfig)
       return Promise.resolve(new MsgResult(true, '保存成功'))
     }
@@ -113,9 +110,9 @@ export default class SystemService {
    * 获取单个配置项
    */
   async getConfig(name: string): Promise<object> {
-    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: true}).exec()
-    if(pictureCdnConfig) {
-      return Promise.resolve(pictureCdnConfig.value)
+    const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: true}).exec()
+    if (systemConfig) {
+      return Promise.resolve(systemConfig.value)
     } else {
       return Promise.resolve({})
     }

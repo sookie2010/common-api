@@ -1,9 +1,9 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export const SystemConfigSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
   name: String,
   value: Object,
   description: String,
-  is_public: Boolean
+  is_public: Boolean,
 }, { collection: 'system_config', versionKey: false })

@@ -1,4 +1,4 @@
-export interface FileDto {
+export interface FileEntity {
   fieldname: string // 文件字段
   originalname: string // 文件名
   encoding: string // 文件编码

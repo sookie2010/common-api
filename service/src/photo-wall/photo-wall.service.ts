@@ -3,11 +3,11 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from './photo-wall.interface'
 import SystemConfig from '../system/system-config.interface'
-import { FileDto, Page, MsgResult } from '../common/common.dto'
+import { FileEntity, Page, MsgResult } from '../common/common.dto'
+import CommonUtils from '../common/common.util'
 
 import { NosClient, NosClientOptions } from '@xgheaven/nos-node-sdk'
 import * as sharp from 'sharp'
-import * as crypto from 'crypto'
 
 @Injectable()
 export default class PhotoWallService {
@@ -18,7 +18,7 @@ export default class PhotoWallService {
 
     systemConfigModel.findOne({name: 'nos_setting'}).exec().then((systemConfig: SystemConfig) => {
       // 网易云对象存储接口
-      this.client = new NosClient(<NosClientOptions>systemConfig.value)
+      this.client = new NosClient(systemConfig.value as NosClientOptions)
     })
   }
 
@@ -61,20 +61,17 @@ export default class PhotoWallService {
    * 保存照片信息
    * @param photowall 照片信息
    */
-  async save(image: FileDto): Promise<MsgResult> {
+  async save(image: FileEntity): Promise<MsgResult> {
     const imgSharp = sharp(image.buffer)
     const imgMeta = await imgSharp.metadata()
     const ext = imgMeta.format // 文件扩展名
     // 获取图片宽高
     const photowall: PhotoWallEntity = {
-      _id: new Types.ObjectId(),
       width: imgMeta.width,
-      height: imgMeta.height
+      height: imgMeta.height,
     }
     // 获取图片MD5值
-    const fsHash = crypto.createHash('md5')
-    fsHash.update(image.buffer)
-    photowall.md5 = fsHash.digest('hex')
+    photowall.md5 = CommonUtils.dataHash(image.buffer, 'md5')
 
     const md5Check: number = await this.photoWallModel.countDocuments({md5: photowall.md5}).exec()
     if (md5Check > 0) {

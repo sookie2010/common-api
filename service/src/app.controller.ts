@@ -23,7 +23,7 @@ export default class AppController {
     private readonly articleService: ArticleService,
     private readonly systemService: SystemService,
     private readonly appService: AppService,
-    private readonly backgroundImgService: BackgroundImgService
+    private readonly backgroundImgService: BackgroundImgService,
   ) {}
   /**
    * 登录

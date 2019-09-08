@@ -1,9 +1,8 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
 export const SystemUserSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
   username: String,
   password: String,
   realname: String,
-  created_at: Date,
-}, { collection: 'system_user', versionKey: false })
+}, { collection: 'system_user', versionKey: false, timestamps: {createdAt: 'created_at'} })

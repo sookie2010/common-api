@@ -3,7 +3,7 @@ import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 
 export interface PhotoWallEntity {
-  _id: Types.ObjectId
+  _id?: Types.ObjectId
   name?: string // 图片文件名
   md5?: string // 文件md5哈希值
   thumbnail?: string // 缩略图名称

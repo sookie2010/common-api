@@ -1,11 +1,10 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
 export const HitokotoSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: {type: Types.ObjectId, default: new Types.ObjectId()},
   hitokoto: String,
   type: String,
   from: String,
   creator: String,
-  created_at: Date,
   number: Number,
-}, { collection: 'hitokoto', versionKey: false })
+}, { collection: 'hitokoto', versionKey: false, timestamps: {createdAt: 'created_at'} })

@@ -1,28 +1,25 @@
-import * as mongoose from 'mongoose'
+import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from './system/system-config.interface'
 import SystemUser from './system/system-user.interface'
 import { MsgResult } from './common/common.dto'
+import CommonUtils from './common/common.util'
 
 import * as jwt from 'jsonwebtoken'
-import * as crypto from 'crypto'
 
 @Injectable()
 export default class AppService {
 
-  constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: mongoose.Model<SystemConfig>,
-              @InjectModel('SystemUser') private readonly systemUserModel: mongoose.Model<SystemUser>,
+  constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>,
+              @InjectModel('SystemUser') private readonly systemUserModel: Model<SystemUser>,
   ) {}
   /**
    * 登录
    * @param systemUser 用户信息
    */
   async login(systemUser: SystemUser): Promise<object> {
-    const pwdHashed = crypto.createHash('sha1')
-        .update(systemUser.password)
-        .digest('hex')
-    systemUser.password = pwdHashed
+    systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     let signUser = null
     return this.systemUserModel.findOne(systemUser).exec().then((user: SystemUser) => {
       if (!user) {

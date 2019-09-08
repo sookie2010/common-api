@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Delete, Query, Body, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express/index'
 import BackgroundImgService from './background-img.service'
 import { BackgroundImgEntity } from './background-img.interface'
-import { Page, MsgResult, FileDto } from '../common/common.dto'
+import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -35,11 +35,11 @@ export default class BackgroundImgController {
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
-  uploadFile(@UploadedFile() image: FileDto): Promise<object> {
+  uploadFile(@UploadedFile() image: FileEntity): Promise<object> {
     const backgroundImgEntity: BackgroundImgEntity = {
       size: image.size,
       mime: image.mimetype,
-      img: image.buffer
+      img: image.buffer,
     }
     return this.backgroundImgService.save(backgroundImgEntity)
   }

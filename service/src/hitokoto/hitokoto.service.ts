@@ -53,7 +53,6 @@ export default class HitokotoService {
    * @param hitokoto 一言
    */
   async save(hitokoto: Hitokoto): Promise<MsgResult> {
-    hitokoto.created_at = new Date()
     return this.hitokotoModel.aggregate([{$group: {
       _id: 'max_number',
       number: { $max: '$number' },
@@ -63,7 +62,6 @@ export default class HitokotoService {
       } else {
         hitokoto.number = 1
       }
-      hitokoto._id = new Types.ObjectId()
       return this.hitokotoModel.create(hitokoto)
     }).then(() => {
       return new MsgResult(true, '保存成功')

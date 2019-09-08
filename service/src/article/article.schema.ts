@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
 export const ArticleSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
   title: String,
   path: String,
   categories: Array,
@@ -12,7 +12,7 @@ export const ArticleSchema = new Schema({
 }, { collection: 'article', versionKey: false })
 
 export const ArticleKeysSchema = new Schema({
-  _id: Schema.Types.ObjectId,
-  article_id: Schema.Types.ObjectId,
+  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
+  article_id: Types.ObjectId,
   keys: Array,
 }, { collection: 'article_keys', versionKey: false })

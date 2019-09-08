@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } f
 import { FileInterceptor } from '@nestjs/platform-express/index'
 import PhotoWallService from './photo-wall.service'
 import { PhotoWallDto } from './photo-wall.interface'
-import { FileDto, Page, MsgResult } from '../common/common.dto'
+import { FileEntity, Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -34,7 +34,7 @@ export default class PhotoWallController {
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
-  uploadFile(@UploadedFile() image: FileDto): Promise<object> {
+  uploadFile(@UploadedFile() image: FileEntity): Promise<object> {
     return this.photoWallService.save(image)
   }
 }

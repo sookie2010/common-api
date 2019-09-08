@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
 export const PhotoWallSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Types.ObjectId, default: new Types.ObjectId()},
   name: String,
   md5: String,
   thumbnail: String,

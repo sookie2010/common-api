@@ -3,8 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { BackgroundImg, BackgroundImgEntity } from './background-img.interface'
 import { Page, MsgResult } from '../common/common.dto'
-
-import * as crypto from 'crypto'
+import CommonUtils from '../common/common.util'
 
 @Injectable()
 export default class BackgroundImgService {
@@ -19,10 +18,10 @@ export default class BackgroundImgService {
       if (cnt === 0) {
         throw new Error('无背景图数据')
       }
-      const skipNum = Math.floor(Math.random() * cnt)
-      if(id) {
+      if (id) {
         return this.backgroundImgModel.find({_id: id}).exec()
       } else {
+        const skipNum = Math.floor(Math.random() * cnt)
         return this.backgroundImgModel.find().sort({created_at: 1}).skip(skipNum).limit(1).exec()
       }
     }).then((backgroundImgs: BackgroundImg[]) => {
@@ -50,13 +49,7 @@ export default class BackgroundImgService {
    * @param backgroundImgEntity 背景图
    */
   async save(backgroundImgEntity: BackgroundImgEntity): Promise<MsgResult> {
-    backgroundImgEntity.created_at = new Date()
-    backgroundImgEntity._id = new Types.ObjectId()
-
-    const fsHash = crypto.createHash('md5')
-    fsHash.update(backgroundImgEntity.img)
-    backgroundImgEntity.hash = fsHash.digest('hex')
-
+    backgroundImgEntity.hash = CommonUtils.dataHash(backgroundImgEntity.img, 'md5')
     return this.backgroundImgModel.create(backgroundImgEntity).then(() => {
       return new MsgResult(true, '保存成功')
     })

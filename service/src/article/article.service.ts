@@ -82,7 +82,7 @@ export default class ArticleService {
       if (cnt > 0) {
         await this.articleKeysModel.updateOne({article_id: article._id}, {$set: {keys: articleKeys}})
       } else {
-        await this.articleKeysModel.create({_id: new Types.ObjectId(), article_id: article._id, keys: articleKeys})
+        await this.articleKeysModel.create({article_id: article._id, keys: articleKeys})
       }
     }
     return Promise.resolve(new MsgResult(true, `${articles.length} 篇文章分词处理成功`))
@@ -187,7 +187,6 @@ export default class ArticleService {
         createCnt ++
         // 保存文章分词
         await this.articleKeysModel.create({
-          _id: new Types.ObjectId(),
           article_id: articleId,
           keys: nodejieba.cut(articleEntity.content, true),
         })
