@@ -2,10 +2,10 @@
 <div>
   <Row>
     <Col span="3">
-      <div class="search-title">配置项名称/描述：</div>
+      <div class="search-title">配置项：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name" @on-enter="loadData" />
+      <Input v-model="search.name" @on-enter="loadData" placeholder="名称/描述" />
     </Col>
     <Col span="5" offset="12">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
@@ -36,6 +36,8 @@ import Button from 'iview/src/components/button'
 import Modal from 'iview/src/components/modal'
 
 import SystemConfigAdd from './SystemConfigAdd'
+
+import moment from 'moment'
 
 export default {
   components: {
@@ -69,13 +71,13 @@ export default {
           title: '创建时间',
           key: 'created_at',
           render (h, data) {
-            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+            return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }
         },{
           title: '更新时间',
           key: 'updated_at',
           render (h, data) {
-            return data.row.updated_at ? h('span', new Date(data.row.updated_at).Format('yyyy-MM-dd hh:mm:ss')) : undefined
+            return data.row.updated_at ? h('span', moment(data.row.updated_at).format('YYYY-MM-DD HH:mm:ss')) : undefined
           }
         },{
           title: '操作',
@@ -83,6 +85,7 @@ export default {
             return h('div', [
               h(Button, {
                 props: {size:'small'},
+                style: {marginRight: '5px'},
                 on: { click: () => {this.update(data.row) } }
               },'修改'),
               h(Button, {

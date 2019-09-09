@@ -1,46 +1,46 @@
 import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express/index'
-import BackgroundImgService from './background-img.service'
-import { BackgroundImgEntity } from './background-img.interface'
+import { FileInterceptor } from '@nestjs/platform-express'
+import SourceImageService from './source-image.service'
+import { SourceImageEntity } from './source-image.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
-@Controller('/background-img')
-export default class BackgroundImgController {
+@Controller('/source-image')
+export default class SourceImageController {
   constructor(
-    private readonly backgroundImgService: BackgroundImgService,
+    private readonly sourceImageService: SourceImageService,
   ) {}
   /**
-   * 查询背景图列表
+   * 查询图片资源列表
    * @param page 分页
    */
   @Get('/list')
   list(@Query(PageTransform) page: Page): Promise<Page> {
-    return this.backgroundImgService.list(page)
+    return this.sourceImageService.list(page)
   }
   /**
-   * 删除背景图
+   * 删除图片资源
    * @param ids 需要删除的多个ID
    */
   @Delete('/delete')
   delete(@Query('_ids') ids: string[]): Promise<MsgResult> {
-    return this.backgroundImgService.delete(ids)
+    return this.sourceImageService.delete(ids)
   }
 
   /**
-   * 上传背景图
+   * 上传图片资源
    * @param image 上传的图片文件
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(@UploadedFile() image: FileEntity): Promise<object> {
-    const backgroundImgEntity: BackgroundImgEntity = {
+    const sourceImageEntity: SourceImageEntity = {
       size: image.size,
       mime: image.mimetype,
       img: image.buffer,
     }
-    return this.backgroundImgService.save(backgroundImgEntity)
+    return this.sourceImageService.save(sourceImageEntity)
   }
 }

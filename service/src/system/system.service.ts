@@ -7,8 +7,6 @@ import BaseQc from '../common/base.qc';
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto';
 
-import * as crypto from 'crypto'
-
 @Injectable()
 export default class SystemService {
   constructor(@InjectModel('SystemUser') private readonly systemUserModel: Model<SystemUser>,
@@ -40,10 +38,7 @@ export default class SystemService {
    * @param systemUser 用户对象
    */
   async saveUser(systemUser: SystemUser): Promise<MsgResult> {
-    const pwdHashed = crypto.createHash('sha1')
-        .update(systemUser.password)
-        .digest('hex')
-    systemUser.password = pwdHashed
+    systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     if (systemUser._id) { // 更新
       const userId = systemUser._id
       delete systemUser._id

@@ -6,7 +6,7 @@
   </Alert>
   
   <div class="btn-container">
-    <Upload :action="($http.defaults.baseURL || '') + '/background-img/upload'" 
+    <Upload :action="($http.defaults.baseURL || '') + '/source-image/upload'" 
       name="image" :show-upload-list="false" 
       :format="allowUploadExt" :headers="uploadHeaders" :max-size="10240" 
       :before-upload="beforeUpload" :on-success="uploadSuccess" @on-error="uploadError"
@@ -17,8 +17,8 @@
     <Button type="error" @click="deleteAll">删除</Button>
   </div>
   <div class="table-container">
-    <Table border :loading="loading" :columns="backgrounImgColumns" 
-      :data="backgrounImgData" height="520" @on-selection-change="dataSelect"></Table>
+    <Table border :loading="loading" :columns="sourceImageColumns" 
+      :data="sourceImageData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -33,13 +33,15 @@ import Table from 'iview/src/components/table'
 import Upload from 'iview/src/components/upload'
 import Button from 'iview/src/components/button'
 import Page from 'iview/src/components/page'
+import Tag from 'iview/src/components/tag'
 
-const prettyBytes = require('pretty-bytes')
+import prettyBytes from 'pretty-bytes'
+import moment from 'moment'
 
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Alert, Table, Upload, Button, Page
+    Alert, Table, Upload, Button, Page, Tag
   },
   data() {
     return {
@@ -51,8 +53,8 @@ export default {
         limit: 10,
         total: null
       },
-      allowUploadExt: ['jpg','jpeg','png'],
-      backgrounImgColumns: [{
+      allowUploadExt: ['jpg','jpeg','png','svg'],
+      sourceImageColumns: [{
           type: 'selection',
           key: '_id',
           width: 60,
@@ -73,11 +75,25 @@ export default {
           key: 'mime',
           width: 150
         },{
+          title: '标签',
+          key: 'label',
+          render (h, data) {
+            if(!data.row.label) {
+              return undefined
+            }
+            return h('div', data.row.label.map(label => {
+              return h(Tag, {
+                props: {color:'cyan'},
+                style: {marginRight: '5px'}
+              },label)
+            }))
+          }
+        },{
           title: '上传时间',
           key: 'created_at',
           width: 150,
           render (h, data) {
-            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+            return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }
         },{
           title: '操作',
@@ -88,7 +104,7 @@ export default {
             },'预览')
           }
         }],
-      backgrounImgData: []
+      sourceImageData: []
     }
   },
   methods: {
@@ -106,11 +122,11 @@ export default {
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/background-img/list', {params:this.search}).then(data => {
+      this.$http.get('/source-image/list', {params:this.search}).then(data => {
         selectedData = null
         this.loading = false
         this.search.total = data.total
-        this.backgrounImgData = data.data
+        this.sourceImageData = data.data
       })
     },
     deleteAll() {
@@ -123,7 +139,7 @@ export default {
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
         onOk: () => {
-          this.$http.delete('/background-img/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
+          this.$http.delete('/source-image/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
             this.$Modal.remove()
             this.$Message.success('删除成功')
             this.loadData()

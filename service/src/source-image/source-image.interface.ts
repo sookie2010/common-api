@@ -1,14 +1,15 @@
 import { Document, Types } from 'mongoose'
 
-export interface BackgroundImgEntity {
+export interface SourceImageEntity {
   _id?: Types.ObjectId
   mime?: string // MIME类型
   hash?: string // 图片md5值
   size?: number // 图片大小
   created_at?: Date // 创建时间
+  label?: string[] // 图片标签
   img?: Buffer // 图片二进制数据
 }
 
-export interface BackgroundImg extends Document, BackgroundImgEntity {
+export interface SourceImage extends Document, SourceImageEntity {
   _id: Types.ObjectId
 }

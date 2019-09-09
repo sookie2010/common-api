@@ -59,6 +59,8 @@ import Modal from 'iview/src/components/modal'
 
 import HitokotoAdd from './HitokotoAdd'
 
+import moment from 'moment'
+
 var selectedData = null
 export default {
   components: {
@@ -106,7 +108,7 @@ export default {
           key: 'created_at',
           width: 150,
           render (h, data) {
-            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+            return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }
         }],
       hitokotoData: [],

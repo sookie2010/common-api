@@ -78,6 +78,8 @@ import Icon from 'iview/src/components/icon'
 import Select from 'iview/src/components/select'
 import Option from 'iview/src/components/option'
 
+import moment from 'moment'
+
 var selectedData = null
 export default {
   components: {
@@ -137,7 +139,7 @@ export default {
           key: 'create_date',
           width: 180,
           render (h, data) {
-            return h('span', new Date(data.row.create_date).Format('yyyy-MM-dd hh:mm:ss'))
+            return h('span', moment(data.row.create_date).format('YYYY-MM-DD HH:mm:ss'))
           }
         },{
           title: '是否已分词',

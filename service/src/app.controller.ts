@@ -3,10 +3,10 @@ import AppService from './app.service'
 import HitokotoService from './hitokoto/hitokoto.service'
 import PhotoWallService from './photo-wall/photo-wall.service'
 import ArticleService from './article/article.service'
-import BackgroundImgService from './backgroud-img/background-img.service'
+import SourceImageService from './source-image/source-image.service'
 import { Hitokoto, HitokotoDto } from './hitokoto/hitokoto.interface'
 import { ArticleDto } from './article/article.interface'
-import { BackgroundImg } from './backgroud-img/background-img.interface'
+import { SourceImage } from './source-image/source-image.interface'
 import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 import PageTransform from './common/page.transform'
@@ -23,7 +23,7 @@ export default class AppController {
     private readonly articleService: ArticleService,
     private readonly systemService: SystemService,
     private readonly appService: AppService,
-    private readonly backgroundImgService: BackgroundImgService,
+    private readonly sourceImageService: SourceImageService,
   ) {}
   /**
    * 登录
@@ -84,19 +84,26 @@ export default class AppController {
     return this.articleService.search(articleDto.words, page)
   }
   /**
-   * 随机获取一张背景图
+   * 获取一张背景图
+   * @param id 图片ID(不传则根据label随机获取一张)
+   * @param label 图片标签
    */
   @Get('/randomBg')
-  randomBg(@Query('id') id: string, @Res() res: Response): void {
-    this.backgroundImgService.findOne(id).then((backgroundImg: BackgroundImg) => {
-      const stream = new Readable();
-      stream.push(backgroundImg.img)
+  randomBg(@Query('id') id: string, @Query('label') label: string, @Res() res: Response): void {
+    this.sourceImageService.findOne(id, label).then((sourceImage: SourceImage) => {
+      const stream = new Readable()
+      stream.push(sourceImage.img)
       stream.push(null)
       res.set({
-        'Content-Type': backgroundImg.mime,
-        'Content-Length': backgroundImg.size,
+        'Content-Type': sourceImage.mime,
+        'Content-Length': sourceImage.size,
       })
       stream.pipe(res)
+    }).catch(err => {
+      res.set({
+        'Content-Type': 'application/json',
+      })
+      res.end(JSON.stringify(new MsgResult(false, err.message)))
     })
   }
 }

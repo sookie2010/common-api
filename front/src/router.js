@@ -11,7 +11,7 @@ const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/compo
 const SystemUser = () => import(/* webpackChunkName: "systemUser" */'@/components/system/SystemUser')
 const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
 const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
-const BackgroundImg = () => import(/* webpackChunkName: "backgroundImg" */'@/components/api/BackgroundImg')
+const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage')
 
 export const router = new Router({
   routes: [
@@ -23,7 +23,7 @@ export const router = new Router({
     { path: '/system/user', name: 'SystemUser', component: SystemUser },
     { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
     { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall },
-    { path: '/api/backgroundImg', name: 'BackgroundImg', component: BackgroundImg }
+    { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage }
   ]
 })
 
@@ -36,7 +36,7 @@ export const routePathes = {
   'Statistics': ['首页', '系统管理', '分析统计'],
   'Hitokoto': ['首页', 'API数据', '一言'],
   'PhotoWall': ['首页', 'API数据', '照片墙'],
-  'BackgroundImg': ['首页', 'API数据', '背景图']
+  'BackgroundImg': ['首页', 'API数据', '图片资源库']
 }
 
 export const filterExclude = ['Login']

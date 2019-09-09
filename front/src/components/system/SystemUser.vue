@@ -48,6 +48,8 @@ import Form from 'iview/src/components/form'
 import FormItem from 'iview/src/components/form-item'
 import Page from 'iview/src/components/page'
 
+import moment from 'moment'
+
 export default {
   components: {
     Table, Row, Col, Input, Button, Modal, Form, FormItem, Page
@@ -70,13 +72,13 @@ export default {
           title: '创建时间',
           key: 'created_at',
           render (h, data) {
-            return h('span', new Date(data.row.created_at).Format('yyyy-MM-dd hh:mm:ss'))
+            return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }
         },{
           title: '更新时间',
           key: 'updated_at',
           render (h, data) {
-            return data.row.updated_at ? h('span', new Date(data.row.updated_at).Format('yyyy-MM-dd hh:mm:ss')) : undefined
+            return data.row.updated_at ? h('span', moment(data.row.updated_at).format('YYYY-MM-DD HH:mm:ss')) : undefined
           }
         },{
           title: '操作',
@@ -84,6 +86,7 @@ export default {
             return h('div', [
               h(Button, {
                 props: {size:'small'},
+                style: {marginRight: '5px'},
                 on: { click: () => {this.update(data.row) } }
               },'修改'),
               h(Button, {

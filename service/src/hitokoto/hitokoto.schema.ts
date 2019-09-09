@@ -7,4 +7,4 @@ export const HitokotoSchema = new Schema({
   from: String,
   creator: String,
   number: Number,
-}, { collection: 'hitokoto', versionKey: false, timestamps: {createdAt: 'created_at'} })
+}, { collection: 'hitokoto', versionKey: false, timestamps: {createdAt: 'created_at', updatedAt: false} })
