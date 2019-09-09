@@ -36,7 +36,7 @@ export const routePathes = {
   'Statistics': ['首页', '系统管理', '分析统计'],
   'Hitokoto': ['首页', 'API数据', '一言'],
   'PhotoWall': ['首页', 'API数据', '照片墙'],
-  'BackgroundImg': ['首页', 'API数据', '图片资源库']
+  'SourceImage': ['首页', 'API数据', '图片资源库']
 }
 
 export const filterExclude = ['Login']

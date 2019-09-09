@@ -123,7 +123,7 @@ export default {
           width: 70
         },{
           title: '操作',
-          width: 70,
+          width: 80,
           render: (h, data) => {
             return h(Button, {
               props: {size:'small'},
