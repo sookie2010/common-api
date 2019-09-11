@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import SourceImageService from './source-image.service'
 import { SourceImageEntity } from './source-image.interface'
@@ -42,5 +42,25 @@ export default class SourceImageController {
       img: image.buffer,
     }
     return this.sourceImageService.save(sourceImageEntity)
+  }
+
+  /**
+   * 添加图片标签
+   * @param id 图片ID
+   * @param label 标签文本
+   */
+  @Post('/addLabel')
+  addLabel(@Body('id') id: string, @Body('label') label: string): Promise<MsgResult> {
+    return this.sourceImageService.addLabel(id, label)
+  }
+
+  /**
+   * 删除图片标签
+   * @param id 图片ID
+   * @param label 标签文本
+   */
+  @Delete('/removeLabel')
+  removeLabel(@Query('_id') id: string, @Query('label') label: string): Promise<MsgResult> {
+    return this.sourceImageService.removeLabel(id, label)
   }
 }

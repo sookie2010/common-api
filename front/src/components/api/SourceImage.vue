@@ -98,10 +98,17 @@ export default {
         },{
           title: '操作',
           render: (h, data) => {
-            return h(Button, {
-              props: {size:'small'},
-              on: { click: () => {this.preview(data.row) } }
-            },'预览')
+            return h('div', [
+              h(Button, {
+                props: {size:'small',type:'primary'},
+                style: {marginRight: '5px'},
+                on: { click: () => {this.preview(data.row) } }
+              },'添加标签'),
+              h(Button, {
+                props: {size:'small'},
+                on: { click: () => {this.preview(data.row) } }
+              },'预览')
+            ])
           }
         }],
       sourceImageData: []
