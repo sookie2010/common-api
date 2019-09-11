@@ -11,7 +11,7 @@
       <Input v-model="formData.description" />
     </Form-item>
     <Form-item label="是否公开">
-      <Select v-model="formData.is_public">
+      <Select v-model="formData.isPublic">
         <Option :value="1" >是</Option>
         <Option :value="0" >否</Option>
       </Select>

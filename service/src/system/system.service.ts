@@ -105,9 +105,11 @@ export default class SystemService {
 
   /**
    * 获取单个配置项
+   * @param name 配置项名称
+   * @param isPublic 是否为公开配置项
    */
-  async getConfig(name: string): Promise<object> {
-    const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: true}).exec()
+  async getConfig(name: string, isPublic: boolean): Promise<object> {
+    const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: isPublic}).exec()
     if (systemConfig) {
       return Promise.resolve(systemConfig.value)
     } else {

@@ -68,7 +68,7 @@ export default class AppController {
    */
   @Get('/config/:name')
   getPublicConfig(@Param('name')name: string): Promise<object> {
-    return this.systemService.getConfig(name)
+    return this.systemService.getConfig(name, true)
   }
 
   /**

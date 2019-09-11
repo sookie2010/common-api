@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, Param, UseInterceptors } from '@nestjs/common'
 import LoginInterceptor from '../common/login.interceptor'
 import SystemService from './system.service'
 import SystemConfig from './system-config.interface'
@@ -44,6 +44,14 @@ export default class SystemController {
   @Get('/config/list')
   listConfig(@Query() systemConfig: SystemConfig): Promise<SystemConfig[]> {
     return this.systemService.listConfig(systemConfig);
+  }
+  /**
+   * 获取非公开配置项
+   * @param name 配置项名称
+   */
+  @Get('/config/get/:name')
+  getConfig(@Param('name') name: string): Promise<object> {
+    return this.systemService.getConfig(name, false)
   }
   /**
    * 新增或更新配置项

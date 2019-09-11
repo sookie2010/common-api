@@ -60,7 +60,7 @@ export default class SourceImageController {
    * @param label 标签文本
    */
   @Delete('/removeLabel')
-  removeLabel(@Query('_id') id: string, @Query('label') label: string): Promise<MsgResult> {
+  removeLabel(@Query('id') id: string, @Query('label') label: string): Promise<MsgResult> {
     return this.sourceImageService.removeLabel(id, label)
   }
 }

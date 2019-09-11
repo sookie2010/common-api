@@ -24,7 +24,23 @@
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
   </div>
-  
+  <Modal v-model="modifyModal" title="修改标签" :footer-hide="true" @on-visible-change="modifyModalClose">
+    <Tag v-for="item in curModifyLabels" :key="item" closable @on-close="removeLabel(item)">{{item}}</Tag>
+    <Form :label-width="100">
+      <Form-item label="可添加的标签">
+        <Row>
+          <Col span="20">
+            <Select v-model="selectedLabel">
+              <Option v-for="item in labelList" :value="item" :key="item">{{ item }}</Option>
+            </Select>
+          </Col>
+          <Col span="4">
+            <Button type="primary" @click="addLabel">添加</Button>
+          </Col>
+        </Row>
+      </Form-item>
+    </Form>
+  </Modal>
 </div>
 </template>
 <script>
@@ -34,6 +50,13 @@ import Upload from 'iview/src/components/upload'
 import Button from 'iview/src/components/button'
 import Page from 'iview/src/components/page'
 import Tag from 'iview/src/components/tag'
+import Modal from 'iview/src/components/modal'
+import Form from 'iview/src/components/form'
+import FormItem from 'iview/src/components/form-item'
+import Select from 'iview/src/components/select'
+import Option from 'iview/src/components/option'
+import Row from 'iview/src/components/row'
+import Col from 'iview/src/components/col'
 
 import prettyBytes from 'pretty-bytes'
 import moment from 'moment'
@@ -41,7 +64,7 @@ import moment from 'moment'
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Alert, Table, Upload, Button, Page, Tag
+    Alert, Table, Upload, Button, Page, Tag, Modal, Form, FormItem, Select, Option, Row, Col
   },
   data() {
     return {
@@ -102,8 +125,8 @@ export default {
               h(Button, {
                 props: {size:'small',type:'primary'},
                 style: {marginRight: '5px'},
-                on: { click: () => {this.preview(data.row) } }
-              },'添加标签'),
+                on: { click: () => {this.modifyTags(data.row) } }
+              },'修改标签'),
               h(Button, {
                 props: {size:'small'},
                 on: { click: () => {this.preview(data.row) } }
@@ -111,7 +134,12 @@ export default {
             ])
           }
         }],
-      sourceImageData: []
+      sourceImageData: [],
+      curModifyLabels: [],
+      labelList: [],
+      selectedLabel: null,
+      curId: null,
+      modifyModal: false
     }
   },
   methods: {
@@ -209,10 +237,39 @@ export default {
         width: 500 + 100,
         content: `<img src="/api/common/randomBg?id=${row._id}" style="width:500px;" />`
       })
+    },
+    modifyTags(item) {
+      this.curModifyLabels.length = 0
+      if(item.label) {
+        this.curModifyLabels.push(...item.label)
+      }
+      this.curId = item._id
+      this.selectedLabel = null
+      this.modifyModal = true
+    },
+    modifyModalClose(isShow) {
+      if(!isShow) {
+        this.loadData()
+      }
+    },
+    addLabel() {
+      if(!this.selectedLabel || this.curModifyLabels.includes(this.selectedLabel)) return
+      this.$http.post('/source-image/addLabel', {id: this.curId, label: this.selectedLabel}).then(() => {
+        this.curModifyLabels.push(this.selectedLabel)
+      })
+    },
+    removeLabel(label) {
+      this.$http.delete('/source-image/removeLabel', {params: {id: this.curId, label}}).then(() => {
+        let labelIndex = this.curModifyLabels.indexOf(label)
+        this.curModifyLabels.splice(labelIndex, 1)
+      })
     }
   },
   created() {
     this.loadData()
+    this.$http.get('/system/config/get/image_label').then(data => {
+      this.labelList.push(...data)
+    })
   }
 }
 </script>

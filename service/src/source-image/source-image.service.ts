@@ -23,7 +23,7 @@ export default class SourceImageService {
     }
     const cnt = await this.sourceImageModel.countDocuments({label}).exec()
     if (cnt === 0) {
-      throw new Error('无背景图数据')
+      throw new Error('无匹配的图片数据')
     }
     const skipNum = Math.floor(Math.random() * cnt)
     const sourceImages = await this.sourceImageModel.find({label}).sort({created_at: 1}).skip(skipNum).limit(1).exec()
