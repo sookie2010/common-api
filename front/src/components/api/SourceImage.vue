@@ -31,7 +31,7 @@
         <Row>
           <Col span="20">
             <Select v-model="selectedLabel">
-              <Option v-for="item in labelList" :value="item" :key="item">{{ item }}</Option>
+              <Option v-for="item in labelList" :value="item.name" :key="item.name">{{ item.name }}</Option>
             </Select>
           </Col>
           <Col span="4">
@@ -76,7 +76,7 @@ export default {
         limit: 10,
         total: null
       },
-      allowUploadExt: ['jpg','jpeg','png','svg'],
+      allowUploadExt: ['jpg','jpeg','png','svg','ico'],
       sourceImageColumns: [{
           type: 'selection',
           key: '_id',
@@ -100,13 +100,16 @@ export default {
         },{
           title: '标签',
           key: 'label',
-          render (h, data) {
+          render: (h, data) => {
             if(!data.row.label) {
               return undefined
             }
             return h('div', data.row.label.map(label => {
+              let index = this.labelList.findIndex(item => {
+                return item.name === label
+              })
               return h(Tag, {
-                props: {color:'cyan'},
+                props: {color: index === -1 ? 'default' : this.labelList[index].color},
                 style: {marginRight: '5px'}
               },label)
             }))
@@ -266,9 +269,9 @@ export default {
     }
   },
   created() {
-    this.loadData()
     this.$http.get('/system/config/get/image_label').then(data => {
       this.labelList.push(...data)
+      this.loadData()
     })
   }
 }
