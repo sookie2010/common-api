@@ -1,4 +1,4 @@
-import { Schema, Types } from 'mongoose';
+import { Schema, Types } from 'mongoose'
 
 export const SystemConfigSchema = new Schema({
   _id: Types.ObjectId,

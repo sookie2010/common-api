@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Delete, Query, Body, Param, UseInterceptors } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
 import LoginInterceptor from '../common/login.interceptor'
 import SystemService from './system.service'
 import SystemConfig from './system-config.interface'
-import SystemUser from './system-user.interface';
-import { Page, MsgResult } from '../common/common.dto'
+import SystemUser from './system-user.interface'
+import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
@@ -43,7 +44,7 @@ export default class SystemController {
    */
   @Get('/config/list')
   listConfig(@Query() systemConfig: SystemConfig): Promise<SystemConfig[]> {
-    return this.systemService.listConfig(systemConfig);
+    return this.systemService.listConfig(systemConfig)
   }
   /**
    * 获取非公开配置项
@@ -75,5 +76,14 @@ export default class SystemController {
   @Delete('/config/delete')
   deleteConfig(@Query('id')id: string): Promise<MsgResult> {
     return this.systemService.deleteConfig(id)
+  }
+  /**
+   * 发布博客
+   * @param blogZip 博客静态化文件压缩包
+   */
+  @Post('/deployBlog')
+  @UseInterceptors(FileInterceptor('blogZip'))
+  deployBlog(@UploadedFile()blogZip: FileEntity): Promise<MsgResult> {
+    return this.systemService.deployBlogZip(blogZip.buffer)
   }
 }

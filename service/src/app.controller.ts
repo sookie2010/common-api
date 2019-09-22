@@ -10,7 +10,7 @@ import { SourceImage } from './source-image/source-image.interface'
 import { Page, MsgResult } from './common/common.dto'
 import SystemUser from './system/system-user.interface'
 import PageTransform from './common/page.transform'
-import SystemService from './system/system.service';
+import SystemService from './system/system.service'
 import { Response } from 'express'
 
 import { Readable } from 'stream'

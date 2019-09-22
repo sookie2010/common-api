@@ -11,6 +11,6 @@ export default class PageTransform implements PipeTransform<Page> {
     } else {
       page.start = page.limit * (~~page.pageNum - 1)
     }
-    return page;
+    return page
   }
 }

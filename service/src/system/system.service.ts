@@ -3,9 +3,11 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../system/system-config.interface'
 import SystemUser from './system-user.interface'
-import BaseQc from '../common/base.qc';
+import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
-import { Page, MsgResult } from '../common/common.dto';
+import { Page, MsgResult } from '../common/common.dto'
+
+import { zip } from 'compressing'
 
 @Injectable()
 export default class SystemService {
@@ -115,5 +117,32 @@ export default class SystemService {
     } else {
       return Promise.resolve({})
     }
+  }
+  /**
+   * 发布博客
+   * @param blogZip zip压缩文件
+   */
+  async deployBlogZip(blogZip: Buffer): Promise<MsgResult> {
+
+    const tempPathConfig = await this.systemConfigModel.findOne({name: 'deploy_temp'}).exec()
+    const tempPath: string = tempPathConfig ? tempPathConfig.value.toString() : '/tmp/blog'
+    // 删除可能存在的解压后的目录
+    CommonUtils.deleteFolderRecursive(tempPath)
+    try {
+      await zip.uncompress(blogZip, tempPath)
+    } catch (err) {
+      return new MsgResult(false, `解压出错 ${err.message}`)
+    }
+    const deployPathConfig = await this.systemConfigModel.findOne({name: 'deploy_path'}).exec()
+
+    if (!deployPathConfig) {
+      return new MsgResult(false, '未配置deploy_path(发布路径)')
+    }
+    // 删除目前已发布的文件
+    CommonUtils.deleteFolderRecursive(deployPathConfig.value.toString())
+    // 拷贝解压后的文件到发布目录
+    CommonUtils.copyFolderRecursive(tempPath, deployPathConfig.value.toString())
+
+    return new MsgResult(true, '发布成功')
   }
 }

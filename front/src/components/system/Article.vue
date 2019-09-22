@@ -55,6 +55,14 @@
   <div class="btn-container">
     <Button type="primary" @click="splitWord">分词处理</Button>
     <Button @click="pullArticles">拉取文章</Button>
+    <Upload :action="($http.defaults.baseURL || '') + '/system/deployBlog'" 
+      name="blogZip" :show-upload-list="false" 
+      :format="allowUploadExt" :headers="uploadHeaders" :max-size="102400" 
+      :before-upload="beforeUpload" :on-success="uploadSuccess" @on-error="uploadError"
+      :on-format-error="uploadFormatError" :on-exceeded-size="uploadFileSizeError"
+      style="display: inline-block;">
+      <Button type="primary" icon="ios-cloud-upload-outline">发布博客</Button>
+    </Upload>
   </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="articleColumns" :data="articleData" height="520" @on-selection-change="dataSelect"></Table>
@@ -73,6 +81,7 @@ import Col from 'iview/src/components/col'
 import Input from 'iview/src/components/input'
 import DatePicker from 'iview/src/components/date-picker'
 import Button from 'iview/src/components/button'
+import Upload from 'iview/src/components/upload'
 import Page from 'iview/src/components/page'
 import Icon from 'iview/src/components/icon'
 import Select from 'iview/src/components/select'
@@ -80,10 +89,10 @@ import Option from 'iview/src/components/option'
 
 import moment from 'moment'
 
-var selectedData = null
+var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, DatePicker, Button, Page, Select, Option
+    Table, Row, Col, Input, DatePicker, Button, Upload, Page, Select, Option
   },
   data() {
     return {
@@ -93,6 +102,8 @@ export default {
         limit: 10,
         total: null
       },
+      allowUploadExt: ['zip'],
+      uploadHeaders: {token: localStorage.getItem('login_token')},
       articleColumns: [{
           type: 'selection',
           key: '_id',
@@ -232,7 +243,44 @@ export default {
     },
     dataSelect(selection) {
       selectedData = selection
-    }
+    },
+    beforeUpload(file) {
+      let filenameCut = undefined
+      if(file.name.length > 15) {
+        filenameCut = file.name.substr(0, 15) + '...'
+      }
+      closeUploadTip = this.$Message.loading({
+        content: (filenameCut || file.name) + ' 正在上传，请稍候...',
+        duration: 0
+      })
+      return true
+    },
+    uploadFormatError() {
+      this.closeUploadTip()
+      this.$Message.error(`只能上传 ${this.allowUploadExt.join('、')} 格式的文件`)
+    },
+    uploadFileSizeError() {
+      this.closeUploadTip()
+      this.$Message.error(`只能上传不超过100MB的文件`)
+    },
+    uploadSuccess(response) {
+      this.closeUploadTip()
+      if(response.status) {
+        this.$Message.success(response.msg)
+      } else {
+        this.$Message.warning(response.msg)
+      }
+    },
+    uploadError() {
+      this.closeUploadTip()
+      this.$Message.error('上传失败')
+    },
+    closeUploadTip() {
+      if(typeof closeUploadTip === 'function') {
+        closeUploadTip.call(this)
+        closeUploadTip = null
+      }
+    },
   },
   created() {
     this.loadData()

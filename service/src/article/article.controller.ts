@@ -1,7 +1,7 @@
 import { Controller, Get, Put, Query, Body, UseInterceptors } from '@nestjs/common'
 import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
-import ArticleService from './article.service';
+import ArticleService from './article.service'
 import { ArticleDto } from './article.interface'
 import PageTransform from '../common/page.transform'
 
