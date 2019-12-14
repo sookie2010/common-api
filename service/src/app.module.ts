@@ -5,6 +5,7 @@ import PhotoWallController from './controller/photo-wall.controller'
 import SystemController from './controller/system.controller'
 import ArticleController from './controller/article.controller'
 import SourceImageController from './controller/source-image.controller'
+import ProvinceController from './controller/province.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import AppService from './service/common.service'
 import HitokotoService from './service/hitokoto.service'
@@ -12,12 +13,15 @@ import PhotoWallService from './service/photo-wall.service'
 import SystemService from './service/system.service'
 import ArticleService from './service/article.service'
 import SourceImageService from './service/source-image.service'
+import ProvinceService from './service/province.service'
 import { HitokotoSchema } from './schema/hitokoto.schema'
 import { PhotoWallSchema } from './schema/photo-wall.schema'
 import { SystemConfigSchema } from './schema/system-config.schema'
 import { SystemUserSchema } from './schema/system-user.schema'
 import { ArticleSchema, ArticleKeysSchema } from './schema/article.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
+import { ProvinceSchema } from './schema/province.schema'
+
 
 const dbConfig = require('../config/db.json')
 
@@ -36,9 +40,26 @@ const dbConfig = require('../config/db.json')
       { name: 'Article', schema: ArticleSchema },
       { name: 'ArticleKeys', schema: ArticleKeysSchema },
       { name: 'SourceImage', schema: SourceImageSchema },
+      { name: 'Province', schema: ProvinceSchema },
     ]),
   ],
-  controllers: [CommonController, HitokotoController, PhotoWallController, SystemController, ArticleController, SourceImageController],
-  providers: [AppService, HitokotoService, PhotoWallService, SystemService, ArticleService, SourceImageService],
+  controllers: [
+    CommonController,
+    HitokotoController,
+    PhotoWallController,
+    SystemController,
+    ArticleController,
+    SourceImageController,
+    ProvinceController
+  ],
+  providers: [
+    AppService,
+    HitokotoService,
+    PhotoWallService,
+    SystemService,
+    ArticleService,
+    SourceImageService,
+    ProvinceService
+  ],
 })
 export class AppModule {}

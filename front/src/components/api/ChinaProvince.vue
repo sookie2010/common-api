@@ -12,18 +12,18 @@
       <div class="search-title">归属：</div>
     </Col>
     <Col span="3">
-      <Select v-model="search.province" placeholder="省">
-        <Option v-for="item in provinceList" :value="item.code" :key="item.code">{{ item.name }}</Option>
+      <Select v-model="search.province" placeholder="省/直辖市" @on-change="provinceChange" clearable filterable>
+        <Option v-for="item in provinceList" :value="item.province" :key="item.code">{{ item.name }}</Option>
       </Select>
     </Col>
     <Col span="3">
-      <Select v-model="search.city" placeholder="市">
-        <Option v-for="item in cityList" :value="item.code" :key="item.code">{{ item.name }}</Option>
+      <Select v-model="search.city" placeholder="市" @on-change="cityChange" clearable filterable>
+        <Option v-for="item in cityList" :value="item.city" :key="item.code">{{ item.name }}</Option>
       </Select>
     </Col>
     <Col span="3">
-      <Select v-model="search.area" placeholder="县/区">
-        <Option v-for="item in areaList" :value="item.code" :key="item.code">{{ item.name }}</Option>
+      <Select v-model="search.area" placeholder="县/区" clearable filterable>
+        <Option v-for="item in areaList" :value="item.area" :key="item.code">{{ item.name }}</Option>
       </Select>
     </Col>
     <Col span="5" offset="2">
@@ -32,10 +32,10 @@
     </Col>
   </Row>
   <div class="btn-container">
-    <Button type="primary" >导出</Button>
+    <Button type="primary" @click="$refs.table.exportCsv({ filename: '行政区划'})">导出</Button>
   </div>
   <div class="table-container">
-    <Table border :loading="loading" :columns="hitokotoColumns" :data="hitokotoData" height="520" @on-selection-change="dataSelect"></Table>
+    <Table border :loading="loading" ref="table" :columns="chinaProvinceColumns" :data="chinaProvinceData" height="520" ></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
@@ -66,15 +66,11 @@ export default {
         limit: 10,
         total: null
       },
+      selectSearch: {},
       provinceList: [],
       cityList: [],
       areaList: [],
       chinaProvinceColumns: [{
-          type: 'selection',
-          key: '_id',
-          width: 60,
-          align: 'center'
-        },{
           title: '编码',
           key: 'code'
         },{
@@ -98,14 +94,12 @@ export default {
         this.search.pageNum = 1
         this.search.limit = 10
       }
-      /*
       this.loading = true
-      this.$http.get('/hitokoto/list', {params:this.search}).then(data => {
-        selectedData = null
+      this.$http.get('/province/list', {params:this.search}).then(data => {
         this.loading = false
         this.search.total = data.total
-        this.hitokotoData = data.data
-      })*/
+        this.chinaProvinceData = data.data
+      })
     },
     pageChange(pageNum) {
       this.search.pageNum = pageNum
@@ -114,12 +108,33 @@ export default {
     pageSizeChange(pageSize) {
       this.search.limit = pageSize
       this.loadData()
+    },
+    provinceChange(value) {
+      delete this.search.city
+      delete this.search.area
+      if(!value) {
+        this.cityList.length = 0
+        this.areaList.length = 0
+        return
+      }
+      this.$http.get('/province/listAll', {params:{province: value}}).then(data => {
+        this.cityList = data
+      })
+    },
+    cityChange(value) {
+      delete this.search.area
+      if(!value) {
+        this.areaList.length = 0
+        return
+      }
+      this.$http.get('/province/listAll', {params:{province: this.search.province, city: value}}).then(data => {
+        this.areaList = data
+      })
     }
   },
   created() {
-    this.$http.get('/common/config/hitokoto_type').then(data => {
-      this.typeList = data
-      this.loadData()
+    this.$http.get('/province/listAll').then(data => {
+      this.provinceList = data
     })
   }
 }
