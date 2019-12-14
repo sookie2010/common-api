@@ -89,17 +89,16 @@ export default {
       }
       this.loadData()
     },
-    loadData(resetPage) {
+    async loadData(resetPage) {
       if(resetPage) {
         this.search.pageNum = 1
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/province/list', {params:this.search}).then(data => {
-        this.loading = false
-        this.search.total = data.total
-        this.chinaProvinceData = data.data
-      })
+      const data = await this.$http.get('/province/list', {params:this.search})
+      this.loading = false
+      this.search.total = data.total
+      this.chinaProvinceData = data.data
     },
     pageChange(pageNum) {
       this.search.pageNum = pageNum
@@ -109,7 +108,7 @@ export default {
       this.search.limit = pageSize
       this.loadData()
     },
-    provinceChange(value) {
+    async provinceChange(value) {
       delete this.search.city
       delete this.search.area
       if(!value) {
@@ -117,25 +116,25 @@ export default {
         this.areaList.length = 0
         return
       }
-      this.$http.get('/province/listAll', {params:{province: value}}).then(data => {
-        this.cityList = data
-      })
+      const data = await this.$http.get('/province/listAll', {params:{ province: value }})
+      this.cityList = data
     },
-    cityChange(value) {
+    async cityChange(value) {
       delete this.search.area
       if(!value) {
         this.areaList.length = 0
         return
       }
-      this.$http.get('/province/listAll', {params:{province: this.search.province, city: value}}).then(data => {
-        this.areaList = data
-      })
+      const data = await this.$http.get('/province/listAll', {params:{
+          province: this.search.province,
+          city: value
+        }})
+      this.areaList = data
     }
   },
-  created() {
-    this.$http.get('/province/listAll').then(data => {
-      this.provinceList = data
-    })
+  async created() {
+    const data = await this.$http.get('/province/listAll')
+    this.provinceList = data
   }
 }
 </script>

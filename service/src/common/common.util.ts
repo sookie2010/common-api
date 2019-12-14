@@ -74,7 +74,7 @@ export default class CommonUtils {
    * @param {string} target 目标目录
    * @param {Function} callback 回调函数
    */
-  private static _checkDirectory(src: string, target: string, callback: Function) {
+  private static _checkDirectory(src: string, target: string, callback: (source: string, target: string) => void) {
     fs.access(target, fs.constants.F_OK, err => {
       if (err) {
         fs.mkdirSync(target)

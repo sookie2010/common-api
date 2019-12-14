@@ -21,28 +21,37 @@ export class ProvinceQc {
   city?: {$exists: boolean} | string
   area?: {$exists: boolean} | string
   town?: {$exists: boolean} | string
-
-  constructor(provinceEntity: ProvinceEntity) {
+  /**
+   * 构造符合mongodb格式的查询条件
+   * @param provinceEntity 查询条件
+   * @param isDirect 是否只查询直属下级
+   */
+  constructor(provinceEntity: ProvinceEntity, isDirect: boolean) {
     if (provinceEntity.name) { // mongodb的模糊搜索使用正则形式
       this.name = {$regex: new RegExp(CommonUtils.escapeRegexStr(provinceEntity.name))}
     }
-    if(!Object.keys(provinceEntity).length) {
+    if (!provinceEntity.province && isDirect) {
       // 只查询所有省/直辖市列表
       this.city = {$exists: false}
-    }
-    if(provinceEntity.province && !provinceEntity.city && !provinceEntity.area) {
+    } else if (provinceEntity.province && !provinceEntity.city && !provinceEntity.area) {
       // 查询指定省份下的市列表
       this.province = provinceEntity.province
-      this.city = {$exists: true}
-      this.area = {$exists: false}
-    }
-    if(provinceEntity.province && provinceEntity.city && !provinceEntity.area) {
+      if (isDirect) {
+        this.city = {$exists: true}
+        this.area = {$exists: false}
+      }
+    } else if (provinceEntity.province && provinceEntity.city && !provinceEntity.area) {
       // 查询指定市下的县/区列表
       this.province = provinceEntity.province
       this.city = provinceEntity.city
-      this.area = {$exists: true}
-      this.town = {$exists: false}
+      if (isDirect) {
+        this.area = {$exists: true}
+        this.town = {$exists: false}
+      }
+    } else {
+      this.province = provinceEntity.province
+      this.city = provinceEntity.city
+      this.area = provinceEntity.area
     }
-
   }
 }

@@ -13,8 +13,7 @@ export default class ProvinceService {
    * @param provinceEntity 查询条件
    */
   async listAll(provinceEntity: ProvinceEntity): Promise<Province[]> {
-    const searchParam = new ProvinceQc(provinceEntity)
-    console.log(searchParam)
+    const searchParam = new ProvinceQc(provinceEntity, true)
     return this.provinceModel.find(searchParam).exec()
   }
 
@@ -24,7 +23,7 @@ export default class ProvinceService {
    * @param page 分页
    */
   async list(provinceEntity: ProvinceEntity, page: Page): Promise<Page> {
-    const searchParam = new ProvinceQc(provinceEntity)
+    const searchParam = new ProvinceQc(provinceEntity, false)
     return this.provinceModel.countDocuments(searchParam).exec().then((cnt: number) => {
       page.total = cnt
       return this.provinceModel.find(searchParam).skip(page.start).limit(page.limit).exec()

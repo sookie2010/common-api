@@ -22,7 +22,6 @@ import { ArticleSchema, ArticleKeysSchema } from './schema/article.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
 import { ProvinceSchema } from './schema/province.schema'
 
-
 const dbConfig = require('../config/db.json')
 
 @Module({
@@ -50,7 +49,7 @@ const dbConfig = require('../config/db.json')
     SystemController,
     ArticleController,
     SourceImageController,
-    ProvinceController
+    ProvinceController,
   ],
   providers: [
     AppService,
@@ -59,7 +58,7 @@ const dbConfig = require('../config/db.json')
     SystemService,
     ArticleService,
     SourceImageService,
-    ProvinceService
+    ProvinceService,
   ],
 })
 export class AppModule {}
