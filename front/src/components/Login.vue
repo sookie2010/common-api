@@ -16,10 +16,10 @@
   </div>
 </template>
 <script>
-import Input from 'iview/src/components/input'
-import Form from 'iview/src/components/form'
-import FormItem from 'iview/src/components/form-item'
-import Button from 'iview/src/components/button'
+import Input from 'view-design/src/components/input'
+import Form from 'view-design/src/components/form'
+import FormItem from 'view-design/src/components/form-item'
+import Button from 'view-design/src/components/button'
 
 export default {
   components: { Input, Form, FormItem, Button },

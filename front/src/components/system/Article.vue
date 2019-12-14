@@ -75,17 +75,17 @@
 </div>
 </template>
 <script>
-import Table from 'iview/src/components/table'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
-import Input from 'iview/src/components/input'
-import DatePicker from 'iview/src/components/date-picker'
-import Button from 'iview/src/components/button'
-import Upload from 'iview/src/components/upload'
-import Page from 'iview/src/components/page'
-import Icon from 'iview/src/components/icon'
-import Select from 'iview/src/components/select'
-import Option from 'iview/src/components/option'
+import Table from 'view-design/src/components/table'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
+import Input from 'view-design/src/components/input'
+import DatePicker from 'view-design/src/components/date-picker'
+import Button from 'view-design/src/components/button'
+import Upload from 'view-design/src/components/upload'
+import Page from 'view-design/src/components/page'
+import Icon from 'view-design/src/components/icon'
+import Select from 'view-design/src/components/select'
+import Option from 'view-design/src/components/option'
 
 import moment from 'moment'
 
@@ -155,7 +155,7 @@ export default {
         },{
           title: '是否已分词',
           key: 'is_splited',
-          width: 100,
+          width: 120,
           align: 'center',
           render (h, data) {
             return h(Icon, {

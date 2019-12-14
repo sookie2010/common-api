@@ -20,11 +20,11 @@
 </div>
 </template>
 <script>
-import Input from 'iview/src/components/input'
-import Form from 'iview/src/components/form'
-import FormItem from 'iview/src/components/form-item'
-import Select from 'iview/src/components/select'
-import Option from 'iview/src/components/option'
+import Input from 'view-design/src/components/input'
+import Form from 'view-design/src/components/form'
+import FormItem from 'view-design/src/components/form-item'
+import Select from 'view-design/src/components/select'
+import Option from 'view-design/src/components/option'
 
 export default {
   components: { Input, Form, FormItem, Select, Option },

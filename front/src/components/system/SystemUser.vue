@@ -38,15 +38,15 @@
 </div>
 </template>
 <script>
-import Table from 'iview/src/components/table'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
-import Input from 'iview/src/components/input'
-import Button from 'iview/src/components/button'
-import Modal from 'iview/src/components/modal'
-import Form from 'iview/src/components/form'
-import FormItem from 'iview/src/components/form-item'
-import Page from 'iview/src/components/page'
+import Table from 'view-design/src/components/table'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
+import Input from 'view-design/src/components/input'
+import Button from 'view-design/src/components/button'
+import Modal from 'view-design/src/components/modal'
+import Form from 'view-design/src/components/form'
+import FormItem from 'view-design/src/components/form-item'
+import Page from 'view-design/src/components/page'
 
 import moment from 'moment'
 

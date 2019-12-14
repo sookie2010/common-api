@@ -11,8 +11,8 @@
 </template>
 <script>
 
-import Carousel from 'iview/src/components/carousel'
-import CarouselItem from 'iview/src/components/carousel-item'
+import Carousel from 'view-design/src/components/carousel'
+import CarouselItem from 'view-design/src/components/carousel-item'
 
 const carouselImages = [
   "photo-wall/2/pic_00078.png",

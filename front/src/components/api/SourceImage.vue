@@ -44,19 +44,19 @@
 </div>
 </template>
 <script>
-import Alert from 'iview/src/components/alert'
-import Table from 'iview/src/components/table'
-import Upload from 'iview/src/components/upload'
-import Button from 'iview/src/components/button'
-import Page from 'iview/src/components/page'
-import Tag from 'iview/src/components/tag'
-import Modal from 'iview/src/components/modal'
-import Form from 'iview/src/components/form'
-import FormItem from 'iview/src/components/form-item'
-import Select from 'iview/src/components/select'
-import Option from 'iview/src/components/option'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
+import Alert from 'view-design/src/components/alert'
+import Table from 'view-design/src/components/table'
+import Upload from 'view-design/src/components/upload'
+import Button from 'view-design/src/components/button'
+import Page from 'view-design/src/components/page'
+import Tag from 'view-design/src/components/tag'
+import Modal from 'view-design/src/components/modal'
+import Form from 'view-design/src/components/form'
+import FormItem from 'view-design/src/components/form-item'
+import Select from 'view-design/src/components/select'
+import Option from 'view-design/src/components/option'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
 
 import prettyBytes from 'pretty-bytes'
 import moment from 'moment'
@@ -85,7 +85,7 @@ export default {
         },{
           title: 'md5',
           key: 'hash',
-          width: 280
+          width: 300
         },{
           title: '文件大小',
           key: 'size',
@@ -117,7 +117,7 @@ export default {
         },{
           title: '上传时间',
           key: 'created_at',
-          width: 150,
+          width: 180,
           render (h, data) {
             return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }

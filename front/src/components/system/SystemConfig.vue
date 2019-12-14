@@ -28,12 +28,12 @@
 </div>
 </template>
 <script>
-import Table from 'iview/src/components/table'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
-import Input from 'iview/src/components/input'
-import Button from 'iview/src/components/button'
-import Modal from 'iview/src/components/modal'
+import Table from 'view-design/src/components/table'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
+import Input from 'view-design/src/components/input'
+import Button from 'view-design/src/components/button'
+import Modal from 'view-design/src/components/modal'
 
 import SystemConfigAdd from './SystemConfigAdd'
 

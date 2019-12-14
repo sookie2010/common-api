@@ -69,14 +69,14 @@
 </div>
 </template>
 <script>
-import Alert from 'iview/src/components/alert'
-import Table from 'iview/src/components/table'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
-import Input from 'iview/src/components/input'
-import Button from 'iview/src/components/button'
-import Upload from 'iview/src/components/upload'
-import Page from 'iview/src/components/page'
+import Alert from 'view-design/src/components/alert'
+import Table from 'view-design/src/components/table'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
+import Input from 'view-design/src/components/input'
+import Button from 'view-design/src/components/button'
+import Upload from 'view-design/src/components/upload'
+import Page from 'view-design/src/components/page'
 
 var selectedData = null, closeUploadTip = null
 export default {
@@ -109,7 +109,7 @@ export default {
         },{
           title: 'md5',
           key: 'md5',
-          width: 280
+          width: 300
         },{
           title: '缩略图',
           key: 'thumbnail'
@@ -123,7 +123,7 @@ export default {
           width: 70
         },{
           title: '操作',
-          width: 80,
+          width: 100,
           render: (h, data) => {
             return h(Button, {
               props: {size:'small'},

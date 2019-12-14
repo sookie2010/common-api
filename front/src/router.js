@@ -12,6 +12,7 @@ const SystemUser = () => import(/* webpackChunkName: "systemUser" */'@/component
 const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
 const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
 const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage')
+const ChinaProvince = () => import(/* webpackChunkName: "chinaProvince" */'@/components/api/ChinaProvince')
 
 export const router = new Router({
   routes: [
@@ -23,7 +24,8 @@ export const router = new Router({
     { path: '/system/user', name: 'SystemUser', component: SystemUser },
     { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
     { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall },
-    { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage }
+    { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage },
+    { path: '/api/chinaProvince', name: 'ChinaProvince', component: ChinaProvince }
   ]
 })
 
@@ -36,7 +38,8 @@ export const routePathes = {
   'Statistics': ['首页', '系统管理', '分析统计'],
   'Hitokoto': ['首页', 'API数据', '一言'],
   'PhotoWall': ['首页', 'API数据', '照片墙'],
-  'SourceImage': ['首页', 'API数据', '图片资源库']
+  'SourceImage': ['首页', 'API数据', '图片资源库'],
+  'ChinaProvince': ['首页', 'API数据', '中国行政区划']
 }
 
 export const filterExclude = ['Login']

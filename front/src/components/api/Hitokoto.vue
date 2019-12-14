@@ -46,16 +46,16 @@
 </div>
 </template>
 <script>
-import Table from 'iview/src/components/table'
-import Row from 'iview/src/components/row'
-import Col from 'iview/src/components/col'
-import Input from 'iview/src/components/input'
-import Select from 'iview/src/components/select'
-import Option from 'iview/src/components/option'
-import DatePicker from 'iview/src/components/date-picker'
-import Button from 'iview/src/components/button'
-import Page from 'iview/src/components/page'
-import Modal from 'iview/src/components/modal'
+import Table from 'view-design/src/components/table'
+import Row from 'view-design/src/components/row'
+import Col from 'view-design/src/components/col'
+import Input from 'view-design/src/components/input'
+import Select from 'view-design/src/components/select'
+import Option from 'view-design/src/components/option'
+import DatePicker from 'view-design/src/components/date-picker'
+import Button from 'view-design/src/components/button'
+import Page from 'view-design/src/components/page'
+import Modal from 'view-design/src/components/modal'
 
 import HitokotoAdd from './HitokotoAdd'
 
@@ -106,7 +106,7 @@ export default {
         },{
           title: '创建时间',
           key: 'created_at',
-          width: 150,
+          width: 180,
           render (h, data) {
             return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
           }

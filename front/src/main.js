@@ -7,9 +7,9 @@ import store from './store'
 Vue.config.productionTip = false
 
 /*------iview start------*/
-import 'iview/dist/styles/iview.css'
-import Message from 'iview/src/components/message'
-import Modal from 'iview/src/components/modal'
+import 'view-design/dist/styles/iview.css'
+import Message from 'view-design/src/components/message'
+import Modal from 'view-design/src/components/modal'
 Vue.prototype.$Message = Message
 Vue.prototype.$Modal = Modal
 /*------iview end------*/

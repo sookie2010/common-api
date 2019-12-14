@@ -18,7 +18,7 @@
     </Col>
     <Col span="20" class="layout-right">
       <div class="layout-header">
-        <h1>博客API管理后台</h1>
+        <h2>博客API管理后台</h2>
         <div class="nav-btns-left">
           <router-link to="/">首页</router-link>
         </div>
@@ -42,15 +42,15 @@
 </template>
 
 <script>
-import Row from 'iview/src/components/row'
-import Menu from 'iview/src/components/menu'
-import Submenu from 'iview/src/components/submenu'
-import MenuItem from 'iview/src/components/menu-item'
-import Icon from 'iview/src/components/icon'
-import Col from 'iview/src/components/col'
-import Breadcrumb from 'iview/src/components/breadcrumb'
-import BreadcrumbItem from 'iview/src/components/breadcrumb-item'
-import Button from 'iview/src/components/button'
+import Row from 'view-design/src/components/row'
+import Menu from 'view-design/src/components/menu'
+import Submenu from 'view-design/src/components/submenu'
+import MenuItem from 'view-design/src/components/menu-item'
+import Icon from 'view-design/src/components/icon'
+import Col from 'view-design/src/components/col'
+import Breadcrumb from 'view-design/src/components/breadcrumb'
+import BreadcrumbItem from 'view-design/src/components/breadcrumb-item'
+import Button from 'view-design/src/components/button'
 
 export default {
   name: 'app',
@@ -88,6 +88,9 @@ export default {
         },{
           name: '图片资源库',
           path: '/api/sourceImage'
+        },{
+          name: '中国行政区划',
+          path: '/api/chinaProvince'
         }]
       }]
     }
@@ -163,7 +166,7 @@ export default {
     background: #fff;
     box-shadow: 0 1px 1px rgba(0,0,0,.1);
   }
-  .layout-header h1 {
+  .layout-header h2 {
     display: inline-block;
   }
   .layout-header .nav-btns-right {
