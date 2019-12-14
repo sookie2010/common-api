@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common'
-import HitokotoService from './hitokoto.service'
-import { Hitokoto, HitokotoDto } from './hitokoto.interface'
+import HitokotoService from '../service/hitokoto.service'
+import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'

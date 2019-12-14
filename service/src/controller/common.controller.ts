@@ -1,22 +1,22 @@
 import { Controller, Get, Query, Param, Post, Body, Res } from '@nestjs/common'
-import AppService from './app.service'
-import HitokotoService from './hitokoto/hitokoto.service'
-import PhotoWallService from './photo-wall/photo-wall.service'
-import ArticleService from './article/article.service'
-import SourceImageService from './source-image/source-image.service'
-import { Hitokoto, HitokotoDto } from './hitokoto/hitokoto.interface'
-import { ArticleDto } from './article/article.interface'
-import { SourceImage } from './source-image/source-image.interface'
-import { Page, MsgResult } from './common/common.dto'
-import SystemUser from './system/system-user.interface'
-import PageTransform from './common/page.transform'
-import SystemService from './system/system.service'
+import AppService from '../service/common.service'
+import HitokotoService from '../service/hitokoto.service'
+import PhotoWallService from '../service/photo-wall.service'
+import ArticleService from '../service/article.service'
+import SourceImageService from '../service/source-image.service'
+import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
+import { ArticleDto } from '../interface/article.interface'
+import { SourceImage } from '../interface/source-image.interface'
+import { Page, MsgResult } from '../common/common.dto'
+import SystemUser from '../interface/system-user.interface'
+import PageTransform from '../common/page.transform'
+import SystemService from '../service/system.service'
 import { Response } from 'express'
 
 import { Readable } from 'stream'
 
 @Controller('/common')
-export default class AppController {
+export default class CommonController {
   constructor(
     private readonly hitokotoService: HitokotoService,
     private readonly photoWallService: PhotoWallService,

@@ -1,15 +1,15 @@
 import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import SystemConfig from './system/system-config.interface'
-import SystemUser from './system/system-user.interface'
-import { MsgResult } from './common/common.dto'
-import CommonUtils from './common/common.util'
+import SystemConfig from '../interface/system-config.interface'
+import SystemUser from '../interface/system-user.interface'
+import { MsgResult } from '../common/common.dto'
+import CommonUtils from '../common/common.util'
 
 import * as jwt from 'jsonwebtoken'
 
 @Injectable()
-export default class AppService {
+export default class CommonService {
 
   constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>,
               @InjectModel('SystemUser') private readonly systemUserModel: Model<SystemUser>,

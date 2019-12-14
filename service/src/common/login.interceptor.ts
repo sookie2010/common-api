@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
 // import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
-import SystemConfig from '../system/system-config.interface'
+import SystemConfig from '../interface/system-config.interface'
 import { ServerResponse } from 'http'
 
 import * as jwt from 'jsonwebtoken'

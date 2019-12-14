@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Delete, Query, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import LoginInterceptor from '../common/login.interceptor'
-import SystemService from './system.service'
-import SystemConfig from './system-config.interface'
-import SystemUser from './system-user.interface'
+import SystemService from '../service/system.service'
+import SystemConfig from '../interface/system-config.interface'
+import SystemUser from '../interface/system-user.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
 

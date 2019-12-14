@@ -1,7 +1,7 @@
 import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { SourceImage, SourceImageEntity } from './source-image.interface'
+import { SourceImage, SourceImageEntity } from '../interface/source-image.interface'
 import { Page, MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 
