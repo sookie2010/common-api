@@ -25,21 +25,9 @@
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
   </div>
   <Modal v-model="modifyModal" title="修改标签" :footer-hide="true" @on-visible-change="modifyModalClose">
-    <Tag v-for="item in curModifyLabels" :key="item" closable @on-close="removeLabel(item)">{{item}}</Tag>
-    <Form :label-width="100">
-      <Form-item label="可添加的标签">
-        <Row>
-          <Col span="20">
-            <Select v-model="selectedLabel">
-              <Option v-for="item in labelList" :value="item.name" :key="item.name">{{ item.name }}</Option>
-            </Select>
-          </Col>
-          <Col span="4">
-            <Button type="primary" @click="addLabel">添加</Button>
-          </Col>
-        </Row>
-      </Form-item>
-    </Form>
+    <CheckboxGroup v-model="curModifyLabels" @on-change="changeLabel">
+      <Checkbox v-for="item in labelList" :label="item.name" :key="item.name" border @on-change="changeLabel"></Checkbox>
+    </CheckboxGroup>
   </Modal>
 </div>
 </template>
@@ -51,12 +39,8 @@ import Button from 'view-design/src/components/button'
 import Page from 'view-design/src/components/page'
 import Tag from 'view-design/src/components/tag'
 import Modal from 'view-design/src/components/modal'
-import Form from 'view-design/src/components/form'
-import FormItem from 'view-design/src/components/form-item'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import Row from 'view-design/src/components/row'
-import Col from 'view-design/src/components/col'
+import CheckboxGroup from 'view-design/src/components/checkbox-group'
+import Checkbox from 'view-design/src/components/checkbox'
 
 import prettyBytes from 'pretty-bytes'
 import moment from 'moment'
@@ -64,7 +48,7 @@ import moment from 'moment'
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Alert, Table, Upload, Button, Page, Tag, Modal, Form, FormItem, Select, Option, Row, Col
+    Alert, Table, Upload, Button, Page, Modal, CheckboxGroup, Checkbox
   },
   data() {
     return {
@@ -253,15 +237,8 @@ export default {
         this.loadData()
       }
     },
-    async addLabel() {
-      if(!this.selectedLabel || this.curModifyLabels.includes(this.selectedLabel)) return
-      await this.$http.post('/source-image/addLabel', {id: this.curId, label: this.selectedLabel})
-      this.curModifyLabels.push(this.selectedLabel)
-    },
-    async removeLabel(label) {
-      await this.$http.delete('/source-image/removeLabel', {params: {id: this.curId, label}})
-      let labelIndex = this.curModifyLabels.indexOf(label)
-      this.curModifyLabels.splice(labelIndex, 1)
+    async changeLabel(labels) {
+      await this.$http.post('/source-image/updateLabel', {id: this.curId, labels})
     }
   },
   async created() {

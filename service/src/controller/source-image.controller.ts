@@ -43,24 +43,14 @@ export default class SourceImageController {
     }
     return this.sourceImageService.save(sourceImageEntity)
   }
-
+  
   /**
    * 添加图片标签
    * @param id 图片ID
    * @param label 标签文本
    */
-  @Post('/addLabel')
-  addLabel(@Body('id') id: string, @Body('label') label: string): Promise<MsgResult> {
-    return this.sourceImageService.addLabel(id, label)
-  }
-
-  /**
-   * 删除图片标签
-   * @param id 图片ID
-   * @param label 标签文本
-   */
-  @Delete('/removeLabel')
-  removeLabel(@Query('id') id: string, @Query('label') label: string): Promise<MsgResult> {
-    return this.sourceImageService.removeLabel(id, label)
+  @Post('/updateLabel')
+  updateLabel(@Body('id') id: string, @Body('labels') label: string[]): Promise<MsgResult> {
+    return this.sourceImageService.updateLabel(id, label)
   }
 }

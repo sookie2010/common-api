@@ -64,26 +64,19 @@ export default class SourceImageService {
       return new MsgResult(true, '删除成功')
     })
   }
-
+  
   /**
-   * 添加图片标签
+   * 修改图片标签
    * @param id 图片ID
-   * @param label 标签文本
+   * @param label 图片标签数组
    */
-  async addLabel(id: string, label: string): Promise<MsgResult> {
-    return this.sourceImageModel.updateOne({_id: id}, { $addToSet: { label }}).then(() => {
-      return new MsgResult(true, '添加标签成功')
-    })
-  }
-
-  /**
-   * 删除图片标签
-   * @param id 图片ID
-   * @param label 标签文本
-   */
-  async removeLabel(id: string, label: string): Promise<MsgResult> {
-    return this.sourceImageModel.updateOne({_id: id}, { $pull: { label }}).then(() => {
-      return new MsgResult(true, '删除标签成功')
+  async updateLabel(id: string, label: string[]): Promise<MsgResult> {
+    /*
+    mongodb数组添加元素  $addToSet
+    删除元素  $pull
+    */
+    return this.sourceImageModel.updateOne({_id: id}, { $set: { label }}).then(() => {
+      return new MsgResult(true, '修改标签成功')
     })
   }
 }
