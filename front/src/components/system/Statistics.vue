@@ -23,32 +23,32 @@ import 'echarts/lib/component/timeline' // 时间轴
 
 export default {
   components: {'v-chart': ECharts},
-  mounted() {
+  async mounted() {
     this.$refs.categoriesChart.showLoading()
     this.$refs.publishDatesChart.showLoading()
     this.$refs.timelineWordsChart.showLoading()
-    this.$http.get('/article/statistics', {params:{type:'normal'}}).then(data => {
-      this.categoriesChart.legend.data = data.categories.map(item => item._id)
-      this.categoriesChart.series[0].data = data.categories.map(item => {
-        return {name: item._id, value: item.cnt}
-      })
-      this.publishDatesChart.xAxis.data = data.publishDates.map(item => item._id)
-      this.publishDatesChart.series[0].data = data.publishDates.map(item => item.cnt)
-      this.$refs.categoriesChart.hideLoading()
-      this.$refs.publishDatesChart.hideLoading()
+
+    const articleData = await this.$http.get('/article/statistics', {params:{type:'normal'}})
+    this.categoriesChart.legend.data = articleData.categories.map(item => item._id)
+    this.categoriesChart.series[0].data = articleData.categories.map(item => {
+      return {name: item._id, value: item.cnt}
     })
-    this.$http.get('/article/statistics', {params:{type:'timelineWords'}}).then(data => {
-      this.timelineWordsChart.baseOption.timeline.data = data.timelineWords.map(item => item._id)
-      this.timelineWordsChart.options.length = 0
-      data.timelineWords.forEach(item => {
-        this.timelineWordsChart.options.push({
-          title: {text: `${item._id}年发布的文章`},
-          xAxis: { data: item.keys.map(keyItem => keyItem.key) },
-          series: [{data: item.keys.map(keyItem => keyItem.total)}]
-        })
+    this.publishDatesChart.xAxis.data = articleData.publishDates.map(item => item._id)
+    this.publishDatesChart.series[0].data = articleData.publishDates.map(item => item.cnt)
+    this.$refs.categoriesChart.hideLoading()
+    this.$refs.publishDatesChart.hideLoading()
+
+    const timelineData = await this.$http.get('/article/statistics', {params:{type:'timelineWords'}})
+    this.timelineWordsChart.baseOption.timeline.data = timelineData.timelineWords.map(item => item._id)
+    this.timelineWordsChart.options.length = 0
+    timelineData.timelineWords.forEach(item => {
+      this.timelineWordsChart.options.push({
+        title: {text: `${item._id}年发布的文章`},
+        xAxis: { data: item.keys.map(keyItem => keyItem.key) },
+        series: [{data: item.keys.map(keyItem => keyItem.total)}]
       })
-      this.$refs.timelineWordsChart.hideLoading()
     })
+    this.$refs.timelineWordsChart.hideLoading()
   },
   data() {
     return {

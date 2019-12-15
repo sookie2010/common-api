@@ -147,18 +147,17 @@ export default {
       }
       this.loadData()
     },
-    loadData(resetPage) {
+    async loadData(resetPage) {
       if(resetPage) {
         this.search.pageNum = 1
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/photowall/list', {params:this.search}).then(data => {
-        selectedData = null
-        this.loading = false
-        this.search.total = data.total
-        this.photowallData = data.data
-      })
+      const data = await this.$http.get('/photowall/list', {params:this.search})
+      selectedData = null
+      this.loading = false
+      this.search.total = data.total
+      this.photowallData = data.data
     },
     deleteAll() {
       if(!selectedData || !selectedData.length) {
@@ -169,12 +168,11 @@ export default {
         title: '确认删除',
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.delete('/photowall/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
-            this.$Modal.remove()
-            this.$Message.success('删除成功')
-            this.loadData()
-          })
+        onOk: async () => {
+          await this.$http.delete('/photowall/delete', {params:{_ids: selectedData.map(item => item._id)}})
+          this.$Modal.remove()
+          this.$Message.success('删除成功')
+          this.loadData()
         }
       })
     },
@@ -227,15 +225,14 @@ export default {
         closeUploadTip = null
       }
     },
-    preview(row) {
+    async preview(row) {
       let previewHeight = Math.floor(row.height * (500 / row.width))
-      this.$http.get('/common/config/picture_cdn').then(data => {
-        this.$Modal.info({
-          title: '图片预览',
-          width: 500 + 100,
-          content: `<img src="${data}${row.name}" 
-            style="width:500px;height:${previewHeight}px;" />`
-        })
+      const pictureCdn = await this.$http.get('/common/config/picture_cdn')
+      this.$Modal.info({
+        title: '图片预览',
+        width: 500 + 100,
+        content: `<img src="${pictureCdn}${row.name}" 
+          style="width:500px;height:${previewHeight}px;" />`
       })
     }
   },

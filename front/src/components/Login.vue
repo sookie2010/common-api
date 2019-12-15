@@ -41,16 +41,15 @@ export default {
      * 登录
      */
     login() {
-      this.$refs.userInfo.validate(valid => {
+      this.$refs.userInfo.validate(async valid => {
         if(!valid) return
-        this.$http.post('/common/login', this.userInfo).then(data => {
-          if(data.token) {
-            this.$store.commit('login', data)
-            this.$router.push('/')
-          } else {
-            this.$Message.error('用户名/密码 错误')
-          }
-        })
+        const data = await this.$http.post('/common/login', this.userInfo)
+        if(data.token) {
+          this.$store.commit('login', data)
+          this.$router.push('/')
+        } else {
+          this.$Message.error('用户名/密码 错误')
+        }
       })
     }
   }

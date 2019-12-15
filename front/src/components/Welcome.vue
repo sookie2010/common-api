@@ -26,10 +26,9 @@ export default {
       imageSrcs: []
     }
   },
-  created() {
-    this.$http.get('/common/config/picture_cdn').then(data => {
-      this.imageSrcs = carouselImages.map(item => data + item)
-    })
+  async created() {
+    const pictureCdn = await this.$http.get('/common/config/picture_cdn')
+    this.imageSrcs = carouselImages.map(item => pictureCdn + item)
   }
 }
 </script>

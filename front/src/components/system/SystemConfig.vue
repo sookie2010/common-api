@@ -102,7 +102,8 @@ export default {
         _id: null,
         name: null,
         value: null,
-        description: null
+        description: null,
+        is_public: false
       }
     }
   },
@@ -111,17 +112,19 @@ export default {
       this.search = {}
       this.loadData()
     },
-    loadData() {
+    async loadData() {
       this.loading = true
-      this.$http.get('/system/config/list', {params:this.search}).then(data => {
-        this.loading = false
-        this.systemConfigData = data
-      })
+      this.systemConfigData = await this.$http.get('/system/config/list', {params:this.search})
+      this.loading = false
     },
     add() {
       // 清空表单
       Object.keys(this.formData).forEach(key => {
-        this.formData[key] = null
+        if(typeof this.formData[key] === 'boolean') {
+          this.formData[key] = false
+        } else {
+          this.formData[key] = null
+        }
       })
       this.modalTitle = '新增配置项'
       this.addModal = true
@@ -131,26 +134,28 @@ export default {
       this.formData.name = row.name
       this.formData.value = JSON.stringify(row.value, null, ' ')
       this.formData.description = row.description
-      this.formData.isPublic = row.is_public ? 1 : 0
+      this.formData.is_public = row.is_public
       this.modalTitle = '修改配置项'
       this.addModal = true
     },
-    save() {
+    async save() {
       try {
         JSON.parse(this.formData.value)
       } catch (e) {
         this.$Message.warning('值不符合JSON字符串格式')
         return
       }
-      this.formData.is_public = !!this.formData.isPublic
-      this.$http.post('/system/config/save', this.formData).then(data => {
-        this.addModal = false
-        this.$Message.success(data.msg)
-        this.loadData()
-        // 清空表单
-        Object.keys(this.formData).forEach(key => {
+      const data = await this.$http.post('/system/config/save', this.formData)
+      this.addModal = false
+      this.$Message.success(data.msg)
+      this.loadData()
+      // 清空表单
+      Object.keys(this.formData).forEach(key => {
+        if(typeof this.formData[key] === 'boolean') {
+          this.formData[key] = false
+        } else {
           this.formData[key] = null
-        })
+        }
       })
     },
     delete(row) {
@@ -158,16 +163,15 @@ export default {
         title: '确认删除',
         content: `<p>是否确认删除 ${row.name} 配置项？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.delete('/system/config/delete', {params: {id: row._id}}).then(data => {
-            this.$Modal.remove()
-            if(data.status) {
-              this.$Message.success(data.msg)
-              this.loadData()
-            } else {
-              this.$Message.warning(data.msg)
-            }
-          })
+        onOk: async () => {
+          const data = await this.$http.delete('/system/config/delete', {params: {id: row._id}})
+          this.$Modal.remove()
+          if(data.status) {
+            this.$Message.success(data.msg)
+            this.loadData()
+          } else {
+            this.$Message.warning(data.msg)
+          }
         }
       })
     }

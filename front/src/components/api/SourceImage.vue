@@ -154,18 +154,17 @@ export default {
       }
       this.loadData()
     },
-    loadData(resetPage) {
+    async loadData(resetPage) {
       if(resetPage) {
         this.search.pageNum = 1
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/source-image/list', {params:this.search}).then(data => {
-        selectedData = null
-        this.loading = false
-        this.search.total = data.total
-        this.sourceImageData = data.data
-      })
+      const data = await this.$http.get('/source-image/list', {params:this.search})
+      selectedData = null
+      this.loading = false
+      this.search.total = data.total
+      this.sourceImageData = data.data
     },
     deleteAll() {
       if(!selectedData || !selectedData.length) {
@@ -176,12 +175,11 @@ export default {
         title: '确认删除',
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.delete('/source-image/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(() => {
-            this.$Modal.remove()
-            this.$Message.success('删除成功')
-            this.loadData()
-          })
+        onOk: async () => {
+          await this.$http.delete('/source-image/delete', {params:{_ids: selectedData.map(item => item._id)}})
+          this.$Modal.remove()
+          this.$Message.success('删除成功')
+          this.loadData()
         }
       })
     },
@@ -255,24 +253,21 @@ export default {
         this.loadData()
       }
     },
-    addLabel() {
+    async addLabel() {
       if(!this.selectedLabel || this.curModifyLabels.includes(this.selectedLabel)) return
-      this.$http.post('/source-image/addLabel', {id: this.curId, label: this.selectedLabel}).then(() => {
-        this.curModifyLabels.push(this.selectedLabel)
-      })
+      await this.$http.post('/source-image/addLabel', {id: this.curId, label: this.selectedLabel})
+      this.curModifyLabels.push(this.selectedLabel)
     },
-    removeLabel(label) {
-      this.$http.delete('/source-image/removeLabel', {params: {id: this.curId, label}}).then(() => {
-        let labelIndex = this.curModifyLabels.indexOf(label)
-        this.curModifyLabels.splice(labelIndex, 1)
-      })
+    async removeLabel(label) {
+      await this.$http.delete('/source-image/removeLabel', {params: {id: this.curId, label}})
+      let labelIndex = this.curModifyLabels.indexOf(label)
+      this.curModifyLabels.splice(labelIndex, 1)
     }
   },
-  created() {
-    this.$http.get('/system/config/get/image_label').then(data => {
-      this.labelList.push(...data)
-      this.loadData()
-    })
+  async created() {
+    const data = await this.$http.get('/system/config/get/image_label')
+    this.labelList.push(...data)
+    this.loadData()
   }
 }
 </script>

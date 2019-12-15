@@ -112,13 +112,12 @@ export default {
       this.search = {}
       this.loadData()
     },
-    loadData() {
+    async loadData() {
       this.loading = true
-      this.$http.get('/system/user/list', {params:this.search}).then(data => {
-        this.loading = false
-        this.search.total = data.total
-        this.systemUserData = data.data
-      })
+      const data = await this.$http.get('/system/user/list', {params:this.search})
+      this.loading = false
+      this.search.total = data.total
+      this.systemUserData = data.data
     },
     pageChange(pageNum) {
       this.search.pageNum = pageNum
@@ -143,15 +142,14 @@ export default {
       this.modalTitle = '修改用户'
       this.addModal = true
     },
-    save() {
-      this.$http.post('/system/user/save', this.formData).then(data => {
-        this.addModal = false
-        this.$Message.success(data.msg)
-        this.loadData()
-        // 清空表单
-        Object.keys(this.formData).forEach(key => {
-          this.formData[key] = null
-        })
+    async save() {
+      const { msg } = await this.$http.post('/system/user/save', this.formData)
+      this.addModal = false
+      this.$Message.success(msg)
+      this.loadData()
+      // 清空表单
+      Object.keys(this.formData).forEach(key => {
+        this.formData[key] = null
       })
     },
     delete(row) {
@@ -159,16 +157,15 @@ export default {
         title: '确认删除',
         content: `<p>是否确认删除 ${row.username} 用户？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.delete('/system/user/delete', {params: {id: row._id}}).then(data => {
-            this.$Modal.remove()
-            if(data.status) {
-              this.$Message.success(data.msg)
-              this.loadData()
-            } else {
-              this.$Message.warning(data.msg)
-            }
-          })
+        onOk: async () => {
+          const data = await this.$http.delete('/system/user/delete', {params: {id: row._id}})
+          this.$Modal.remove()
+          if(data.status) {
+            this.$Message.success(data.msg)
+            this.loadData()
+          } else {
+            this.$Message.warning(data.msg)
+          }
         }
       })
     }

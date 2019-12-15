@@ -83,7 +83,7 @@ export default {
         },{
           title: '类型',
           key: 'type',
-          width: 150,
+          width: 180,
           render: (h, data) => {
             let type = this.typeList.find(item => item.value === data.row.type)
             return type ? h('span', type.label) : undefined
@@ -94,11 +94,11 @@ export default {
         },{
           title: '来自',
           key: 'from',
-          width: 150
+          width: 180
         },{
           title: '作者',
           key: 'creator',
-          width: 150
+          width: 180
         },{
           title: '编号',
           key: 'number',
@@ -130,28 +130,26 @@ export default {
       }
       this.loadData()
     },
-    loadData(resetPage) {
+    async loadData(resetPage) {
       if(resetPage) {
         this.search.pageNum = 1
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/hitokoto/list', {params:this.search}).then(data => {
-        selectedData = null
-        this.loading = false
-        this.search.total = data.total
-        this.hitokotoData = data.data
-      })
+      const data = await this.$http.get('/hitokoto/list', {params:this.search})
+      selectedData = null
+      this.loading = false
+      this.search.total = data.total
+      this.hitokotoData = data.data
     },
-    save() {
-      this.$http.post('/hitokoto/save', this.formData).then(data => {
-        this.addModal = false
-        this.$Message.success(data.msg)
-        this.loadData()
-        // 清空表单
-        Object.keys(this.formData).forEach(key => {
-          this.formData[key] = null
-        })
+    async save() {
+      const data = await this.$http.post('/hitokoto/save', this.formData)
+      this.addModal = false
+      this.$Message.success(data.msg)
+      this.loadData()
+      // 清空表单
+      Object.keys(this.formData).forEach(key => {
+        this.formData[key] = null
       })
     },
     deleteAll() {
@@ -163,12 +161,11 @@ export default {
         title: '确认删除',
         content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}}).then(data => {
-            this.$Modal.remove()
-            this.$Message.success(data.msg)
-            this.loadData()
-          })
+        onOk: async () => {
+          const data = await this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}})
+          this.$Modal.remove()
+          this.$Message.success(data.msg)
+          this.loadData()
         }
       })
     },
@@ -184,11 +181,9 @@ export default {
       selectedData = selection
     }
   },
-  created() {
-    this.$http.get('/common/config/hitokoto_type').then(data => {
-      this.typeList = data
-      this.loadData()
-    })
+  async created() {
+    this.typeList = await this.$http.get('/common/config/hitokoto_type')
+    this.loadData()
   }
 }
 </script>

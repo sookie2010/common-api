@@ -181,18 +181,17 @@ export default {
       }
       this.loadData()
     },
-    loadData(resetPage) {
+    async loadData(resetPage) {
       if(resetPage) {
         this.search.pageNum = 1
         this.search.limit = 10
       }
       this.loading = true
-      this.$http.get('/article/list', {params:this.search}).then(data => {
-        selectedData = null
-        this.loading = false
-        this.search.total = data.total
-        this.articleData = data.data
-      })
+      const data = await this.$http.get('/article/list', {params:this.search})
+      selectedData = null
+      this.loading = false
+      this.search.total = data.total
+      this.articleData = data.data
     },
     splitWord() {
       if(!selectedData || !selectedData.length) {
@@ -203,15 +202,14 @@ export default {
         title: '操作确认',
         content: `<p>是否确认对选中的${selectedData.length}篇文章执行分词处理？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.put('/article/splitWord', {_ids: selectedData.map(item => item._id)}).then(data => {
-            this.$Modal.remove()
-            if(data.status) {
-              this.$Message.success(data.msg)
-            } else {
-              this.$Message.warning(data.msg)
-            }
-          })
+        onOk: async () => {
+          const data = await this.$http.put('/article/splitWord', {_ids: selectedData.map(item => item._id)})
+          this.$Modal.remove()
+          if(data.status) {
+            this.$Message.success(data.msg)
+          } else {
+            this.$Message.warning(data.msg)
+          }
         }
       })
     },
@@ -220,16 +218,15 @@ export default {
         title: '操作确认',
         content: `<p>确认拉取全部文章？</p>`,
         loading: true,
-        onOk: () => {
-          this.$http.get('/article/pull').then(data => {
-            this.$Modal.remove()
-            if(data.status) {
-              this.$Message.success(data.msg)
-              this.loadData()
-            } else {
-              this.$Message.warning(data.msg)
-            }
-          })
+        onOk: async () => {
+          const data = await this.$http.get('/article/pull')
+          this.$Modal.remove()
+          if(data.status) {
+            this.$Message.success(data.msg)
+            this.loadData()
+          } else {
+            this.$Message.warning(data.msg)
+          }
         }
       })
     },
@@ -282,14 +279,10 @@ export default {
       }
     },
   },
-  created() {
+  async created() {
     this.loadData()
-    this.$http.get('/article/listCategories').then(data => {
-      this.categories = data
-    })
-    this.$http.get('/article/listTags').then(data => {
-      this.tags = data
-    })
+    this.categories = await this.$http.get('/article/listCategories')
+    this.tags = await this.$http.get('/article/listTags')
   }
 }
 </script>

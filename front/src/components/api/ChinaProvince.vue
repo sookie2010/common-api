@@ -116,8 +116,7 @@ export default {
         this.areaList.length = 0
         return
       }
-      const data = await this.$http.get('/province/listAll', {params:{ province: value }})
-      this.cityList = data
+      this.cityList = await this.$http.get('/province/listAll', {params:{ province: value }})
     },
     async cityChange(value) {
       delete this.search.area
@@ -125,16 +124,14 @@ export default {
         this.areaList.length = 0
         return
       }
-      const data = await this.$http.get('/province/listAll', {params:{
+      this.areaList = await this.$http.get('/province/listAll', {params:{
           province: this.search.province,
           city: value
         }})
-      this.areaList = data
     }
   },
   async created() {
-    const data = await this.$http.get('/province/listAll')
-    this.provinceList = data
+    this.provinceList = await this.$http.get('/province/listAll')
   }
 }
 </script>

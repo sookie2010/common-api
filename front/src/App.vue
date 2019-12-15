@@ -107,19 +107,18 @@ export default {
       this.$router.push('/login')
     }
   },
-  created() {
+  async created() {
     if(!localStorage.getItem('login_token')) {
       this.$router.push('/login')
       return
     } 
-    this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')}).then(data => {
-      if(data.status) {
-        this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
-        this.$router.push('/')
-      } else {
-        this.$router.push('/login')
-      }
-    })
+    const data = await this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')})
+    if(data.status) {
+      this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
+      this.$router.push('/')
+    } else {
+      this.$router.push('/login')
+    }
   }
 }
 </script>
