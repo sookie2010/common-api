@@ -13,7 +13,7 @@ const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/ap
 const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
 const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage')
 const ChinaProvince = () => import(/* webpackChunkName: "chinaProvince" */'@/components/api/ChinaProvince')
-
+const SqlReplace = () => import(/* webpackChunkName: "sqlReplace" */'@/components/tool/SqlReplace')
 export const router = new Router({
   routes: [
     { path: '/', name: 'Welcome', component: Welcome },
@@ -25,7 +25,8 @@ export const router = new Router({
     { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
     { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall },
     { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage },
-    { path: '/api/chinaProvince', name: 'ChinaProvince', component: ChinaProvince }
+    { path: '/api/chinaProvince', name: 'ChinaProvince', component: ChinaProvince },
+    { path: '/tool/sqlReplace', name: 'SqlReplace', component: SqlReplace }
   ]
 })
 
@@ -39,7 +40,8 @@ export const routePathes = {
   'Hitokoto': ['首页', 'API数据', '一言'],
   'PhotoWall': ['首页', 'API数据', '照片墙'],
   'SourceImage': ['首页', 'API数据', '图片资源库'],
-  'ChinaProvince': ['首页', 'API数据', '中国行政区划']
+  'ChinaProvince': ['首页', 'API数据', '中国行政区划'],
+  'SqlReplace': ['首页', '工具', 'SQL占位符替换']
 }
 
 export const filterExclude = ['Login']

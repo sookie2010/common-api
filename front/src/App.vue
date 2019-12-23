@@ -5,7 +5,7 @@
       <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" >
         <Submenu v-for="(item,index) in menus" :key="index" :name="index">
           <template slot="title">
-            <Icon :type="item.icon"></Icon>{{item.name}}
+            <Icon :type="item.icon" size="16"></Icon>{{item.name}}
           </template>
           <Menu-item v-for="(subItem,subIndex) in item.child" :key="subIndex" :link="'/api/hitokoto'"
               :name="index + '-' + subIndex" >
@@ -62,7 +62,7 @@ export default {
       // 菜单项
       menus: [{
         name: '系统管理',
-        icon: 'ios-cog',
+        icon: 'md-options',
         child: [{
           name: '系统配置',
           path: '/system/config'
@@ -78,7 +78,7 @@ export default {
         }]
       },{
         name: 'API数据',
-        icon: 'ios-grid',
+        icon: 'logo-buffer',
         child: [{
           name: '一言',
           path: '/api/hitokoto'
@@ -91,6 +91,13 @@ export default {
         },{
           name: '中国行政区划',
           path: '/api/chinaProvince'
+        }]
+      },{
+        name: '工具',
+        icon: 'md-build',
+        child: [{
+          name: 'SQL占位符替换',
+          path: '/tool/sqlReplace'
         }]
       }]
     }
