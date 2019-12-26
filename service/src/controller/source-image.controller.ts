@@ -43,7 +43,7 @@ export default class SourceImageController {
     }
     return this.sourceImageService.save(sourceImageEntity)
   }
-  
+
   /**
    * 添加图片标签
    * @param id 图片ID

@@ -64,7 +64,7 @@ export default class SourceImageService {
       return new MsgResult(true, '删除成功')
     })
   }
-  
+
   /**
    * 修改图片标签
    * @param id 图片ID

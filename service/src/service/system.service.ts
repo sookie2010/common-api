@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../interface/system-config.interface'
 import SystemUser from '../interface/system-user.interface'
@@ -7,7 +7,8 @@ import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto'
 
-import { zip } from 'compressing'
+import * as child_process from 'child_process'
+import * as fs from 'fs'
 
 @Injectable()
 export default class SystemService {
@@ -124,24 +125,25 @@ export default class SystemService {
    */
   async deployBlogZip(blogZip: Buffer): Promise<MsgResult> {
 
-    const tempPathConfig = await this.systemConfigModel.findOne({name: 'deploy_temp'}).exec()
-    const tempPath: string = tempPathConfig ? tempPathConfig.value.toString() : '/tmp/blog'
+    const deployConfig = await this.systemConfigModel.findOne({name: 'deploy_config'}).exec()
+    const tempPath: string = deployConfig.value['temp'] || '/tmp/blog'
     // 删除可能存在的解压后的目录
     CommonUtils.deleteFolderRecursive(tempPath)
+    fs.writeFileSync(`${tempPath}/BlogDeploy.zip`, blogZip)
     try {
-      await zip.uncompress(blogZip, tempPath)
+      child_process.execSync('unzip -q BlogDeploy.zip -d BlogDeploy', {cwd: tempPath})
     } catch (err) {
-      return new MsgResult(false, `解压出错 ${err.message}`)
+      Logger.error(`解压出错 ${err.toString()}`)
     }
-    const deployPathConfig = await this.systemConfigModel.findOne({name: 'deploy_path'}).exec()
+    const deployPath: string = deployConfig.value['path']
 
-    if (!deployPathConfig) {
-      return new MsgResult(false, '未配置deploy_path(发布路径)')
+    if (!deployPath) {
+      return new MsgResult(false, '未配置deploy_config.path(发布路径)')
     }
     // 删除目前已发布的文件
-    CommonUtils.deleteFolderRecursive(deployPathConfig.value.toString())
+    CommonUtils.deleteFolderRecursive(deployPath)
     // 拷贝解压后的文件到发布目录
-    CommonUtils.copyFolderRecursive(tempPath, deployPathConfig.value.toString())
+    CommonUtils.copyFolderRecursive(`${tempPath}/BlogDeploy`, deployPath)
 
     return new MsgResult(true, '发布成功')
   }
