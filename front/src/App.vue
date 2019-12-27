@@ -121,7 +121,8 @@ export default {
     } 
     const data = await this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')})
     if(data.status) {
-      this.$store.commit('login', {token: localStorage.getItem('login_token'), userInfo: data.userInfo})
+      // 如果是已过期的token 服务端会签发新的token
+      this.$store.commit('login', {token: data.newToken || localStorage.getItem('login_token'), userInfo: data.userInfo})
       this.$router.push('/')
     } else {
       this.$router.push('/login')

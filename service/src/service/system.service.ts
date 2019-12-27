@@ -134,6 +134,7 @@ export default class SystemService {
       child_process.execSync('unzip -q BlogDeploy.zip -d BlogDeploy', {cwd: tempPath})
     } catch (err) {
       Logger.error(`解压出错 ${err.toString()}`)
+      return new MsgResult(false, `解压出错 ${err.toString()}`)
     }
     const deployPath: string = deployConfig.value['path']
 

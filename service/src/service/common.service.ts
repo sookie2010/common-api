@@ -33,7 +33,7 @@ export default class CommonService {
       return this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     }).then((systemConfig: SystemConfig) => {
       const token = jwt.sign(signUser, systemConfig.value.toString()/*秘钥*/, {
-        expiresIn: '1h', /*过期时间*/
+        expiresIn: '1h' /*过期时间*/
       })
       return Promise.resolve({token, userInfo: signUser})
     }).catch(result => {
@@ -45,17 +45,19 @@ export default class CommonService {
    * @param token Token字符串
    */
   async verifyToken(token: string): Promise<object> {
-    return this.systemConfigModel.findOne({name: 'token_private_key'}).exec().then((systemConfig: SystemConfig) => {
+    const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
+    try {
       const userInfo = jwt.verify(token, systemConfig.value.toString())
       return {status: true, userInfo}
-    }).catch(err => {
-      let msg = null
-      if (err instanceof jwt.TokenExpiredError) {
-        msg = '登录超时，请重新登录'
-      } else if (err instanceof jwt.JsonWebTokenError) {
-        msg = 'Token无效，请重新登录'
+    } catch (err) {
+      if (err instanceof jwt.JsonWebTokenError) {
+        return new MsgResult(false, 'Token无效，请重新登录')
+      } else if (err instanceof jwt.TokenExpiredError) {
+        // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
+        const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: false})
+        const newToken = jwt.sign(userInfo, systemConfig.value.toString(), {expiresIn: '1h'})
+        return {status: true, userInfo, newToken}
       }
-      return new MsgResult(false, msg)
-    })
+    }
   }
 }
