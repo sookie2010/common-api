@@ -9,6 +9,7 @@ const Article = () => import(/* webpackChunkName: "article" */'@/components/syst
 const Statistics = () => import(/* webpackChunkName: "Statistics" */'@/components/system/Statistics')
 const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/components/system/SystemConfig')
 const SystemUser = () => import(/* webpackChunkName: "systemUser" */'@/components/system/SystemUser')
+const SystemRole = () => import(/* webpackChunkName: "systemRole" */'@/components/system/SystemRole')
 const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
 const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
 const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage')
@@ -22,6 +23,7 @@ export const router = new Router({
     { path: '/system/statistics', name: 'Statistics', component: Statistics },
     { path: '/system/config', name: 'SystemConfig', component: SystemConfig },
     { path: '/system/user', name: 'SystemUser', component: SystemUser },
+    { path: '/system/role', name: 'SystemRole', component: SystemRole },
     { path: '/api/hitokoto', name: 'Hitokoto', component: Hitokoto },
     { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall },
     { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage },
@@ -35,6 +37,7 @@ export const routePathes = {
   'Login': ['首页', '登录'],
   'SystemConfig': ['首页', '系统管理', '系统配置'],
   'SystemUser': ['首页', '系统管理', '用户管理'],
+  'SystemRole': ['首页', '系统管理', '角色管理'],
   'Article': ['首页', '系统管理', '博客文章'],
   'Statistics': ['首页', '系统管理', '分析统计'],
   'Hitokoto': ['首页', 'API数据', '一言'],

@@ -74,18 +74,17 @@ export default class ArticleService {
    * @param deep 树深度
    * @param parent 父节点名称
    */
-  async tree(deep: number, parent: string): Promise<string[]> {
+  async tree(deep: number, parent: string): Promise<object[]> {
     const $match = {}
     if(deep && parent) {
       $match[`path.${deep-1}`] = parent
     } else {
       $match['path.0'] = {$exists: true}
     }
-    const treeNodes = await this.articleModel.aggregate([
+    return await this.articleModel.aggregate([
       { $match },
       { $group: {_id: {$arrayElemAt: ['$path',deep]}, cnt: {$sum: 1}}},
     ])
-    return treeNodes.map(item => parent ? item._id : `${item._id}(${item.cnt})`)
   }
   /**
    * 对文章内容执行分词处理

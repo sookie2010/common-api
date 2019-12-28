@@ -18,6 +18,7 @@ import { HitokotoSchema } from './schema/hitokoto.schema'
 import { PhotoWallSchema } from './schema/photo-wall.schema'
 import { SystemConfigSchema } from './schema/system-config.schema'
 import { SystemUserSchema } from './schema/system-user.schema'
+import { SystemRoleSchema } from './schema/system-role.schema'
 import { ArticleSchema, ArticleKeysSchema } from './schema/article.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
 import { ProvinceSchema } from './schema/province.schema'
@@ -36,6 +37,7 @@ const dbConfig = require('../config/db.json')
       { name: 'PhotoWall', schema: PhotoWallSchema },
       { name: 'SystemConfig', schema: SystemConfigSchema },
       { name: 'SystemUser', schema: SystemUserSchema },
+      { name: 'SystemRole', schema: SystemRoleSchema },
       { name: 'Article', schema: ArticleSchema },
       { name: 'ArticleKeys', schema: ArticleKeysSchema },
       { name: 'SourceImage', schema: SourceImageSchema },

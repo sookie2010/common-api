@@ -70,6 +70,9 @@ export default {
           name: '用户管理',
           path: '/system/user'
         },{
+          name: '角色管理',
+          path: '/system/role'
+        },{
           name: '博客文章',
           path: '/system/article'
         },{

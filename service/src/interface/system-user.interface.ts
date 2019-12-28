@@ -5,6 +5,7 @@ export default interface SystemUser extends Document {
   username?: string // 用户名
   password?: string // 密码(SHA1)
   realname?: string // 显示名称
+  role_ids?: Types.ObjectId[] // 角色ID们
   created_at?: Date // 创建时间
   updated_at?: Date // 更新时间
 }

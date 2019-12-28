@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../interface/system-config.interface'
 import SystemUser from '../interface/system-user.interface'
+import SystemRole from '../interface/system-role.interface'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto'
@@ -13,6 +14,7 @@ import * as fs from 'fs'
 @Injectable()
 export default class SystemService {
   constructor(@InjectModel('SystemUser') private readonly systemUserModel: Model<SystemUser>,
+              @InjectModel('SystemRole') private readonly systemRoleModel: Model<SystemRole>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {}
 
   /**
@@ -23,10 +25,8 @@ export default class SystemService {
   async listUser(systemUser: SystemUser, page: Page): Promise<Page> {
     const qc: BaseQc = {}
     if (systemUser.username) {
-      qc.$or = [
-        {username: new RegExp(CommonUtils.escapeRegexStr(systemUser.username))},
-        {realname: new RegExp(CommonUtils.escapeRegexStr(systemUser.username))},
-      ]
+      let reg = new RegExp(CommonUtils.escapeRegexStr(systemUser.username))
+      qc.$or = [{username: reg},{realname: reg}]
     }
     return this.systemUserModel.countDocuments(qc).exec().then((cnt: number) => {
       page.total = cnt
@@ -42,6 +42,9 @@ export default class SystemService {
    */
   async saveUser(systemUser: SystemUser): Promise<MsgResult> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
+    if(systemUser.role_ids) {
+      systemUser.role_ids = systemUser.role_ids.map(roleId => new Types.ObjectId(roleId))
+    }
     if (systemUser._id) { // 更新
       const userId = systemUser._id
       delete systemUser._id
@@ -62,6 +65,58 @@ export default class SystemService {
       return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
     }
     await this.systemUserModel.deleteOne({_id}).exec()
+    return Promise.resolve(new MsgResult(true, '删除成功'))
+  }
+  /**
+   * 查询角色(无分页)
+   */
+  async listRoleAll(): Promise<SystemRole[]> {
+    return await this.systemRoleModel.find().exec()
+  }
+  /**
+   * 查询角色列表
+   * @param systemUser 查询条件
+   * @param page 分页条件
+   */
+  async listRole(systemRole: SystemRole, page: Page): Promise<Page> {
+    const qc: BaseQc = {}
+    if (systemRole.name) {
+      let reg = new RegExp(CommonUtils.escapeRegexStr(systemRole.name))
+      qc.$or = [{name: reg},{description: reg}]
+    }
+    return this.systemRoleModel.countDocuments(qc).exec().then((cnt: number) => {
+      page.total = cnt
+      return this.systemRoleModel.find(qc).skip(page.start).limit(page.limit).exec()
+    }).then((systemRoles: SystemRole[]) => {
+      page.data = systemRoles
+      return page
+    })
+  }
+  /**
+   * 保存角色
+   * @param systemUser 角色对象
+   */
+  async saveRole(systemRole: SystemRole): Promise<MsgResult> {
+    if (systemRole._id) { // 更新
+      const roleId = systemRole._id
+      delete systemRole._id
+      await this.systemRoleModel.updateOne({_id: roleId}, {$set: systemRole})
+      return Promise.resolve(new MsgResult(true, '修改成功'))
+    } else { // 新增
+      systemRole._id = new Types.ObjectId()
+      await this.systemRoleModel.create(systemRole)
+      return Promise.resolve(new MsgResult(true, '保存成功'))
+    }
+  }
+  /**
+   * 删除角色
+   * @param _id 角色ID
+   */
+  async deleteRole(_id: string): Promise<MsgResult> {
+    if (!_id) {
+      return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
+    }
+    await this.systemRoleModel.deleteOne({_id}).exec()
     return Promise.resolve(new MsgResult(true, '删除成功'))
   }
   /**

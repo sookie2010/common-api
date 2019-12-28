@@ -292,9 +292,9 @@ export default {
       }
     },
     async loadTreeData(item, callback) {
-      const childNodes = await this.$http.get('/article/tree', {params:{deep:1, parent:item.title.replace(/\([^\)]*\)/g,'')}})
+      const childNodes = await this.$http.get('/article/tree', {params:{deep:1, parent:item.name}})
       callback(childNodes.map(childItem => {
-        return { title: childItem, expand: false }
+        return { title: childItem._id, expand: false }
       }))
     }
   },
@@ -304,7 +304,7 @@ export default {
     this.tags = await this.$http.get('/article/listTags')
     const treeNodes = await this.$http.get('/article/tree', {params:{deep:0}})
     this.articleTree.push(...treeNodes.map(item => {
-      return { title: item, expand: false, loading: false, children:[] }
+      return { title: `${item._id}(${item.cnt})`, name: item._id, expand: false, loading: false, children:[] }
     }))
   }
 }

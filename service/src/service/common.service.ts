@@ -29,6 +29,7 @@ export default class CommonService {
         _id: user._id.toString(),
         username: user.username,
         realname: user.realname,
+        role_ids: user.role_ids
       }
       return this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     }).then((systemConfig: SystemConfig) => {
@@ -54,7 +55,7 @@ export default class CommonService {
         return new MsgResult(false, 'Token无效，请重新登录')
       } else if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
-        const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: false})
+        const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: true})
         const newToken = jwt.sign(userInfo, systemConfig.value.toString(), {expiresIn: '7d'})
         return {status: true, userInfo, newToken}
       }

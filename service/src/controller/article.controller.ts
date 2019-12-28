@@ -28,7 +28,7 @@ export default class ArticleController {
    * @param parent 父节点名称
    */
   @Get('/tree')
-  tree(@Query('deep')deep: number, @Query('parent')parent: string): Promise<string[]> {
+  tree(@Query('deep')deep: number, @Query('parent')parent: string): Promise<object[]> {
     return this.articleService.tree(+deep, parent)
   }
 

@@ -4,6 +4,7 @@ import LoginInterceptor from '../common/login.interceptor'
 import SystemService from '../service/system.service'
 import SystemConfig from '../interface/system-config.interface'
 import SystemUser from '../interface/system-user.interface'
+import SystemRole from '../interface/system-role.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
 
@@ -32,11 +33,45 @@ export default class SystemController {
   }
   /**
    * 删除用户
-   * @param id 配置项ID
+   * @param id 用户ID
    */
   @Delete('/user/delete')
   deleteUser(@Query('id')id: string): Promise<MsgResult> {
     return this.systemService.deleteUser(id)
+  }
+  /**
+   * 查询角色列表(无分页)
+   * @param systemRole 查询条件
+   * @param page 分页
+   */
+  @Get('/role/listAll')
+  listRoleAll(): Promise<SystemRole[]> {
+    return this.systemService.listRoleAll()
+  }
+  /**
+   * 查询角色列表
+   * @param systemRole 查询条件
+   * @param page 分页
+   */
+  @Get('/role/list')
+  listRole(@Query() systemRole: SystemRole, @Query(PageTransform) page: Page): Promise<Page> {
+    return this.systemService.listRole(systemRole, page)
+  }
+  /**
+   * 新增角色
+   * @param systemRole 角色对象
+   */
+  @Post('/role/save')
+  saveRole(@Body() systemRole: SystemRole): Promise<MsgResult> {
+    return this.systemService.saveRole(systemRole)
+  }
+  /**
+   * 删除角色
+   * @param id 角色ID
+   */
+  @Delete('/role/delete')
+  deleteRole(@Query('id')id: string): Promise<MsgResult> {
+    return this.systemService.deleteRole(id)
   }
   /**
    * 查询配置列表

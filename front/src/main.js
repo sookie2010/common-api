@@ -39,21 +39,23 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(res=> {
   return res.data
 }, err => {
-  if(err.response.status === 403) {
-    vm.$Modal.warning({
-      title: '警告',
-      content: err.response.data.msg,
-      onOk() {
-        vm.$router.push('/login')
-      }
-    })
-  } else if(err.response.status >= 500) {
+  if(err.response.status >= 500) {
     vm.$Modal.error({
       title: '错误',
       content: '服务器内部错误'
     })
+  } else if(err.response.status >= 400) {
+    vm.$Modal.warning({
+      title: '警告',
+      content: err.response.data.msg,
+      onOk() {
+        if(err.response.status === 403) {
+          vm.$router.push('/login')
+        }
+      }
+    })
   }
-  return Promise.resolve(err);
+  return Promise.resolve(err)
 })
 Vue.prototype.$http = axios
 /*------axios end------*/

@@ -2,10 +2,10 @@
 <div>
   <Row>
     <Col span="3">
-      <div class="search-title">用户名/昵称：</div>
+      <div class="search-title">角色名称/描述：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.username" @on-enter="loadData" />
+      <Input v-model="search.name" @on-enter="loadData" />
     </Col>
     <Col span="5" offset="12">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
@@ -16,27 +16,33 @@
     <Button type="primary" @click="add">添加</Button>
   </div>
   <div class="table-container">
-    <Table border :loading="loading" :columns="systemUserColumns" :data="systemUserData" height="520" ></Table>
+    <Table border :loading="loading" :columns="systemRoleColumns" :data="systemRoleData" height="520" ></Table>
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
   </div>
   <Modal v-model="addModal" :title="modalTitle" :loading="true" @on-ok="save">
-    <Form :model="formData" :label-width="80">
-      <Form-item label="用户名">
-        <Input v-model="formData.username" />
+    <Form :model="formData" :label-width="120">
+      <Form-item label="角色名称">
+        <Input v-model="formData.name" />
       </Form-item>
-      <Form-item label="密码">
-        <Input v-model="formData.password" type="password" />
+      <Form-item label="描述">
+        <Input v-model="formData.description" />
       </Form-item>
-      <Form-item label="昵称">
-        <Input v-model="formData.realname" />
-      </Form-item>
-      <Form-item label="角色">
-        <Select v-model="formData.role_ids" multiple >
-          <Option v-for="role in roles" :value="role._id" :key="role._id">{{role.name}}</Option>
+      <Form-item label="允许的请求类型">
+        <Select v-model="formData.methods" multiple >
+          <Option value="GET">GET</Option>
+          <Option value="POST">POST</Option>
+          <Option value="PUT">PUT</Option>
+          <Option value="DELETE">DELETE</Option>
         </Select>
+      </Form-item>
+      <Form-item label="允许的URI">
+        
+      </Form-item>
+      <Form-item label="禁止的URI">
+        
       </Form-item>
     </Form>
   </Modal>
@@ -54,6 +60,7 @@ import Modal from 'view-design/src/components/modal'
 import Form from 'view-design/src/components/form'
 import FormItem from 'view-design/src/components/form-item'
 import Page from 'view-design/src/components/page'
+import Tag from 'view-design/src/components/tag'
 
 import moment from 'moment'
 
@@ -69,12 +76,20 @@ export default {
         limit: 10,
         total: null
       },
-      systemUserColumns: [{
-          title: '用户名',
-          key: 'username'
+      systemRoleColumns: [{
+          title: '角色名称',
+          key: 'name'
         },{
-          title: '姓名',
-          key: 'realname'
+          title: '允许的请求类型',
+          key: 'methods',
+          render (h, data) {
+            return h('div', data.row.methods.map(method => {
+              return h(Tag, {
+                props: {color: 'default'},
+                style: {marginRight: '5px'}
+              },method)
+            }))
+          }
         },{
           title: '创建时间',
           key: 'created_at',
@@ -85,7 +100,7 @@ export default {
           title: '更新时间',
           key: 'updated_at',
           render (h, data) {
-            return data.row.updated_at ? h('span', moment(data.row.updated_at).format('YYYY-MM-DD HH:mm:ss')) : undefined
+            return h('span', moment(data.row.updated_at).format('YYYY-MM-DD HH:mm:ss'))
           }
         },{
           title: '操作',
@@ -103,16 +118,16 @@ export default {
             ])
           }
         }],
-      systemUserData: [],
-      roles: [],
+      systemRoleData: [],
       addModal: false,
       modalTitle: null,
       formData: {
         _id: null,
-        username: null,
-        password: null,
-        realname: null,
-        role_ids: []
+        name: null,
+        description: null,
+        methods: [],
+        include_uri: [],
+        exclude_uri: []
       }
     }
   },
@@ -123,10 +138,10 @@ export default {
     },
     async loadData() {
       this.loading = true
-      const data = await this.$http.get('/system/user/list', {params:this.search})
+      const data = await this.$http.get('/system/role/list', {params:this.search})
       this.loading = false
       this.search.total = data.total
-      this.systemUserData = data.data
+      this.systemRoleData = data.data
     },
     pageChange(pageNum) {
       this.search.pageNum = pageNum
@@ -145,19 +160,21 @@ export default {
           this.formData[key] = null
         }
       })
-      this.modalTitle = '新增用户'
+      this.modalTitle = '新增角色'
       this.addModal = true
     },
     update(row) {
       this.formData._id = row._id
-      this.formData.username = row.username
-      this.formData.realname = row.realname
-      this.formData.role_ids = row.role_ids
-      this.modalTitle = '修改用户'
+      this.formData.name = row.name
+      this.formData.description = row.description
+      this.formData.methods = row.methods
+      this.formData.include_uri = row.include_uri
+      this.formData.exclude_uri = row.exclude_uri
+      this.modalTitle = '修改角色'
       this.addModal = true
     },
     async save() {
-      const { msg } = await this.$http.post('/system/user/save', this.formData)
+      const { msg } = await this.$http.post('/system/role/save', this.formData)
       this.addModal = false
       this.$Message.success(msg)
       this.loadData()
@@ -173,10 +190,10 @@ export default {
     delete(row) {
       this.$Modal.confirm({
         title: '确认删除',
-        content: `<p>是否确认删除 ${row.username} 用户？</p>`,
+        content: `<p>是否确认删除 ${row.name} 角色？</p>`,
         loading: true,
         onOk: async () => {
-          const data = await this.$http.delete('/system/user/delete', {params: {id: row._id}})
+          const data = await this.$http.delete('/system/role/delete', {params: {id: row._id}})
           this.$Modal.remove()
           if(data.status) {
             this.$Message.success(data.msg)
@@ -188,9 +205,8 @@ export default {
       })
     }
   },
-  async created() {
+  created() {
     this.loadData()
-    this.roles = await this.$http.get('/system/role/listAll')
   }
 }
 </script>
