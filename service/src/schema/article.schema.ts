@@ -3,7 +3,7 @@ import { Schema, Types } from 'mongoose'
 export const ArticleSchema = new Schema({
   _id: Types.ObjectId,
   title: String,
-  path: String,
+  path: Array,
   categories: Array,
   tags: Array,
   create_date: Date,

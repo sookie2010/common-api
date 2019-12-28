@@ -5,7 +5,7 @@ import CommonUtils from '../common/common.util'
 export interface ArticleEntity {
   _id?: Types.ObjectId
   title?: string // 文章标题
-  path?: string // 文章访问路径
+  path?: string[] // 文章访问路径
   created_date?: Date // 创建时间
   categories?: string[] // 分类
   tags?: string[] // 标签

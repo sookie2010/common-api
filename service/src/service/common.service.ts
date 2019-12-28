@@ -33,7 +33,7 @@ export default class CommonService {
       return this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     }).then((systemConfig: SystemConfig) => {
       const token = jwt.sign(signUser, systemConfig.value.toString()/*秘钥*/, {
-        expiresIn: '1h' /*过期时间*/
+        expiresIn: '7d' /*过期时间*/
       })
       return Promise.resolve({token, userInfo: signUser})
     }).catch(result => {
@@ -55,7 +55,7 @@ export default class CommonService {
       } else if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
         const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: false})
-        const newToken = jwt.sign(userInfo, systemConfig.value.toString(), {expiresIn: '1h'})
+        const newToken = jwt.sign(userInfo, systemConfig.value.toString(), {expiresIn: '7d'})
         return {status: true, userInfo, newToken}
       }
     }

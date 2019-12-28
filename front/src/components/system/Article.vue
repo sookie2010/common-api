@@ -64,9 +64,17 @@
       <Button type="primary" icon="ios-cloud-upload-outline">发布博客</Button>
     </Upload>
   </div>
-  <div class="table-container">
-    <Table border :loading="loading" :columns="articleColumns" :data="articleData" height="520" @on-selection-change="dataSelect"></Table>
-  </div>
+  <Row>
+    <Col span="4" style="height:520px;overflow:auto;">
+      <Tree :data="articleTree" :load-data="loadTreeData"></Tree>
+    </Col>
+    <Col span="20">
+      <div class="table-container">
+        <Table border :loading="loading" :columns="articleColumns" :data="articleData" height="520" @on-selection-change="dataSelect"></Table>
+      </div>
+    </Col>
+  </Row>
+  
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
@@ -86,13 +94,14 @@ import Page from 'view-design/src/components/page'
 import Icon from 'view-design/src/components/icon'
 import Select from 'view-design/src/components/select'
 import Option from 'view-design/src/components/option'
+import Tree from 'view-design/src/components/tree'
 
 import moment from 'moment'
 
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, DatePicker, Button, Upload, Page, Select, Option
+    Table, Row, Col, Input, DatePicker, Button, Upload, Page, Select, Option, Tree
   },
   data() {
     return {
@@ -114,7 +123,10 @@ export default {
           key: 'title'
         },{
           title: '路径',
-          key: 'path'
+          key: 'path',
+          render (h, data) {
+            return h('span', data.row.path.join('/'))
+          }
         },{
           title: '分类',
           key: 'categories',
@@ -168,6 +180,7 @@ export default {
           }
         }],
       articleData: [],
+      articleTree: [],
       tags: [], // 所有标签
       categories: [] // 所有分类
     }
@@ -278,11 +291,21 @@ export default {
         closeUploadTip = null
       }
     },
+    async loadTreeData(item, callback) {
+      const childNodes = await this.$http.get('/article/tree', {params:{deep:1, parent:item.title.replace(/\([^\)]*\)/g,'')}})
+      callback(childNodes.map(childItem => {
+        return { title: childItem, expand: false }
+      }))
+    }
   },
   async created() {
     this.loadData()
     this.categories = await this.$http.get('/article/listCategories')
     this.tags = await this.$http.get('/article/listTags')
+    const treeNodes = await this.$http.get('/article/tree', {params:{deep:0}})
+    this.articleTree.push(...treeNodes.map(item => {
+      return { title: item, expand: false, loading: false, children:[] }
+    }))
   }
 }
 </script>

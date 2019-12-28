@@ -70,6 +70,24 @@ export default class ArticleService {
     })
   }
   /**
+   * 查询文章目录树
+   * @param deep 树深度
+   * @param parent 父节点名称
+   */
+  async tree(deep: number, parent: string): Promise<string[]> {
+    const $match = {}
+    if(deep && parent) {
+      $match[`path.${deep-1}`] = parent
+    } else {
+      $match['path.0'] = {$exists: true}
+    }
+    const treeNodes = await this.articleModel.aggregate([
+      { $match },
+      { $group: {_id: {$arrayElemAt: ['$path',deep]}, cnt: {$sum: 1}}},
+    ])
+    return treeNodes.map(item => parent ? item._id : `${item._id}(${item.cnt})`)
+  }
+  /**
    * 对文章内容执行分词处理
    * @param ids 文章ID们
    */
@@ -98,10 +116,10 @@ export default class ArticleService {
       splitedWords.push(...nodejieba.cut(whiteSpaceSplited, true))
     }
     const [ searchResult ]: ArticleDto[] = await this.articleKeysModel.aggregate([
-      {$unwind: '$keys'},
-      {$match: {keys: {$in: splitedWords}}},
-      {$group: {_id: '$article_id', num: {$sum: 1}}},
-      {$sort: {num: -1}},
+      { $unwind: '$keys' },
+      { $match: {keys: {$in: splitedWords}} },
+      { $group: {_id: '$article_id', num: {$sum: 1}} },
+      { $sort: {num: -1} },
       { $lookup: {
           from: 'article',
           localField: '_id',
@@ -109,7 +127,7 @@ export default class ArticleService {
           as: 'articles',
         },
       },
-      { $group: {_id: 1, articles: {$push: '$articles'}, total: {$sum: 1}}},
+      { $group: {_id: 1, articles: {$push: '$articles'}, total: {$sum: 1}} },
       { $project : {
           _id: 1,
           total: 1,
@@ -144,11 +162,15 @@ export default class ArticleService {
     let updateCnt: number = 0 // 更新文章计数
     let createCnt: number = 0 // 新增文章计数
     for (const xmlArticle of articleJsonObj.search.entry) {
+      let pathArr: string[] = xmlArticle.path.split('/')
+      if(!pathArr[pathArr.length - 1]) {
+        pathArr.pop() // 去除最后一个空字符串
+      }
       const queryParams: ArticleEntity = {
         // 标题
         title: xmlArticle.title,
         // 路径
-        path: xmlArticle.path,
+        path: pathArr,
       }
       // 正文内容
       const articleContent: string = xmlArticle.content.__cdata.replace(/<[^>]*>/g, '')

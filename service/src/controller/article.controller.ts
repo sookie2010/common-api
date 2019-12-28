@@ -21,6 +21,17 @@ export default class ArticleController {
   list(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<Page> {
     return this.articleService.list(articleDto, page)
   }
+
+  /**
+   * 查询文章目录树
+   * @param deep 树深度
+   * @param parent 父节点名称
+   */
+  @Get('/tree')
+  tree(@Query('deep')deep: number, @Query('parent')parent: string): Promise<string[]> {
+    return this.articleService.tree(+deep, parent)
+  }
+
   /**
    * 批量执行文章分词处理
    * @param articleDto 包含多个ID
@@ -47,7 +58,7 @@ export default class ArticleController {
   }
 
   /**
-   * 列出所有标签
+   * 列出所有分类
    */
   @Get('/listCategories')
   listCategories(): Promise<string[]> {
