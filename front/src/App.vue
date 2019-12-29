@@ -2,7 +2,7 @@
 <div id="app" class="layout">
   <Row type="flex">
     <Col span="4" class="layout-left">
-      <Menu theme="dark" width="auto" :open-names="[1]" :accordion="true" >
+      <Menu theme="light" width="auto" :open-names="[1]" :accordion="true" style="height:100%;overflow-y:auto" >
         <Submenu v-for="(item,index) in menus" :key="index" :name="index">
           <template slot="title">
             <Icon :type="item.icon" size="16"></Icon>{{item.name}}
@@ -161,9 +161,6 @@ export default {
     text-align: center;
     padding: 10px 0 20px;
     color: #9ea7b4;
-  }
-  .layout-left{
-    background: #464c5b;
   }
   .layout-right{
     display: flex !important;

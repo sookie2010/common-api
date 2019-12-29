@@ -39,10 +39,16 @@
         </Select>
       </Form-item>
       <Form-item label="允许的URI">
-        
+        <Input v-model="uri.include">
+          <Button slot="append" icon="md-add" @click="addUri('include_uri', uri.include)"></Button>
+        </Input>
+        <Tag v-for="uri in formData.include_uri" :key="uri" closable @on-close="removeUri('include_uri', uri)">{{uri}}</Tag>
       </Form-item>
       <Form-item label="禁止的URI">
-        
+        <Input v-model="uri.exclude">
+          <Button slot="append" icon="md-add" @click="addUri('exclude_uri', uri.exclude)"></Button>
+        </Input>
+        <Tag v-for="uri in formData.exclude_uri" :key="uri" closable @on-close="removeUri('include_uri', uri)">{{uri}}</Tag>
       </Form-item>
     </Form>
   </Modal>
@@ -66,7 +72,7 @@ import moment from 'moment'
 
 export default {
   components: {
-    Table, Row, Col, Input, Select, Option, Button, Modal, Form, FormItem, Page
+    Table, Row, Col, Input, Select, Option, Button, Modal, Form, FormItem, Page, Tag
   },
   data() {
     return {
@@ -121,6 +127,10 @@ export default {
       systemRoleData: [],
       addModal: false,
       modalTitle: null,
+      uri: {
+        include: null,
+        exclude: null
+      },
       formData: {
         _id: null,
         name: null,
@@ -153,6 +163,8 @@ export default {
     },
     add() {
       // 清空表单
+      this.uri.include = null
+      this.uri.exclude = null
       Object.keys(this.formData).forEach(key => {
         if(Array.isArray(this.formData[key])) {
           this.formData[key].splice(0, this.formData[key].length)
@@ -164,6 +176,8 @@ export default {
       this.addModal = true
     },
     update(row) {
+      this.uri.include = null
+      this.uri.exclude = null
       this.formData._id = row._id
       this.formData.name = row.name
       this.formData.description = row.description
@@ -179,6 +193,8 @@ export default {
       this.$Message.success(msg)
       this.loadData()
       // 清空表单
+      this.uri.include = null
+      this.uri.exclude = null
       Object.keys(this.formData).forEach(key => {
         if(Array.isArray(this.formData[key])) {
           this.formData[key].splice(0, this.formData[key].length)
@@ -203,6 +219,18 @@ export default {
           }
         }
       })
+    },
+    addUri(fieldName, uri) {
+      if(!uri) return
+      if(this.formData[fieldName].indexOf(uri) === -1) {
+        this.formData[fieldName].push(uri)
+      }
+    },
+    removeUri(fieldName, uri) {
+      let index = this.formData[fieldName].indexOf(uri)
+      if(index !== -1) {
+        this.formData[fieldName].splice(index, 1)
+      }
     }
   },
   created() {
