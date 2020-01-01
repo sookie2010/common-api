@@ -3,8 +3,8 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const Welcome = import('@/components/Welcome')
-const Login = import('@/components/Login')
+const Welcome = () => import('@/components/Welcome')
+const Login = () => import('@/components/Login')
 const Article = () => import(/* webpackChunkName: "article" */'@/components/system/Article')
 const Statistics = () => import(/* webpackChunkName: "Statistics" */'@/components/system/Statistics')
 const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/components/system/SystemConfig')

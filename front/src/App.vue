@@ -35,7 +35,7 @@
       <div class="layout-content">
         <router-view class="main-view"></router-view>
       </div>
-      <div class="layout-copy">2016-2019 &copy; colorfulsweet</div>
+      <div class="layout-copy">2016-2020 &copy; colorfulsweet</div>
     </Col>
   </Row>
 </div>
