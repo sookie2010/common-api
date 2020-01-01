@@ -216,10 +216,6 @@ export default {
     padding: 10px;
     text-align: center;
   }
-  .carousel-container {
-    width: 80%;
-    margin:0 auto;
-  }
   .carsouel-img {
     position: relative;
     left: 50%;transform:
