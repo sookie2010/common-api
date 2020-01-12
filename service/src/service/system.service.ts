@@ -184,6 +184,8 @@ export default class SystemService {
     const tempPath: string = deployConfig.value['temp'] || '/tmp/blog'
     // 删除可能存在的解压后的目录
     CommonUtils.deleteFolderRecursive(tempPath)
+    // 创建临时目录
+    fs.mkdirSync(tempPath, {recursive: true})
     fs.writeFileSync(`${tempPath}/BlogDeploy.zip`, blogZip)
     try {
       child_process.execSync('unzip -q BlogDeploy.zip -d BlogDeploy', {cwd: tempPath})
