@@ -7,6 +7,7 @@ export const ArticleSchema = new Schema({
   categories: Array,
   tags: Array,
   create_date: Date,
+  md: String,
   content: String,
   content_hash: String,
 }, { collection: 'article', versionKey: false })

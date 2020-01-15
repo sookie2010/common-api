@@ -10,8 +10,10 @@ Vue.config.productionTip = false
 import 'view-design/dist/styles/iview.css'
 import Message from 'view-design/src/components/message'
 import Modal from 'view-design/src/components/modal'
+import LoadingBar from 'view-design/src/components/loading-bar'
 Vue.prototype.$Message = Message
 Vue.prototype.$Modal = Modal
+Vue.prototype.$Loading = LoadingBar
 /*------iview end------*/
 
 /*------axios start------*/

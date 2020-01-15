@@ -10,6 +10,7 @@ export interface ArticleEntity {
   categories?: string[] // 分类
   tags?: string[] // 标签
   content?: string // 正文内容
+  md?: string // markdown文本
   content_hash?: string // 正文内容Hash(SHA1)
 }
 

@@ -83,9 +83,28 @@ export default class ArticleService {
     }
     return await this.articleModel.aggregate([
       { $match },
-      { $group: {_id: {$arrayElemAt: ['$path',deep]}, cnt: {$sum: 1}}},
+      { $group: {_id: {$arrayElemAt: ['$path',deep]}, cnt: {$sum: 1}, article_ids: {$push: '$_id'}}},
+      { $project: {
+          _id: '$_id',
+          cnt: '$cnt',
+          article_id: {
+            $cond: { if: { $gt: [ {$size: '$article_ids'}, 1 ] }, then: null, else: {$arrayElemAt:['$article_ids',0]}}
+          }
+        }
+      },
+      { $sort: {_id: 1}},
     ])
   }
+  /**
+   * 获取文章markdown文本
+   * @param id 文章ID
+   */
+  async markdown(id: string): Promise<string> {
+    const article: Article = await this.articleModel.findById(id, {md: 1})
+    const pictureCdnConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'picture_cdn'}).exec()
+    return article.md.replace(/\]\s*\((?=(?!http).*?\))/gi, `](${pictureCdnConfig.value}`)
+  }
+
   /**
    * 对文章内容执行分词处理
    * @param ids 文章ID们
@@ -171,6 +190,8 @@ export default class ArticleService {
         // 路径
         path: pathArr,
       }
+      // 文章markdown内容
+      const articleMd: string = xmlArticle.md.__cdata
       // 正文内容
       const articleContent: string = xmlArticle.content.__cdata.replace(/<[^>]*>/g, '')
       // 文章分类
@@ -185,6 +206,7 @@ export default class ArticleService {
         tags = typeof xmlArticle.tags.tag === 'string' ? [xmlArticle.tags.tag] : xmlArticle.tags.tag
       }
       const updateParams = {
+        md: articleMd,
         content: articleContent,
         // 内容Hash
         content_hash: crypto.createHash('sha1').update(articleContent).digest('hex'),
@@ -195,7 +217,6 @@ export default class ArticleService {
       }
 
       const article: Article = await this.articleModel.findOne(queryParams, {_id: 1, content_hash: 1}).exec()
-
       if (article && article.content_hash !== updateParams.content_hash) { // 更新
         await this.articleModel.updateOne({_id: article._id}, {$set: updateParams})
         updateCnt ++

@@ -22,19 +22,12 @@ export default class CommonService {
    */
   async login(systemUser: SystemUser): Promise<object> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
-    const user = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
-    if(!user) {
+    const signUser : SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
+    if(!signUser) {
       return Promise.reject({statusCode: 401, msg: '用户名/密码错误'})
     }
     const tokenKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
-
-    const signUser = {
-      _id: user._id.toString(),
-      username: user.username,
-      realname: user.realname,
-      role_ids: user.role_ids
-    }
-    const token = jwt.sign(signUser, tokenKeyConfig.value.toString()/*秘钥*/, {
+    const token = jwt.sign(Object.assign({}, signUser), tokenKeyConfig.value.toString()/*秘钥*/, {
       expiresIn: '7d' /*过期时间*/
     })
     return Promise.resolve({token, userInfo: signUser})
@@ -52,14 +45,9 @@ export default class CommonService {
       if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
         const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: true})
-        const curUser = await this.systemUserModel.findById(userInfo['_id'], this.tokenField).exec()
-        const signUser = {
-          _id: curUser._id.toString(),
-          username: curUser.username,
-          realname: curUser.realname,
-          role_ids: curUser.role_ids
-        }
-        const newToken = jwt.sign(signUser, systemConfig.value.toString(), {expiresIn: '7d'})
+        const signUser = await this.systemUserModel.findById(userInfo['_id'], this.tokenField).exec()
+        const newToken = jwt.sign(Object.assign({}, signUser), systemConfig.value.toString(), {expiresIn: '7d'})
+        /* sign的第一个参数必须是plain object */
         return {status: true, userInfo, newToken}
       } else if (err instanceof jwt.JsonWebTokenError) {
         return new MsgResult(false, 'Token无效，请重新登录')

@@ -231,7 +231,7 @@ export default {
       this.$Modal.info({
         title: '图片预览',
         width: 500 + 100,
-        content: `<img src="${pictureCdn}${row.name}" 
+        content: `<img src="${pictureCdn}/${row.name}" 
           style="width:500px;height:${previewHeight}px;" />`
       })
     }

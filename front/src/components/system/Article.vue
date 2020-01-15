@@ -66,7 +66,7 @@
   </div>
   <Row>
     <Col span="4" style="height:520px;overflow:auto;">
-      <Tree :data="articleTree" :load-data="loadTreeData"></Tree>
+      <Tree :data="articleTree" :load-data="loadTreeData" @on-select-change="articlePreview"></Tree>
     </Col>
     <Col span="20">
       <div class="table-container">
@@ -79,7 +79,9 @@
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
   </div>
-  
+  <Drawer :closable="false" width="40" v-model="markdownPreview.show" :title="markdownPreview.title" >
+    <div v-html="markdownPreview.content"></div>
+  </Drawer>
 </div>
 </template>
 <script>
@@ -95,13 +97,18 @@ import Icon from 'view-design/src/components/icon'
 import Select from 'view-design/src/components/select'
 import Option from 'view-design/src/components/option'
 import Tree from 'view-design/src/components/tree'
+import Drawer from 'view-design/src/components/drawer'
 
 import moment from 'moment'
+import hyperdown from 'hyperdown'
+import prismjs from 'prismjs'
+
+import 'prismjs/themes/prism.css'
 
 var selectedData = null, closeUploadTip = null
 export default {
   components: {
-    Table, Row, Col, Input, DatePicker, Button, Upload, Page, Select, Option, Tree
+    Table, Row, Col, Input, DatePicker, Button, Upload, Page, Select, Option, Tree, Drawer
   },
   data() {
     return {
@@ -182,7 +189,12 @@ export default {
       articleData: [],
       articleTree: [],
       tags: [], // 所有标签
-      categories: [] // 所有分类
+      categories: [], // 所有分类
+      markdownPreview: { // markdown内容预览
+        show: false,
+        title: null,
+        content: null
+      }
     }
   },
   methods: {
@@ -292,20 +304,51 @@ export default {
       }
     },
     async loadTreeData(item, callback) {
-      const childNodes = await this.$http.get('/article/tree', {params:{deep:1, parent:item.name}})
+      const childNodes = await this.$http.get('/article/tree', {params:{deep:item.deep+1, parent:item.name}})
       callback(childNodes.map(childItem => {
-        return { title: childItem._id, expand: false }
+        const treeNode = { name: childItem._id, deep: item.deep+1, expand: false }
+        if(childItem.article_id) {
+          // 已是叶子结点
+          treeNode.title = childItem._id
+          treeNode.id = childItem.article_id
+        } else {
+          // 仍有下级节点
+          treeNode.title = `${childItem._id}(${childItem.cnt})`
+          treeNode.children = []
+          treeNode.loading = false
+        }
+        return treeNode
       }))
+    },
+    /**
+     * 树节点选中事件
+     * @param selectNodes 当前已选中的节点(适用于带复选框的)
+     * @param curNode 本次选中的节点
+     */
+    async articlePreview(selectNodes, curNode) {
+      if(!curNode.id) {
+        return
+      }
+      // 加载文章markdown预览
+      this.$Loading.start()
+      const mdText = await this.$http.get('/article/markdown', {params:{id:curNode.id}})
+      this.$Loading.finish()
+      this.markdownPreview.show = true
+      const markdownHtml = new hyperdown().makeHtml(mdText);
+      this.markdownPreview.content = markdownHtml.replace(/(?<=<pre><code[^>]*?>)[\s\S]*?(?=<\/code><\/pre>)/gi, v => {
+        v = v.replace(/_&/g, ' ').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+        return prismjs.highlight(v, prismjs.languages.javascript)
+      })
+      this.markdownPreview.title = curNode.name
     }
   },
   async created() {
     this.loadData()
     this.categories = await this.$http.get('/article/listCategories')
     this.tags = await this.$http.get('/article/listTags')
-    const treeNodes = await this.$http.get('/article/tree', {params:{deep:0}})
-    this.articleTree.push(...treeNodes.map(item => {
-      return { title: `${item._id}(${item.cnt})`, name: item._id, expand: false, loading: false, children:[] }
-    }))
+    this.loadTreeData({deep:-1}, (treeNodes) => {
+      this.articleTree.push(...treeNodes)
+    })
   }
 }
 </script>

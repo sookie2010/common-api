@@ -31,6 +31,15 @@ export default class ArticleController {
   tree(@Query('deep')deep: number, @Query('parent')parent: string): Promise<object[]> {
     return this.articleService.tree(+deep, parent)
   }
+  
+  /**
+   * 获取文章markdown文本
+   * @param id 文章ID
+   */
+  @Get('/markdown')
+  markdown(@Query('id')id: string): Promise<string> {
+    return this.articleService.markdown(id)
+  }
 
   /**
    * 批量执行文章分词处理
