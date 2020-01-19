@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Param, Post, Body, Res } from '@nestjs/common'
-import AppService from '../service/common.service'
+import CommonService from '../service/common.service'
 import HitokotoService from '../service/hitokoto.service'
 import PhotoWallService from '../service/photo-wall.service'
 import ArticleService from '../service/article.service'
@@ -22,7 +22,7 @@ export default class CommonController {
     private readonly photoWallService: PhotoWallService,
     private readonly articleService: ArticleService,
     private readonly systemService: SystemService,
-    private readonly appService: AppService,
+    private readonly commonService: CommonService,
     private readonly sourceImageService: SourceImageService,
   ) {}
   /**
@@ -31,7 +31,7 @@ export default class CommonController {
    */
   @Post('/login')
   login(@Body() systemUser: SystemUser): Promise<object> {
-    return this.appService.login(systemUser)
+    return this.commonService.login(systemUser)
   }
 
   /**
@@ -43,7 +43,7 @@ export default class CommonController {
     if (!tokenObj.token) {
       return Promise.resolve(new MsgResult(false, '未获得Token'))
     }
-    return this.appService.verifyToken(tokenObj.token)
+    return this.commonService.verifyToken(tokenObj.token)
   }
 
   /**
