@@ -39,12 +39,12 @@ export default class CommonService {
   async verifyToken(token: string): Promise<object> {
     const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     try {
-      const userInfo = jwt.verify(token, systemConfig.value.toString())
+      const userInfo = jwt.verify(token, systemConfig.value.toString())['_doc']
       return {status: true, userInfo}
     } catch (err) {
       if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
-        const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: true})
+        const userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: true})['_doc']
         const signUser = await this.systemUserModel.findById(userInfo['_id'], this.tokenField).exec()
         const newToken = jwt.sign(Object.assign({}, signUser), systemConfig.value.toString(), {expiresIn: '7d'})
         /* sign的第一个参数必须是plain object */
