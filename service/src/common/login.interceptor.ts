@@ -1,10 +1,12 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import { HttpArgumentsHost } from '@nestjs/common/interfaces'
 // import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
 import SystemConfig from '../interface/system-config.interface'
 import SystemRole from '../interface/system-role.interface'
 import { ServerResponse } from 'http'
+import { Request } from 'express'
 
 import * as jwt from 'jsonwebtoken'
 
@@ -14,25 +16,27 @@ export default class LoginInterceptor implements NestInterceptor {
               @InjectModel('SystemRole') private readonly systemRoleModel: Model<SystemRole>) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
-    const token = context.getArgs()[0].headers.token
+    const http: HttpArgumentsHost = context.switchToHttp()
+    const request: Request = http.getRequest()
+    const token = request.header('token')
     if (!token) {
-      this.responseHandler(context.switchToHttp().getResponse(), 403, '请先登录')
+      this.responseHandler(http.getResponse(), 403, '请先登录')
       return
     }
-    const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
+    const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     try {
-      const userInfo = jwt.verify(token, systemConfig.value.toString())['_doc']
+      const userInfo = jwt.verify(token, privateKeyConfig.value.toString())['_doc']
       if(userInfo['role_ids'] && Array.isArray(userInfo['role_ids'])) {
         // 校验用户角色具备的权限
-        let method = context.getArgs()[0].method // 请求类型
-        let uri = context.getArgs()[0].route.path // 请求URI
+        let method = request.method // 请求类型
+        let uri = request.route.path // 请求URI
         let cnt = await this.systemRoleModel.countDocuments({
-          _id: {$in: userInfo['role_ids'].map(roleId => new Types.ObjectId(roleId))},
+          _id: {$in: userInfo['role_ids'].map((roleId: string) => new Types.ObjectId(roleId))},
           $or: [{methods: method}, {include_uri: uri}],
           exclude_uri: {$ne: uri}
         }).exec()
         if(!cnt) {
-          this.responseHandler(context.switchToHttp().getResponse(), 400, '无访问权限')
+          this.responseHandler(http.getResponse(), 400, '无访问权限')
           return
         }
       }
