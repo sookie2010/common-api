@@ -35,7 +35,7 @@ export default class SourceImageController {
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
-  uploadFile(@UploadedFile() image: FileEntity): Promise<object> {
+  uploadImage(@UploadedFile() image: FileEntity): Promise<object> {
     const sourceImageEntity: SourceImageEntity = {
       size: image.size,
       mime: image.mimetype,

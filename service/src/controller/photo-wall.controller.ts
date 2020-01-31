@@ -34,7 +34,7 @@ export default class PhotoWallController {
    */
   @Post('/upload')
   @UseInterceptors(FileInterceptor('image'))
-  uploadFile(@UploadedFile() image: FileEntity): Promise<object> {
+  uploadImage(@UploadedFile() image: FileEntity): Promise<object> {
     return this.photoWallService.save(image)
   }
 }

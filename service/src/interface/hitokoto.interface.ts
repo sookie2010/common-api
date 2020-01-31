@@ -37,10 +37,10 @@ export class HitokotoQc extends BaseQc {
     if (hitokotoDto.content) { // mongodb的模糊搜索使用正则形式
       this.hitokoto = {$regex: new RegExp(CommonUtils.escapeRegexStr(hitokotoDto.content))}
     }
-    if (hitokotoDto.createAt && hitokotoDto.createAt[0] && hitokotoDto.createAt[1]) {
+    if (hitokotoDto.createdAt && hitokotoDto.createdAt[0] && hitokotoDto.createdAt[1]) {
       this.created_at = {
-        $gte: new Date(hitokotoDto.createAt[0]),
-        $lte: new Date(hitokotoDto.createAt[1]),
+        $gte: new Date(hitokotoDto.createdAt[0]),
+        $lte: new Date(hitokotoDto.createdAt[1]),
       }
     }
     if (~~hitokotoDto.length > 0) {
@@ -63,7 +63,7 @@ export interface HitokotoDto {
    * 创建时间范围搜索, 数组包含2个元素
    * 分别是起始时间与结束时间的 UTS 字符串
    */
-  createAt: string[]
+  createdAt: string[]
   /**
    * a	Anime - 动画
    * b	Comic – 漫画

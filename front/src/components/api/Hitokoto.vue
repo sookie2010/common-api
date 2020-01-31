@@ -21,7 +21,7 @@
       <div class="search-title">创建时间：</div>
     </Col>
     <Col span="4">
-      <Date-picker v-model="search.createAt" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
+      <Date-picker v-model="search.createdAt" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
     </Col>
     <Col span="5" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
