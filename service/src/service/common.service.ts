@@ -24,7 +24,7 @@ export default class CommonService {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     const signUser : SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
     if(!signUser) {
-      return Promise.reject({statusCode: 401, msg: '用户名/密码错误'})
+      return Promise.resolve({msg: '用户名/密码错误'})
     }
     const tokenKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     const token = jwt.sign(Object.assign({}, signUser), tokenKeyConfig.value.toString()/*秘钥*/, {

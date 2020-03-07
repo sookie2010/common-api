@@ -48,7 +48,7 @@ export default {
           this.$store.commit('login', data)
           this.$router.push('/')
         } else {
-          this.$Message.error('用户名/密码 错误')
+          this.$Message.error(data.msg)
         }
       })
     }
