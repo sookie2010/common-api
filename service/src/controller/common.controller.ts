@@ -33,7 +33,13 @@ export default class CommonController {
   login(@Body() systemUser: SystemUser): Promise<object> {
     return this.commonService.login(systemUser)
   }
-
+  /**
+   * 访客登录
+   */
+  @Post('/guestLogin')
+  guestLogin(): Promise<MsgResult> {
+    return this.commonService.guestLogin()
+  }
   /**
    * 校验Token
    * @param tokenObj Token字符串

@@ -18,7 +18,8 @@ export interface Page {
 export class MsgResult {
   constructor(
     private readonly status: boolean,
-    private readonly msg: string) { }
+    private readonly msg: string,
+    private readonly data?: object) { }
 
   getStatus() {
     return this.status

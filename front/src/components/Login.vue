@@ -11,6 +11,9 @@
     </Form>
     <div style="padding-left:80px">
       <Button type="primary" @click="login">登录</Button>
+      <Tooltip content="无需账号密码，只有查询权限" placement="bottom">
+        <Button @click="guestLogin">访客模式</Button>
+      </Tooltip>
     </div>
     </div>
   </div>
@@ -20,9 +23,10 @@ import Input from 'view-design/src/components/input'
 import Form from 'view-design/src/components/form'
 import FormItem from 'view-design/src/components/form-item'
 import Button from 'view-design/src/components/button'
+import Tooltip from 'view-design/src/components/tooltip'
 
 export default {
-  components: { Input, Form, FormItem, Button },
+  components: { Input, Form, FormItem, Button, Tooltip },
   data() {
     return {
       userInfo: {},
@@ -51,6 +55,18 @@ export default {
           this.$Message.error(data.msg)
         }
       })
+    },
+    /**
+     * 访客模式
+     */
+    async guestLogin() {
+      const res = await this.$http.post('/common/guestLogin')
+      if (res.status && res.data.token) {
+        this.$store.commit('login', res.data)
+        this.$router.push('/')
+      } else {
+        this.$Message.error(res.msg)
+      }
     }
   }
 }

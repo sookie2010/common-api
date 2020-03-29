@@ -25,7 +25,7 @@ export default class LoginInterceptor implements NestInterceptor {
     }
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     try {
-      const userInfo = jwt.verify(token, privateKeyConfig.value.toString())['_doc']
+      const userInfo = jwt.verify(token, privateKeyConfig.value.toString())
       if(userInfo['role_ids'] && Array.isArray(userInfo['role_ids'])) {
         // 校验用户角色具备的权限
         let method = request.method // 请求类型
