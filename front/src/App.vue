@@ -133,7 +133,7 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="less">
   html,body {
     height: 100%;
   }
@@ -172,31 +172,31 @@ export default {
     padding-left: 30px;
     background: #fff;
     box-shadow: 0 1px 1px rgba(0,0,0,.1);
-  }
-  .layout-header h2 {
-    display: inline-block;
-  }
-  .layout-header .nav-btns-right {
-    display: inline-block;
-    position: absolute;
-    right: 20px;
-  }
-  .layout-header .nav-btns-right > span {
-    margin-right: 10px;
-  }
-  .layout-header .nav-btns-left {
-    display: inline-block;
-    position: absolute;
-    margin-left: 20px;
-    font-size: 16px;
+    h2 {
+      display: inline-block;
+    }
+    .nav-btns-right {
+      display: inline-block;
+      position: absolute;
+      right: 20px;
+    }
+    .nav-btns-right > span {
+      margin-right: 10px;
+    }
+    .nav-btns-left {
+      display: inline-block;
+      position: absolute;
+      margin-left: 20px;
+      font-size: 16px;
+    }
   }
   .ivu-menu-item {
     padding: 0 !important;
-  }
-  .ivu-menu-item a.menu-link {
-    padding: 14px 24px 14px 43px;
-    color: inherit;
-    display: block;
+    a.menu-link {
+      padding: 14px 24px 14px 43px;
+      color: inherit;
+      display: block;
+    }
   }
   .search-title {
     line-height: 32px;
@@ -208,9 +208,9 @@ export default {
   }
   .btn-container {
     padding: 10px 0;
-  }
-  .btn-container button {
-    margin-right: 3px;
+    button {
+      margin-right: 3px;
+    }
   }
   .page-container {
     padding: 10px;

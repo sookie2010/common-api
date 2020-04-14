@@ -48,7 +48,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 .clock-circle {
   width: 180px;
   height: 180px;
@@ -62,19 +62,18 @@ export default {
 .clock-face {
   width: 100%;
   height: 100%;
-}
-
-.clock-face::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
-  background: #000;
-  border-radius: 6px;
-  content: "";
-  display: block
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    background: #000;
+    border-radius: 6px;
+    content: "";
+    display: block
+  }
 }
 
 .clock-hour,.clock-minute,.clock-second {

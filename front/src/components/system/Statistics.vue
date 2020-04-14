@@ -212,17 +212,17 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 .echarts-container {
   display: grid;
   grid-template-columns: 50% 50%;
   grid-template-rows: 50% 50%;
   height: 100%;
-}
-.echarts-container > .echarts {
-  border: 1px solid #ccc;
-  width: auto;
-  height: auto;
+  > .echarts {
+    border: 1px solid #ccc;
+    width: auto;
+    height: auto;
+  }
 }
 .timeline-chart {
   grid-column-start: 1;
