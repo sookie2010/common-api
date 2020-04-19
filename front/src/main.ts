@@ -1,19 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import { router, routePathes, filterExclude} from './router'
+import { router, routePathes, filterExclude } from './router'
+import { Route } from 'vue-router'
 import store from './store'
 
 Vue.config.productionTip = false
 
 /*------iview start------*/
 import 'view-design/dist/styles/iview.css'
-import Message from 'view-design/src/components/message'
-import Modal from 'view-design/src/components/modal'
-import LoadingBar from 'view-design/src/components/loading-bar'
-Vue.prototype.$Message = Message
-Vue.prototype.$Modal = Modal
-Vue.prototype.$Loading = LoadingBar
+import ViewUI from 'view-design'
+Vue.use(ViewUI)
 /*------iview end------*/
 
 /*------axios start------*/
@@ -39,7 +36,7 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(res=> {
-  return res.data
+  return res
 }, err => {
   if(err.response.status >= 500) {
     vm.$Modal.error({
@@ -61,7 +58,6 @@ axios.interceptors.response.use(res=> {
 })
 Vue.prototype.$http = axios
 /*------axios end------*/
-
 const vm = new Vue({
   render: h => h(App),
   router,
@@ -69,11 +65,11 @@ const vm = new Vue({
 }).$mount('#app')
 
 // 全局路由导航前置守卫
-router.beforeEach((function (to, from, next) {
-  this.$store.commit('setBreadcrumb', routePathes[to.name] || [])
-  if(filterExclude.indexOf(to.name) !== -1 || localStorage.getItem('login_token')) {
+router.beforeEach(function (to: Route, from: Route, next: Function) {
+  vm.$store.commit('setBreadcrumb', routePathes[to.path] || [])
+  if(filterExclude.indexOf(to.path) !== -1 || localStorage.getItem('login_token')) {
     next()
   } else {
     next('/login')
   }
-}).bind(vm))
+})

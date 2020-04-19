@@ -7,7 +7,6 @@
     <Col span="4">
       <Input v-model="search.name" @on-enter="loadData" />
     </Col>
-
     <Col span="2">
       <div class="search-title">归属：</div>
     </Col>
@@ -43,95 +42,76 @@
   </div>
 </div>
 </template>
-<script>
-import Table from 'view-design/src/components/table'
-import Row from 'view-design/src/components/row'
-import Col from 'view-design/src/components/col'
-import Input from 'view-design/src/components/input'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import Button from 'view-design/src/components/button'
-import Page from 'view-design/src/components/page'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import { Page } from '../../model/common.dto'
 
+@Component({})
+export default class ChinaProvince extends Vue {
+  private loading: boolean = false
+  private search = new ChinaProvincePage()
+  private selectSearch = {}
+  private provinceList = []
+  private cityList = []
+  private areaList = []
+  private chinaProvinceColumns = [{
+      title: '编码',
+      key: 'code'
+    },{
+      title: '名称',
+      key: 'name'
+    }]
+  private chinaProvinceData = []
 
-export default {
-  components: {
-    Table, Row, Col, Input, Select, Option, Button, Page
-  },
-  data() {
-    return {
-      loading: false,
-      search: {
-        pageNum: 1,
-        limit: 10,
-        total: null
-      },
-      selectSearch: {},
-      provinceList: [],
-      cityList: [],
-      areaList: [],
-      chinaProvinceColumns: [{
-          title: '编码',
-          key: 'code'
-        },{
-          title: '名称',
-          key: 'name'
-        }],
-      chinaProvinceData: []
-    }
-  },
-  methods: {
-    reset() {
-      this.search = {
-        pageNum: 1,
-        limit: 10,
-        total: this.search.total
-      }
-      this.loadData()
-    },
-    async loadData(resetPage) {
-      if(resetPage) {
-        this.search.pageNum = 1
-        this.search.limit = 10
-      }
-      this.loading = true
-      const data = await this.$http.get('/province/list', {params:this.search})
-      this.loading = false
-      this.search.total = data.total
-      this.chinaProvinceData = data.data
-    },
-    pageChange(pageNum) {
-      this.search.pageNum = pageNum
-      this.loadData()
-    },
-    pageSizeChange(pageSize) {
-      this.search.limit = pageSize
-      this.loadData()
-    },
-    async provinceChange(value) {
-      delete this.search.city
-      delete this.search.area
-      if(!value) {
-        this.cityList.length = 0
-        this.areaList.length = 0
-        return
-      }
-      this.cityList = await this.$http.get('/province/listAll', {params:{ province: value }})
-    },
-    async cityChange(value) {
-      delete this.search.area
-      if(!value) {
-        this.areaList.length = 0
-        return
-      }
-      this.areaList = await this.$http.get('/province/listAll', {params:{
-          province: this.search.province,
-          city: value
-        }})
-    }
-  },
-  async created() {
-    this.provinceList = await this.$http.get('/province/listAll')
+  reset() {
+    this.loadData(true)
   }
+  async loadData(resetPage?: boolean) {
+    if(resetPage) {
+      this.search.reset()
+    }
+    this.loading = true
+    const { data } = await this.$http.get('/province/list', {params:this.search})
+    this.loading = false
+    this.search.total = data.total
+    this.chinaProvinceData = data.data
+  }
+  pageChange(pageNum: number) {
+    this.search.pageNum = pageNum
+    this.loadData()
+  }
+  pageSizeChange(pageSize: number) {
+    this.search.limit = pageSize
+    this.loadData()
+  }
+  async provinceChange(value: string) {
+    delete this.search.city
+    delete this.search.area
+    if(!value) {
+      this.cityList.length = 0
+      this.areaList.length = 0
+      return
+    }
+    this.cityList = (await this.$http.get('/province/listAll', {params:{ province: value }})).data
+  }
+  async cityChange(value: string) {
+    delete this.search.area
+    if(!value) {
+      this.areaList.length = 0
+      return
+    }
+    this.areaList = (await this.$http.get('/province/listAll', {params:{
+        province: this.search.province,
+        city: value
+      }})).data
+  }
+  async created() {
+    this.provinceList = (await this.$http.get('/province/listAll')).data
+  }
+}
+class ChinaProvincePage extends Page {
+  city?: string
+  area?: string
+  province? : string
 }
 </script>

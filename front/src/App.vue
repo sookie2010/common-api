@@ -41,92 +41,56 @@
 </div>
 </template>
 
-<script>
-import Row from 'view-design/src/components/row'
-import Menu from 'view-design/src/components/menu'
-import Submenu from 'view-design/src/components/submenu'
-import MenuItem from 'view-design/src/components/menu-item'
-import Icon from 'view-design/src/components/icon'
-import Col from 'view-design/src/components/col'
-import Breadcrumb from 'view-design/src/components/breadcrumb'
-import BreadcrumbItem from 'view-design/src/components/breadcrumb-item'
-import Button from 'view-design/src/components/button'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'app',
-  components: {
-    Row, Menu, Submenu, Icon, MenuItem, Col, Breadcrumb, BreadcrumbItem, Button
-  },
-  data() {
-    return {
-      // 菜单项
-      menus: [{
-        name: '系统管理',
-        icon: 'md-options',
-        child: [{
-          name: '系统配置',
-          path: '/system/config'
-        },{
-          name: '用户管理',
-          path: '/system/user'
-        },{
-          name: '角色管理',
-          path: '/system/role'
-        },{
-          name: '博客文章',
-          path: '/system/article'
-        },{
-          name: '分析统计',
-          path: '/system/statistics'
-        }]
-      },{
-        name: 'API数据',
-        icon: 'logo-buffer',
-        child: [{
-          name: '一言',
-          path: '/api/hitokoto'
-        },{
-          name: '照片墙',
-          path: '/api/photoWall'
-        },{
-          name: '图片资源库',
-          path: '/api/sourceImage'
-        },{
-          name: '中国行政区划',
-          path: '/api/chinaProvince'
-        }]
-      },{
-        name: '工具',
-        icon: 'md-build',
-        child: [{
-          name: 'SQL占位符替换',
-          path: '/tool/sqlReplace'
-        }]
-      }]
-    }
-  },
-  computed: {
-    realname () { // 当前用户的显示名称
-			return this.$store.state.loginInfo.userInfo
-				? this.$store.state.loginInfo.userInfo.realname : null
-		}
-  },
-  methods: {
-    logout() {
-      this.$store.commit('logout')
-      this.$router.push('/login')
-    }
-  },
-  async created() {
+@Component({})
+export default class App extends Vue{
+  private name = 'app'
+  // 菜单项
+  private menus = [{
+    name: '系统管理',
+    icon: 'md-options',
+    child: [
+      { name: '系统配置', path: '/system/config' },
+      { name: '用户管理', path: '/system/user' },
+      { name: '角色管理', path: '/system/role' },
+      { name: '博客文章', path: '/system/article' },
+      { name: '分析统计', path: '/system/statistics'}
+      ]
+    },{
+    name: 'API数据',
+    icon: 'logo-buffer',
+    child: [
+      { name: '一言', path: '/api/hitokoto' },
+      { name: '照片墙', path: '/api/photoWall' },
+      { name: '图片资源库', path: '/api/sourceImage' },
+      { name: '中国行政区划', path: '/api/chinaProvince' }
+      ]
+    },{
+    name: '工具',
+    icon: 'md-build',
+    child: [
+      { name: 'SQL占位符替换', path: '/tool/sqlReplace' }
+      ]
+  }]
+  get realname(): string { // 当前用户的显示名称
+    return this.$store.state.loginInfo.userInfo
+      ? this.$store.state.loginInfo.userInfo.realname : null
+  }
+  logout(): void {
+    this.$store.commit('logout')
+    this.$router.push('/login')
+  }
+  async created(): Promise<void> {
     if(!localStorage.getItem('login_token')) {
       this.$router.push('/login')
       return
     } 
-    const data = await this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')})
+    const { data }  = await this.$http.post('/common/verifyToken', {token: localStorage.getItem('login_token')})
     if(data.status) {
       // 如果是已过期的token 服务端会签发新的token
       this.$store.commit('login', {token: data.newToken || localStorage.getItem('login_token'), userInfo: data.userInfo})
-      this.$router.push('/')
     } else {
       this.$router.push('/login')
     }
@@ -134,11 +98,10 @@ export default {
 }
 </script>
 <style lang="less">
-  html,body {
+  html,body,.layout {
     height: 100%;
   }
   .layout{
-    height: 100%;
     background: #f5f7f9;
     position: relative;
   }

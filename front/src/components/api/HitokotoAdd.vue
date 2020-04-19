@@ -18,18 +18,12 @@
   </Form>
 </div>
 </template>
-<script>
-import Input from 'view-design/src/components/input'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import Form from 'view-design/src/components/form'
-import FormItem from 'view-design/src/components/form-item'
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-export default {
-  components: { Input, Select, Option, Form, FormItem },
-  props: {
-    typeList: Array,
-    formData: Object
-  }
+@Component({})
+export default class HitokotoAdd extends Vue {
+  @Prop() typeList?: []
+  @Prop() formData?: object
 }
 </script>

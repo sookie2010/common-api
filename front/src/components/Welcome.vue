@@ -10,41 +10,39 @@
     <h2 class="time-text">{{timeText}}</h2>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import moment from 'moment'
 
-var clockTimer = null
-export default {
-  data() {
-    return {
-      timeText: null,
-      clock: {
-        hourRotate: 0,
-        minuteRotate: 0,
-        secondRotate: 0
-      }
-    }
-  },
-  created() {
-    const timedUpdate = () => {
+@Component({})
+export default class Welcome extends Vue {
+  private timeText!: string
+  private clock = {
+    hourRotate: 0,
+    minuteRotate: 0,
+    secondRotate: 0
+  }
+  private clockTimer!: number | null
+
+  created(): void {
+    const timedUpdate = (): void => {
       this.updateClock()
-      clockTimer = setTimeout(timedUpdate, 1000)
+      this.clockTimer = setTimeout(timedUpdate, 1000)
     }
     timedUpdate()
-  },
-  beforeDestroy() {
-    if(clockTimer) {
-      clearTimeout(clockTimer)
+  }
+  beforeDestroy(): void {
+    if(this.clockTimer) {
+      clearTimeout(this.clockTimer)
+      this.clockTimer = null
     }
-  },
-  methods: {
-    updateClock() {
-      const now = moment()
-      this.timeText = now.format('YYYY年M月D日 HH:mm:ss')
-      this.clock.secondRotate = now.seconds() * 6
-      this.clock.minuteRotate = now.minutes() * 6 + this.clock.secondRotate / 60
-      this.clock.hourRotate = ((now.hours() % 12) / 12) * 360 + 90 + this.clock.minuteRotate / 12
-    }
+  }
+  updateClock(): void {
+    const now = moment()
+    this.timeText = now.format('YYYY年M月D日 HH:mm:ss')
+    this.clock.secondRotate = now.seconds() * 6
+    this.clock.minuteRotate = now.minutes() * 6 + this.clock.secondRotate / 60
+    this.clock.hourRotate = ((now.hours() % 12) / 12) * 360 + 90 + this.clock.minuteRotate / 12
   }
 }
 </script>

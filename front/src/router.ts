@@ -3,18 +3,18 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const Welcome = () => import('@/components/Welcome')
-const Login = () => import('@/components/Login')
-const Article = () => import(/* webpackChunkName: "article" */'@/components/system/Article')
-const Statistics = () => import(/* webpackChunkName: "Statistics" */'@/components/system/Statistics')
-const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/components/system/SystemConfig')
-const SystemUser = () => import(/* webpackChunkName: "systemUser" */'@/components/system/SystemUser')
-const SystemRole = () => import(/* webpackChunkName: "systemRole" */'@/components/system/SystemRole')
-const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto')
-const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall')
-const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage')
-const ChinaProvince = () => import(/* webpackChunkName: "chinaProvince" */'@/components/api/ChinaProvince')
-const SqlReplace = () => import(/* webpackChunkName: "sqlReplace" */'@/components/tool/SqlReplace')
+const Welcome = () => import('@/components/Welcome.vue')
+const Login = () => import('@/components/Login.vue')
+const Article = () => import(/* webpackChunkName: "article" */'@/components/system/Article.vue')
+const Statistics = () => import(/* webpackChunkName: "Statistics" */'@/components/system/Statistics.vue')
+const SystemConfig = () => import(/* webpackChunkName: "systemConfig" */'@/components/system/SystemConfig.vue')
+const SystemUser = () => import(/* webpackChunkName: "systemUser" */'@/components/system/SystemUser.vue')
+const SystemRole = () => import(/* webpackChunkName: "systemRole" */'@/components/system/SystemRole.vue')
+const Hitokoto = () => import(/* webpackChunkName: "hitokoto" */'@/components/api/Hitokoto.vue')
+const PhotoWall = () => import(/* webpackChunkName: "photoWall" */'@/components/api/PhotoWall.vue')
+const SourceImage = () => import(/* webpackChunkName: "sourceImage" */'@/components/api/SourceImage.vue')
+const ChinaProvince = () => import(/* webpackChunkName: "chinaProvince" */'@/components/api/ChinaProvince.vue')
+const SqlReplace = () => import(/* webpackChunkName: "sqlReplace" */'@/components/tool/SqlReplace.vue')
 export const router = new Router({
   routes: [
     { path: '/', name: 'Welcome', component: Welcome },
@@ -32,7 +32,7 @@ export const router = new Router({
   ]
 })
 
-export const routePathes = {
+export const routePathes : {[propName: string]: string[]} = {
   'Welcome': ['首页'],
   'Login': ['首页', '登录'],
   'SystemConfig': ['首页', '系统管理', '系统配置'],
@@ -47,4 +47,4 @@ export const routePathes = {
   'SqlReplace': ['首页', '工具', 'SQL占位符替换']
 }
 
-export const filterExclude = ['Login']
+export const filterExclude = ['/login']

@@ -43,24 +43,10 @@
 </div>
 </template>
 <script>
-import Table from 'view-design/src/components/table'
-import Row from 'view-design/src/components/row'
-import Col from 'view-design/src/components/col'
-import Input from 'view-design/src/components/input'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import Button from 'view-design/src/components/button'
-import Modal from 'view-design/src/components/modal'
-import Form from 'view-design/src/components/form'
-import FormItem from 'view-design/src/components/form-item'
-import Page from 'view-design/src/components/page'
-
 import moment from 'moment'
+import { Button } from 'view-design'
 
 export default {
-  components: {
-    Table, Row, Col, Input, Select, Option, Button, Modal, Form, FormItem, Page
-  },
   data() {
     return {
       loading: false,
@@ -123,7 +109,7 @@ export default {
     },
     async loadData() {
       this.loading = true
-      const data = await this.$http.get('/system/user/list', {params:this.search})
+      const { data } = await this.$http.get('/system/user/list', {params:this.search})
       this.loading = false
       this.search.total = data.total
       this.systemUserData = data.data
@@ -157,7 +143,7 @@ export default {
       this.addModal = true
     },
     async save() {
-      const { msg } = await this.$http.post('/system/user/save', this.formData)
+      const { msg } = (await this.$http.post('/system/user/save', this.formData)).data
       this.addModal = false
       this.$Message.success(msg)
       this.loadData()
@@ -176,7 +162,7 @@ export default {
         content: `<p>是否确认删除 ${row.username} 用户？</p>`,
         loading: true,
         onOk: async () => {
-          const data = await this.$http.delete('/system/user/delete', {params: {id: row._id}})
+          const { data } = await this.$http.delete('/system/user/delete', {params: {id: row._id}})
           this.$Modal.remove()
           if(data.status) {
             this.$Message.success(data.msg)
@@ -190,7 +176,7 @@ export default {
   },
   async created() {
     this.loadData()
-    this.roles = await this.$http.get('/system/role/listAll')
+    this.roles = (await this.$http.get('/system/role/listAll')).data
   }
 }
 </script>

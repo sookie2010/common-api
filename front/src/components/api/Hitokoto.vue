@@ -45,145 +45,116 @@
   </Modal>
 </div>
 </template>
-<script>
-import Table from 'view-design/src/components/table'
-import Row from 'view-design/src/components/row'
-import Col from 'view-design/src/components/col'
-import Input from 'view-design/src/components/input'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import DatePicker from 'view-design/src/components/date-picker'
-import Button from 'view-design/src/components/button'
-import Page from 'view-design/src/components/page'
-import Modal from 'view-design/src/components/modal'
-
-import HitokotoAdd from './HitokotoAdd'
-
+<script lang="ts">
+import HitokotoAdd from './HitokotoAdd.vue'
+import { Page } from '../../model/common.dto'
+import HitokotoModel from '../../model/api/hitokoto'
+import { Component, Vue } from 'vue-property-decorator'
 import moment from 'moment'
 
-var selectedData = null
-export default {
-  components: {
-    Table, Row, Col, Input, Select, Option, DatePicker, Button, Page, Modal, HitokotoAdd
-  },
-  data() {
-    return {
-      loading: false,
-      search: {
-        pageNum: 1,
-        limit: 10,
-        total: null
-      },
-      typeList: [],
-      hitokotoColumns: [{
-          type: 'selection',
-          key: '_id',
-          width: 60,
-          align: 'center'
-        },{
-          title: '类型',
-          key: 'type',
-          width: 180,
-          render: (h, data) => {
-            let type = this.typeList.find(item => item.value === data.row.type)
-            return type ? h('span', type.label) : undefined
-          }
-        },{
-          title: '内容',
-          key: 'hitokoto'
-        },{
-          title: '来自',
-          key: 'from',
-          width: 180
-        },{
-          title: '作者',
-          key: 'creator',
-          width: 180
-        },{
-          title: '编号',
-          key: 'number',
-          width: 70
-        },{
-          title: '创建时间',
-          key: 'created_at',
-          width: 180,
-          render (h, data) {
-            return h('span', moment(data.row.created_at).format('YYYY-MM-DD HH:mm:ss'))
-          }
-        }],
-      hitokotoData: [],
-      formData: {
-        hitokoto: null,
-        type: null,
-        from: null,
-        creator: null
-      },
-      addModal: false
+let selectedData: string[] = []
+@Component({ components: {HitokotoAdd} })
+export default class Hitokoto extends Vue {
+  private loading: boolean = false
+  private search: Page = new Page()
+  private typeList: {label: string, value: string}[] = []
+  private hitokotoColumns = [{
+      type: 'selection',
+      key: '_id',
+      width: 60,
+      align: 'center'
+    },{
+      title: '类型',
+      key: 'type',
+      width: 180,
+      render: (h: Function, {row}: {row: HitokotoModel}) => {
+        const label = this.findTypeText(row.type)
+        return label ? h('span', label) : undefined
+      }
+    },{
+      title: '内容',
+      key: 'hitokoto'
+    },{
+      title: '来自',
+      key: 'from',
+      width: 180
+    },{
+      title: '作者',
+      key: 'creator',
+      width: 180
+    },{
+      title: '编号',
+      key: 'number',
+      width: 70
+    },{
+      title: '创建时间',
+      key: 'created_at',
+      width: 180,
+      render: (h: Function, {row}: {row: HitokotoModel}) => {
+        return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
+      }
+    }]
+  private hitokotoData: HitokotoModel[] = []
+  private formData: {[propName:string]: string | null} = {}
+  private addModal: boolean = false
+
+  reset() {
+    this.loadData(true)
+  }
+  async loadData(resetPage?: boolean) {
+    if(resetPage) {
+      this.search.reset()
     }
-  },
-  methods: {
-    reset() {
-      this.search = {
-        pageNum: 1,
-        limit: 10,
-        total: this.search.total
-      }
-      this.loadData()
-    },
-    async loadData(resetPage) {
-      if(resetPage) {
-        this.search.pageNum = 1
-        this.search.limit = 10
-      }
-      this.loading = true
-      const data = await this.$http.get('/hitokoto/list', {params:this.search})
-      selectedData = null
-      this.loading = false
-      this.search.total = data.total
-      this.hitokotoData = data.data
-    },
-    async save() {
-      const data = await this.$http.post('/hitokoto/save', this.formData)
-      this.addModal = false
-      this.$Message.success(data.msg)
-      this.loadData()
-      // 清空表单
-      Object.keys(this.formData).forEach(key => {
-        this.formData[key] = null
-      })
-    },
-    deleteAll() {
-      if(!selectedData || !selectedData.length) {
-        this.$Message.warning('请选择要删除的数据')
-        return
-      }
-      this.$Modal.confirm({
-        title: '确认删除',
-        content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
-        loading: true,
-        onOk: async () => {
-          const data = await this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData.map(item => item._id)}})
-          this.$Modal.remove()
-          this.$Message.success(data.msg)
-          this.loadData()
-        }
-      })
-    },
-    pageChange(pageNum) {
-      this.search.pageNum = pageNum
-      this.loadData()
-    },
-    pageSizeChange(pageSize) {
-      this.search.limit = pageSize
-      this.loadData()
-    },
-    dataSelect(selection) {
-      selectedData = selection
-    }
-  },
-  async created() {
-    this.typeList = await this.$http.get('/common/config/hitokoto_type')
+    this.loading = true
+    const { data } = await this.$http.get('/hitokoto/list', {params:this.search})
+    selectedData = []
+    this.loading = false
+    this.search.total = data.total
+    this.hitokotoData = data.data
+  }
+  async save() {
+    const { data } = await this.$http.post('/hitokoto/save', this.formData)
+    this.addModal = false
+    this.$Message.success(data.msg)
     this.loadData()
+    // 清空表单
+    this.formData = {}
+  }
+  deleteAll() {
+    if(!selectedData.length) {
+      this.$Message.warning('请选择要删除的数据')
+      return
+    }
+    this.$Modal.confirm({
+      title: '确认删除',
+      content: `<p>是否确认删除选中的${selectedData.length}条数据？</p>`,
+      loading: true,
+      onOk: async () => {
+        const { data } = await this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData}})
+        this.$Modal.remove()
+        this.$Message.success(data.msg)
+        this.loadData()
+      }
+    })
+  }
+  pageChange(pageNum: number) {
+    this.search.pageNum = pageNum
+    this.loadData()
+  }
+  pageSizeChange(pageSize: number) {
+    this.search.limit = pageSize
+    this.loadData()
+  }
+  dataSelect(selection: HitokotoModel[]) {
+    selectedData = selection.map(item => item._id)
+  }
+  async created() {
+    this.typeList = (await this.$http.get('/common/config/hitokoto_type')).data
+    this.loadData()
+  }
+  findTypeText(value: string): string | null {
+    const type = this.typeList.find(item => item.value === value)
+    return type ? type.label : null
   }
 }
 </script>

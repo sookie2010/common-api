@@ -18,55 +18,45 @@
     </div>
   </div>
 </template>
-<script>
-import Input from 'view-design/src/components/input'
-import Form from 'view-design/src/components/form'
-import FormItem from 'view-design/src/components/form-item'
-import Button from 'view-design/src/components/button'
-import Tooltip from 'view-design/src/components/tooltip'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  components: { Input, Form, FormItem, Button, Tooltip },
-  data() {
-    return {
-      userInfo: {},
-      ruleValidate: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
-      }
-    }
-  },
-  methods: {
-    /**
-     * 登录
-     */
-    login() {
-      this.$refs.userInfo.validate(async valid => {
-        if(!valid) return
-        const data = await this.$http.post('/common/login', this.userInfo)
-        if(data.token) {
-          this.$store.commit('login', data)
-          this.$router.push('/')
-        } else {
-          this.$Message.error(data.msg)
-        }
-      })
-    },
-    /**
-     * 访客模式
-     */
-    async guestLogin() {
-      const res = await this.$http.post('/common/guestLogin')
-      if (res.status && res.data.token) {
-        this.$store.commit('login', res.data)
+@Component({})
+export default class Login extends Vue {
+  private userInfo = {}
+  private ruleValidate = {
+    username: [
+      { required: true, message: '请输入用户名', trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' }
+    ],
+  }
+  /**
+   * 登录
+   */
+  async login() {
+    (this.$refs.userInfo as any).validate(async (valid: boolean) => {
+      if(!valid) return
+      const { data } = await this.$http.post('/common/login', this.userInfo)
+      if(data.token) {
+        this.$store.commit('login', data)
         this.$router.push('/')
       } else {
-        this.$Message.error(res.msg)
+        this.$Message.error(data.msg)
       }
+    })
+  }
+  /**
+   * 访客模式
+   */
+  async guestLogin() {
+    const { data } = await this.$http.post('/common/guestLogin')
+    if (data.status && data.data.token) {
+      this.$store.commit('login', data.data)
+      this.$router.push('/')
+    } else {
+      this.$Message.error(data.msg)
     }
   }
 }
