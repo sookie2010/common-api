@@ -48,7 +48,7 @@
 
     <Col span="3" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
   </div>
@@ -77,7 +77,7 @@
   
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
   </div>
   <Drawer :closable="false" width="40" v-model="markdownPreview.show" :title="markdownPreview.title" >
     <div v-html="markdownPreview.content"></div>
@@ -88,9 +88,10 @@
 import moment from 'moment'
 import hyperdown from 'hyperdown'
 import prismjs from 'prismjs'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { Icon } from 'view-design'
 import { MsgResult, Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 import { ArticleModel, TreeNode, TreeNodeSource } from '../../model/system/article'
 
 import 'prismjs/themes/prism.css'
@@ -99,9 +100,8 @@ let selectedData: string[] = []
 let closeUploadTip: Function | void | null
 
 @Component({})
-export default class Article extends Vue {
-  private loading: boolean = false
-  private search = new Page()
+export default class Article extends BaseList<ArticlePage> {
+  protected search = new ArticlePage()
   private allowUploadExt = ['zip']
   private uploadHeaders = {token: localStorage.getItem('login_token')}
   private articleColumns = [{
@@ -183,13 +183,7 @@ export default class Article extends Vue {
     content: null
   }
 
-  reset() {
-    this.loadData(true)
-  }
-  async loadData(resetPage?: boolean) {
-    if(resetPage) {
-      this.search.reset()
-    }
+  async loadData() {
     this.loading = true
     const { data } = await this.$http.get('/article/list', {params:this.search})
     selectedData = []
@@ -233,14 +227,6 @@ export default class Article extends Vue {
         }
       }
     })
-  }
-  pageChange(pageNum: number) {
-    this.search.pageNum = pageNum
-    this.loadData()
-  }
-  pageSizeChange(pageSize: number) {
-    this.search.limit = pageSize
-    this.loadData()
   }
   dataSelect(selection: ArticleModel[]) {
     selectedData = selection.map(item => item._id)
@@ -327,6 +313,22 @@ export default class Article extends Vue {
     this.loadTreeData({deep:-1, name: null, expand: false}, (treeNodes: TreeNode[]) => {
       this.articleTree.push(...treeNodes)
     })
+  }
+}
+
+class ArticlePage extends Page {
+  title?: string
+  createDate?: [Date, Date]
+  category?: string
+  tag?: string
+  isSplited?: boolean
+  reset() {
+    super.reset()
+    this.title = undefined
+    this.createDate = undefined
+    this.category = undefined
+    this.tag = undefined
+    this.isSplited = undefined
   }
 }
 </script>

@@ -41,7 +41,7 @@
     </Col>
     <Col span="5" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
   
@@ -63,14 +63,15 @@
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
   </div>
   
 </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { MsgResult, Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 import PhotoWallModel from '../../model/api/photowall'
 import { Button } from 'view-design'
 
@@ -78,11 +79,10 @@ let selectedData: string[] = []
 let closeUploadTip: Function | void | null
 
 @Component({})
-export default class PhotoWall extends Vue {
-  private loading: boolean = false
+export default class PhotoWall extends BaseList<PhotoWallPage> {
   private uploading: boolean = false
   private uploadHeaders = {token: localStorage.getItem('login_token')}
-  private search = new PhotoWallPage()
+  protected search = new PhotoWallPage()
   private allowUploadExt = ['jpg','jpeg','png']
   private photowallColumns = [{
       type: 'selection',
@@ -119,13 +119,7 @@ export default class PhotoWall extends Vue {
     }]
   private photowallData = []
 
-  reset() {
-    this.loadData(true)
-  }
-  async loadData(resetPage?: boolean) {
-    if(resetPage) {
-      this.search.reset()
-    }
+  async loadData() {
     this.loading = true
     const { data } = await this.$http.get('/photowall/list', {params:this.search})
     selectedData = []
@@ -149,14 +143,6 @@ export default class PhotoWall extends Vue {
         this.loadData()
       }
     })
-  }
-  pageChange(pageNum: number) {
-    this.search.pageNum = pageNum
-    this.loadData()
-  }
-  pageSizeChange(pageSize: number) {
-    this.search.limit = pageSize
-    this.loadData()
   }
   dataSelect(selection: PhotoWallModel[]) {
     selectedData = selection.map(item => item._id)
@@ -216,12 +202,14 @@ export default class PhotoWall extends Vue {
 }
 
 class PhotoWallPage extends Page {
+  name?: string
   widthMin?: number = 0
   widthMax?: number = 0
   heightMin?: number = 0
   heightMax?: number = 0
   reset() {
     super.reset()
+    this.name = undefined
     this.widthMin = 0
     this.widthMax = 0
     this.heightMin = 0

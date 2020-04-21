@@ -27,7 +27,7 @@
     </Col>
     <Col span="5" offset="2">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
   <div class="btn-container">
@@ -38,18 +38,18 @@
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
   </div>
 </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 
 @Component({})
-export default class ChinaProvince extends Vue {
-  private loading: boolean = false
-  private search = new ChinaProvincePage()
+export default class ChinaProvince extends BaseList<ChinaProvincePage> {
+  protected search = new ChinaProvincePage()
   private selectSearch = {}
   private provinceList = []
   private cityList = []
@@ -63,26 +63,12 @@ export default class ChinaProvince extends Vue {
     }]
   private chinaProvinceData = []
 
-  reset() {
-    this.loadData(true)
-  }
-  async loadData(resetPage?: boolean) {
-    if(resetPage) {
-      this.search.reset()
-    }
+  async loadData() {
     this.loading = true
     const { data } = await this.$http.get('/province/list', {params:this.search})
     this.loading = false
     this.search.total = data.total
     this.chinaProvinceData = data.data
-  }
-  pageChange(pageNum: number) {
-    this.search.pageNum = pageNum
-    this.loadData()
-  }
-  pageSizeChange(pageSize: number) {
-    this.search.limit = pageSize
-    this.loadData()
   }
   async provinceChange(value: string) {
     delete this.search.city
@@ -110,8 +96,16 @@ export default class ChinaProvince extends Vue {
   }
 }
 class ChinaProvincePage extends Page {
+  name?: string
   city?: string
   area?: string
   province? : string
+  reset() {
+    super.reset()
+    this.name = undefined
+    this.city = undefined
+    this.area = undefined
+    this.province = undefined
+  }
 }
 </script>

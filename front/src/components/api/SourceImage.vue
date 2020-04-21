@@ -22,7 +22,7 @@
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
   </div>
   <Modal v-model="modifyModal" title="修改标签" :footer-hide="true" @on-visible-change="modifyModalClose">
     <CheckboxGroup v-model="curModifyLabels" @on-change="changeLabel">
@@ -35,19 +35,19 @@
 import { Tag, Button } from 'view-design'
 import prettyBytes from 'pretty-bytes'
 import moment from 'moment'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { MsgResult, Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 import { SourceImageModel, ImageLabel } from '../../model/api/source-image'
 
 let selectedData: string[] = []
 let closeUploadTip: Function | void | null
 
 @Component({})
-export default class SourceImage extends Vue {
-  private loading: boolean = false
+export default class SourceImage extends BaseList<Page> {
   private uploading: boolean = false
   private uploadHeaders = {token: localStorage.getItem('login_token')}
-  private search = new Page()
+  protected search = new Page()
   private allowUploadExt = ['jpg','jpeg','png','svg','ico']
   private sourceImageColumns = [{
       type: 'selection',
@@ -115,13 +115,7 @@ export default class SourceImage extends Vue {
   private curId: string | null = null
   private modifyModal: boolean = false
 
-  reset() {
-    this.loadData(true)
-  }
-  async loadData(resetPage?: boolean): Promise<void> {
-    if(resetPage) {
-      this.search.reset()
-    }
+  async loadData(): Promise<void> {
     this.loading = true
     const { data } = await this.$http.get('/source-image/list', {params:this.search})
     selectedData = []
@@ -145,14 +139,6 @@ export default class SourceImage extends Vue {
         this.loadData()
       }
     })
-  }
-  pageChange(pageNum: number): void {
-    this.search.pageNum = pageNum
-    this.loadData()
-  }
-  pageSizeChange(pageSize: number): void {
-    this.search.limit = pageSize
-    this.loadData()
   }
   dataSelect(selection: SourceImageModel[]): void {
     selectedData = selection.map(item => item._id)

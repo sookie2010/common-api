@@ -25,7 +25,7 @@
     </Col>
     <Col span="5" offset="1">
       <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
+      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
   
@@ -38,7 +38,7 @@
   </div>
   <div class="page-container">
     <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
   </div>
   <Modal v-model="addModal" title="新增一言" :loading="true" @on-ok="save">
     <HitokotoAdd :typeList="typeList" :formData="formData" />
@@ -48,15 +48,15 @@
 <script lang="ts">
 import HitokotoAdd from './HitokotoAdd.vue'
 import { Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 import HitokotoModel from '../../model/api/hitokoto'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import moment from 'moment'
 
 let selectedData: string[] = []
 @Component({ components: {HitokotoAdd} })
-export default class Hitokoto extends Vue {
-  private loading: boolean = false
-  private search: Page = new Page()
+export default class Hitokoto extends BaseList<HitokotoPage> {
+  protected search = new HitokotoPage()
   private typeList: {label: string, value: string}[] = []
   private hitokotoColumns = [{
       type: 'selection',
@@ -98,13 +98,7 @@ export default class Hitokoto extends Vue {
   private formData: {[propName:string]: string | null} = {}
   private addModal: boolean = false
 
-  reset() {
-    this.loadData(true)
-  }
-  async loadData(resetPage?: boolean) {
-    if(resetPage) {
-      this.search.reset()
-    }
+  async loadData() {
     this.loading = true
     const { data } = await this.$http.get('/hitokoto/list', {params:this.search})
     selectedData = []
@@ -137,14 +131,6 @@ export default class Hitokoto extends Vue {
       }
     })
   }
-  pageChange(pageNum: number) {
-    this.search.pageNum = pageNum
-    this.loadData()
-  }
-  pageSizeChange(pageSize: number) {
-    this.search.limit = pageSize
-    this.loadData()
-  }
   dataSelect(selection: HitokotoModel[]) {
     selectedData = selection.map(item => item._id)
   }
@@ -155,6 +141,18 @@ export default class Hitokoto extends Vue {
   findTypeText(value: string): string | null {
     const type = this.typeList.find(item => item.value === value)
     return type ? type.label : null
+  }
+}
+
+class HitokotoPage extends Page {
+  content?: string
+  type?: string
+  createdAt?: [Date, Date]
+  reset() {
+    super.reset()
+    this.content = undefined
+    this.type = undefined
+    this.createdAt = undefined
   }
 }
 </script>
