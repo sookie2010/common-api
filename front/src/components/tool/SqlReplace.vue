@@ -21,13 +21,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Ref, Vue } from 'vue-property-decorator'
 
 @Component({})
 export default class SqlReplace extends Vue {
   private sql: string = ''
   private params: string = ''
   private replaceResult: string = ''
+  @Ref('resultInput') readonly inputInstance!: Vue
+
   replacePlaceholder() {
     let sql = this.sql
     const reg = /(.+?)\s*\((String|Integer|Boolean)\),?/g
@@ -49,8 +51,7 @@ export default class SqlReplace extends Vue {
       execResult = reg.exec(this.params)
     }
     this.replaceResult = sql
-    const inputInstance = this.$refs.resultInput as Vue
-    const resultInput = inputInstance.$el.children[1] as HTMLInputElement
+    const resultInput = this.inputInstance.$el.children[1] as HTMLInputElement
     Promise.resolve('已复制到剪贴板').then(message => {
       resultInput.select()
       if (document.execCommand('copy')) {
