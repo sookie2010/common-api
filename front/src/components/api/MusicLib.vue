@@ -11,9 +11,8 @@
       <div class="search-title">文件类型：</div>
     </Col>
     <Col span="4">
-      <Select v-model="search.ext" clearable>
-        <Option value="mp3" >mp3</Option>
-        <Option value="flac" >flac</Option>
+      <Select v-model="search.ext" multiple :max-tag-count="3">
+        <Option v-for="ext in exts" :key="ext" :value="ext" >{{ext}}</Option>
       </Select>
     </Col>
     <Col span="2">
@@ -36,17 +35,20 @@
     <Col span="4">
       <Input v-model="search.artist" @on-enter="loadData" />
     </Col>
-    <Col span="5" offset="1">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
+  <div class="btn-container">
+    <Button type="success" ghost icon="md-play">播放</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
+  </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="musicLibColumns" :data="musicLibData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
 </div>
 </template>
@@ -88,9 +90,21 @@ export default class MusicLib extends BaseList<MusicLibPage> {
       title: '艺术家',
       key: 'artist'
     }]
+  private exts: string[] = []
   private musicLibData: MusicLibModel[] = []
+  created() {
+    this.loadData()
+    this.$http.get('/music-lib/listExts').then(({data}) => {
+      this.exts = data
+    })
+  }
   async loadData() {
-
+    this.loading = true
+    const { data } = await this.$http.get('/music-lib/list', {params:this.search})
+    selectedData = []
+    this.loading = false
+    this.search.total = data.total
+    this.musicLibData = data.data
   }
   dataSelect(selection: MusicLibModel[]) {
     selectedData = selection.map(item => item._id)
@@ -100,14 +114,14 @@ export default class MusicLib extends BaseList<MusicLibPage> {
 
 class MusicLibPage extends Page {
   name?: string
-  ext?: string
+  ext: string[] = []
   title?: string
   album?: string
   artist?: string
   reset() {
     super.reset()
     this.name = undefined
-    this.ext = undefined
+    this.ext = []
     this.title = undefined
     this.album = undefined
     this.artist = undefined

@@ -7,13 +7,13 @@
     <Col span="4">
       <Input v-model="search.name" @on-enter="loadData" placeholder="名称/描述" />
     </Col>
-    <Col span="5" offset="12">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
   <div class="btn-container">
     <Button type="primary" @click="add">添加</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <div class="table-container">
     <Table :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>

@@ -39,10 +39,6 @@
         <span slot="prepend">&lt;=</span>
       </Input>
     </Col>
-    <Col span="5" offset="1">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
   
   <div class="btn-container">
@@ -56,14 +52,18 @@
       <Button type="primary" icon="ios-cloud-upload-outline">上传图片</Button>
     </Upload>
     <Button type="error" @click="deleteAll">删除</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="photowallColumns" 
       :data="photowallData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
   
 </div>

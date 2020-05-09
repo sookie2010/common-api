@@ -9,7 +9,8 @@ export default new Vuex.Store({
 			userInfo: null,
 			token: null
     },
-    breadcrumb: []
+    breadcrumb: [],
+    pageSizeOpts: [10, 20, 50, 100]
 	},
 	mutations: {
 		/**

@@ -7,20 +7,20 @@
     <Col span="4">
       <Input v-model="search.username" @on-enter="loadData" />
     </Col>
-    <Col span="5" offset="12">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
   <div class="btn-container">
     <Button type="primary" @click="add">添加</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="systemUserColumns" :data="systemUserData" height="520" ></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
   <Modal v-model="addModal" :title="modalTitle" :loading="true" @on-ok="save">
     <Form :model="formData" :label-width="80">
@@ -149,9 +149,11 @@ export default class SystemUser extends BaseList<SystemUserPage> {
       }
     })
   }
-  async created() {
+  created() {
     this.loadData()
-    this.roles = (await this.$http.get('/system/role/listAll')).data
+    this.$http.get('/system/role/listAll').then(({data}) => {
+      this.roles = data
+    })
   }
 }
 

@@ -21,8 +21,8 @@
       :data="sourceImageData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
   <Modal v-model="modifyModal" title="修改标签" :footer-hide="true" @on-visible-change="modifyModalClose">
     <CheckboxGroup v-model="curModifyLabels" @on-change="changeLabel">
@@ -204,10 +204,11 @@ export default class SourceImage extends BaseList<Page> {
   async changeLabel(labels: string[]): Promise<void> {
     await this.$http.post('/source-image/updateLabel', {id: this.curId, labels})
   }
-  async created(): Promise<void> {
-    const { data } = await this.$http.get('/system/config/get/image_label')
-    this.labelList.push(...data)
+  created() {
     this.loadData()
+    this.$http.get('/system/config/get/image_label').then(({data}) => {
+      this.labelList.push(...data)
+    })
   }
 }
 </script>

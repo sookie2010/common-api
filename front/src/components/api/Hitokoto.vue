@@ -23,22 +23,22 @@
     <Col span="4">
       <Date-picker v-model="search.createdAt" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
     </Col>
-    <Col span="5" offset="1">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
   
   <div class="btn-container">
     <Button type="primary" @click="addModal = true">添加</Button>
     <Button type="error" @click="deleteAll">删除</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <div class="table-container">
     <Table border :loading="loading" :columns="hitokotoColumns" :data="hitokotoData" height="520" @on-selection-change="dataSelect"></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
   <Modal v-model="addModal" title="新增一言" :loading="true" @on-ok="save">
     <HitokotoAdd :typeList="typeList" :formData="formData" />
@@ -134,9 +134,11 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
   dataSelect(selection: HitokotoModel[]) {
     selectedData = selection.map(item => item._id)
   }
-  async created() {
-    this.typeList = (await this.$http.get('/common/config/hitokoto_type')).data
+  created() {
     this.loadData()
+    this.$http.get('/common/config/hitokoto_type').then(({data}) => {
+      this.typeList = data
+    })
   }
   findTypeText(value: string): string | null {
     const type = this.typeList.find(item => item.value === value)

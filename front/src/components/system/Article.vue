@@ -5,21 +5,21 @@
     <Col span="2">
       <div class="search-title">标题：</div>
     </Col>
-    <Col span="3">
+    <Col span="4">
       <Input v-model="search.title" @on-enter="loadData" />
     </Col>
 
     <Col span="2">
       <div class="search-title">创建时间：</div>
     </Col>
-    <Col span="3">
+    <Col span="4">
       <Date-picker v-model="search.createDate" type="daterange"  placement="bottom-end" placeholder="选择日期"></Date-picker>
     </Col>
 
     <Col span="2">
       <div class="search-title">分类：</div>
     </Col>
-    <Col span="3">
+    <Col span="4">
       <Select v-model="search.category" filterable clearable>
         <Option v-for="item in categories" :value="item" :key="item">{{ item }}</Option>
       </Select>
@@ -28,27 +28,21 @@
     <Col span="2">
       <div class="search-title">标签：</div>
     </Col>
-    <Col span="3">
+    <Col span="4">
       <Select v-model="search.tag" filterable clearable>
         <Option v-for="item in tags" :value="item" :key="item">{{ item }}</Option>
       </Select>
     </Col>
-    
   </Row>
   <Row class-name="search-row">
     <Col span="2" >
       <div class="search-title">已分词：</div>
     </Col>
-    <Col span="3">
+    <Col span="4">
       <Select v-model="search.isSplited" clearable>
         <Option value="true" >是</Option>
         <Option value="false" >否</Option>
       </Select>
-    </Col>
-
-    <Col span="3" offset="1">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click.native="reset" icon="ios-refresh">重置</Button>
     </Col>
   </Row>
   </div>
@@ -63,6 +57,10 @@
       style="display: inline-block;">
       <Button type="primary" icon="ios-cloud-upload-outline">发布博客</Button>
     </Upload>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <Row>
     <Col span="4" style="height:520px;overflow:auto;">
@@ -76,8 +74,8 @@
   </Row>
   
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change.native="pageChange" @on-page-size-change.native="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
   <Drawer :closable="false" width="40" v-model="markdownPreview.show" :title="markdownPreview.title" >
     <div v-html="markdownPreview.content"></div>
@@ -306,10 +304,14 @@ export default class Article extends BaseList<ArticlePage> {
     })
     this.markdownPreview.title = curNode.name
   }
-  async created() {
+  created() {
     this.loadData()
-    this.categories = (await this.$http.get('/article/listCategories')).data
-    this.tags = (await this.$http.get('/article/listTags')).data
+    this.$http.get('/article/listCategories').then(({data}) => {
+      this.categories = data
+    })
+    this.$http.get('/article/listTags').then(({data}) => {
+      this.tags = data
+    })
     this.loadTreeData({deep:-1, name: null, expand: false}, (treeNodes: TreeNode[]) => {
       this.articleTree.push(...treeNodes)
     })
