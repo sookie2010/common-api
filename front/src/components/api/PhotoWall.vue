@@ -188,7 +188,6 @@ export default class PhotoWall extends BaseList<PhotoWallPage> {
   async preview(row: PhotoWallModel) {
     const previewHeight = Math.floor(row.height * (500 / row.width))
     const pictureCdn = (await this.$http.get('/common/config/picture_cdn')).data
-    debugger
     this.$Modal.info({
       title: '图片预览',
       width: 500 + 100,

@@ -65,7 +65,8 @@ export default class App extends Vue{
       { name: '一言', path: '/api/hitokoto' },
       { name: '照片墙', path: '/api/photoWall' },
       { name: '图片资源库', path: '/api/sourceImage' },
-      { name: '中国行政区划', path: '/api/chinaProvince' }
+      { name: '中国行政区划', path: '/api/chinaProvince' },
+      { name: '歌曲库', path: '/api/musicLib' }
       ]
     },{
     name: '工具',
