@@ -19,16 +19,11 @@
   </Form>
 </div>
 </template>
-<script>
-import Input from 'view-design/src/components/input'
-import Form from 'view-design/src/components/form'
-import FormItem from 'view-design/src/components/form-item'
-import ISwitch from 'view-design/src/components/switch'
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-export default {
-  components: { Input, Form, FormItem, ISwitch },
-  props: {
-    formData: Object
-  }
+@Component({})
+export default class SystenConfigAdd extends Vue {
+  @Prop() formData?: object
 }
 </script>

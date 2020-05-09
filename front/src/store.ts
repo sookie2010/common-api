@@ -9,7 +9,8 @@ export default new Vuex.Store({
 			userInfo: null,
 			token: null
     },
-    breadcrumb: []
+    breadcrumb: [],
+    pageSizeOpts: [10, 20, 50, 100]
 	},
 	mutations: {
 		/**
@@ -18,7 +19,7 @@ export default new Vuex.Store({
      * @param {Object} userInfo 用户信息
      * @param {String} token 登录Token
      */
-		login(state, user) {
+		login(state, user): void {
 			localStorage.setItem('login_token', user.token)
 			state.loginInfo.token = user.token
 			state.loginInfo.userInfo = user.userInfo
@@ -27,17 +28,17 @@ export default new Vuex.Store({
      * 注销
      * @param {Object} state 
      */
-		logout(state) {
+		logout(state): void {
 			localStorage.removeItem('login_token')
 			state.loginInfo.token = null
-			state.loginInfo.userInfo = null
+      state.loginInfo.userInfo = null
     },
     /**
      * 设置面包屑导航
      * @param {Object} state 
      * @param {Array} breadcrumbArr 面包屑导航的内容
      */
-    setBreadcrumb(state, breadcrumbArr) {
+    setBreadcrumb(state, breadcrumbArr): void {
       state.breadcrumb = breadcrumbArr
     }
 	}

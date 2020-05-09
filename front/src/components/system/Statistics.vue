@@ -28,7 +28,7 @@ export default {
     this.$refs.publishDatesChart.showLoading()
     this.$refs.timelineWordsChart.showLoading()
 
-    const articleData = await this.$http.get('/article/statistics', {params:{type:'normal'}})
+    const articleData = (await this.$http.get('/article/statistics', {params:{type:'normal'}})).data
     this.categoriesChart.legend.data = articleData.categories.map(item => item._id)
     this.categoriesChart.series[0].data = articleData.categories.map(item => {
       return {name: item._id, value: item.cnt}
@@ -38,7 +38,7 @@ export default {
     this.$refs.categoriesChart.hideLoading()
     this.$refs.publishDatesChart.hideLoading()
 
-    const timelineData = await this.$http.get('/article/statistics', {params:{type:'timelineWords'}})
+    const timelineData = (await this.$http.get('/article/statistics', {params:{type:'timelineWords'}})).data
     this.timelineWordsChart.baseOption.timeline.data = timelineData.timelineWords.map(item => item._id)
     this.timelineWordsChart.options.length = 0
     timelineData.timelineWords.forEach(item => {
@@ -212,17 +212,17 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 .echarts-container {
   display: grid;
   grid-template-columns: 50% 50%;
   grid-template-rows: 50% 50%;
   height: 100%;
-}
-.echarts-container > .echarts {
-  border: 1px solid #ccc;
-  width: auto;
-  height: auto;
+  > .echarts {
+    border: 1px solid #ccc;
+    width: auto;
+    height: auto;
+  }
 }
 .timeline-chart {
   grid-column-start: 1;

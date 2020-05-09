@@ -7,7 +7,6 @@
     <Col span="4">
       <Input v-model="search.name" @on-enter="loadData" />
     </Col>
-
     <Col span="2">
       <div class="search-title">归属：</div>
     </Col>
@@ -26,112 +25,87 @@
         <Option v-for="item in areaList" :value="item.area" :key="item.code">{{ item.name }}</Option>
       </Select>
     </Col>
-    <Col span="5" offset="2">
-      <Button type="primary" shape="circle" @click="loadData" icon="ios-search">搜索</Button>
-      <Button shape="circle" @click="reset" icon="ios-refresh">重置</Button>
-    </Col>
   </Row>
   <div class="btn-container">
     <Button type="primary" @click="$refs.table.exportCsv({ filename: '行政区划'})">导出</Button>
+    <div class="search-btn">
+      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button @click.native="reset" icon="md-refresh">重置</Button>
+    </div>
   </div>
   <div class="table-container">
     <Table border :loading="loading" ref="table" :columns="chinaProvinceColumns" :data="chinaProvinceData" height="520" ></Table>
   </div>
   <div class="page-container">
-    <Page :total="search.total" :current="search.pageNum" :page-size="search.limit" 
-      show-total show-sizer show-elevator @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+    <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
+      show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
 </div>
 </template>
-<script>
-import Table from 'view-design/src/components/table'
-import Row from 'view-design/src/components/row'
-import Col from 'view-design/src/components/col'
-import Input from 'view-design/src/components/input'
-import Select from 'view-design/src/components/select'
-import Option from 'view-design/src/components/option'
-import Button from 'view-design/src/components/button'
-import Page from 'view-design/src/components/page'
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { Page } from '../../model/common.dto'
+import BaseList from '../../model/baselist'
 
+@Component({})
+export default class ChinaProvince extends BaseList<ChinaProvincePage> {
+  protected search = new ChinaProvincePage()
+  private selectSearch = {}
+  private provinceList = []
+  private cityList = []
+  private areaList = []
+  private chinaProvinceColumns = [{
+      title: '编码',
+      key: 'code'
+    },{
+      title: '名称',
+      key: 'name'
+    }]
+  private chinaProvinceData = []
 
-export default {
-  components: {
-    Table, Row, Col, Input, Select, Option, Button, Page
-  },
-  data() {
-    return {
-      loading: false,
-      search: {
-        pageNum: 1,
-        limit: 10,
-        total: null
-      },
-      selectSearch: {},
-      provinceList: [],
-      cityList: [],
-      areaList: [],
-      chinaProvinceColumns: [{
-          title: '编码',
-          key: 'code'
-        },{
-          title: '名称',
-          key: 'name'
-        }],
-      chinaProvinceData: []
+  async loadData() {
+    this.loading = true
+    const { data } = await this.$http.get('/province/list', {params:this.search})
+    this.loading = false
+    this.search.total = data.total
+    this.chinaProvinceData = data.data
+  }
+  async provinceChange(value: string) {
+    delete this.search.city
+    delete this.search.area
+    if(!value) {
+      this.cityList.length = 0
+      this.areaList.length = 0
+      return
     }
-  },
-  methods: {
-    reset() {
-      this.search = {
-        pageNum: 1,
-        limit: 10,
-        total: this.search.total
-      }
-      this.loadData()
-    },
-    async loadData(resetPage) {
-      if(resetPage) {
-        this.search.pageNum = 1
-        this.search.limit = 10
-      }
-      this.loading = true
-      const data = await this.$http.get('/province/list', {params:this.search})
-      this.loading = false
-      this.search.total = data.total
-      this.chinaProvinceData = data.data
-    },
-    pageChange(pageNum) {
-      this.search.pageNum = pageNum
-      this.loadData()
-    },
-    pageSizeChange(pageSize) {
-      this.search.limit = pageSize
-      this.loadData()
-    },
-    async provinceChange(value) {
-      delete this.search.city
-      delete this.search.area
-      if(!value) {
-        this.cityList.length = 0
-        this.areaList.length = 0
-        return
-      }
-      this.cityList = await this.$http.get('/province/listAll', {params:{ province: value }})
-    },
-    async cityChange(value) {
-      delete this.search.area
-      if(!value) {
-        this.areaList.length = 0
-        return
-      }
-      this.areaList = await this.$http.get('/province/listAll', {params:{
-          province: this.search.province,
-          city: value
-        }})
+    this.cityList = (await this.$http.get('/province/listAll', {params:{ province: value }})).data
+  }
+  async cityChange(value: string) {
+    delete this.search.area
+    if(!value) {
+      this.areaList.length = 0
+      return
     }
-  },
+    this.areaList = (await this.$http.get('/province/listAll', {params:{
+        province: this.search.province,
+        city: value
+      }})).data
+  }
   async created() {
-    this.provinceList = await this.$http.get('/province/listAll')
+    this.provinceList = (await this.$http.get('/province/listAll')).data
+  }
+}
+class ChinaProvincePage extends Page {
+  name?: string
+  city?: string
+  area?: string
+  province? : string
+  reset() {
+    super.reset()
+    this.name = undefined
+    this.city = undefined
+    this.area = undefined
+    this.province = undefined
   }
 }
 </script>
