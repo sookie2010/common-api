@@ -67,6 +67,7 @@ const vm = new Vue({
 // 全局路由导航前置守卫
 router.beforeEach(function (to: Route, from: Route, next: Function) {
   vm.$store.commit('setBreadcrumb', routePathes[to.path] || [])
+  localStorage.setItem('routePath', to.path)
   if(filterExclude.indexOf(to.path) !== -1 || localStorage.getItem('login_token')) {
     next()
   } else {

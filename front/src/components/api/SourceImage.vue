@@ -205,9 +205,9 @@ export default class SourceImage extends BaseList<Page> {
     await this.$http.post('/source-image/updateLabel', {id: this.curId, labels})
   }
   created() {
-    this.loadData()
     this.$http.get('/system/config/get/image_label').then(({data}) => {
       this.labelList.push(...data)
+      this.loadData()
     })
   }
 }

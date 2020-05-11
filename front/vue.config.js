@@ -23,7 +23,7 @@ module.exports = {
     }
   },
   devServer: {
-    proxy: 'http://localhost:3301'
-    // proxy: 'https://www.colorfulsweet.site/api'
+    // proxy: 'http://localhost:3301'
+    proxy: 'https://www.colorfulsweet.site/api'
   }
 }
