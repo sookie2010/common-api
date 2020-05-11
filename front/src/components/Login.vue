@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div style="width: 400px;margin: 20px auto;">
-    <Form ref="userInfo" :model="userInfo" :rules="ruleValidate" :label-width="80">
+  <div id="login-wrapper">
+    <h2 class="title">博客API管理后台</h2>
+    <Form ref="userInfo" :model="userInfo"  :rules="ruleValidate" :label-width="80">
       <Form-item label="用户名" prop="username">
         <Input v-model="userInfo.username" @on-enter="login"/>
       </Form-item>
@@ -9,12 +9,11 @@
         <Input v-model="userInfo.password" type="password" @on-enter="login" />
       </Form-item>
     </Form>
-    <div style="padding-left:80px">
+    <div class="login-btn">
       <Button type="primary" @click="login">登录</Button>
       <Tooltip content="无需账号密码，只有查询权限" placement="bottom">
         <Button @click="guestLogin">访客模式</Button>
       </Tooltip>
-    </div>
     </div>
   </div>
 </template>
@@ -61,3 +60,20 @@ export default class Login extends Vue {
   }
 }
 </script>
+<style lang="less" scoped>
+#login-wrapper {
+  width: 400px;
+  vertical-align: middle;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  .title {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .login-btn {
+    text-align: center;
+  }
+}
+</style>

@@ -3,9 +3,9 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const Login = () => import('@/components/Login.vue')
-const Home = () => import('@/components/Home.vue')
-const Welcome = () => import('@/components/Welcome.vue')
+import Login from '@/components/Login.vue'
+import Home from '@/components/Home.vue'
+import Welcome from '@/components/Welcome.vue'
 const Article = () => import(/* webpackChunkName: "system" */'@/components/system/Article.vue')
 const Statistics = () => import(/* webpackChunkName: "system" */'@/components/system/Statistics.vue')
 const SystemConfig = () => import(/* webpackChunkName: "system" */'@/components/system/SystemConfig.vue')
