@@ -104,7 +104,7 @@ export default class Music extends BaseList<MusicPage> {
     },{
       title: '所属歌单',
       key: 'lib_id',
-      render (h: Function, {row}: {row: MusicModel}) {
+      render: (h: Function, {row}: {row: MusicModel}) => {
         const musicLib = this.musicLibs.find(item => item._id === row.lib_id)
         if(musicLib) {
           return h('span', musicLib.name)
