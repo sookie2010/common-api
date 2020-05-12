@@ -6,7 +6,7 @@ import SystemController from './controller/system.controller'
 import ArticleController from './controller/article.controller'
 import SourceImageController from './controller/source-image.controller'
 import ProvinceController from './controller/province.controller'
-import MusicLibController from './controller/music-lib.controller'
+import MusicController from './controller/music.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import AppService from './service/common.service'
 import HitokotoService from './service/hitokoto.service'
@@ -15,7 +15,7 @@ import SystemService from './service/system.service'
 import ArticleService from './service/article.service'
 import SourceImageService from './service/source-image.service'
 import ProvinceService from './service/province.service'
-import MusicLibService from './service/music-lib.service'
+import MusicService from './service/music.service'
 import { HitokotoSchema } from './schema/hitokoto.schema'
 import { PhotoWallSchema } from './schema/photo-wall.schema'
 import { SystemConfigSchema } from './schema/system-config.schema'
@@ -24,7 +24,7 @@ import { SystemRoleSchema } from './schema/system-role.schema'
 import { ArticleSchema, ArticleKeysSchema } from './schema/article.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
 import { ProvinceSchema } from './schema/province.schema'
-import { MusicLibSchema } from './schema/music-lib.schema'
+import { MusicSchema } from './schema/music.schema'
 
 const dbConfig = require('../config/db.json')
 
@@ -46,7 +46,7 @@ const dbConfig = require('../config/db.json')
       { name: 'ArticleKeys', schema: ArticleKeysSchema },
       { name: 'SourceImage', schema: SourceImageSchema },
       { name: 'Province', schema: ProvinceSchema },
-      { name: 'Music', schema: MusicLibSchema },
+      { name: 'Music', schema: MusicSchema },
     ]),
   ],
   controllers: [
@@ -57,7 +57,7 @@ const dbConfig = require('../config/db.json')
     ArticleController,
     SourceImageController,
     ProvinceController,
-    MusicLibController,
+    MusicController,
   ],
   providers: [
     AppService,
@@ -67,7 +67,7 @@ const dbConfig = require('../config/db.json')
     ArticleService,
     SourceImageService,
     ProvinceService,
-    MusicLibService,
+    MusicService,
   ],
 })
 export class AppModule {}

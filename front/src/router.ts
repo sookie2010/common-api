@@ -15,7 +15,7 @@ const Hitokoto = () => import(/* webpackChunkName: "api" */'@/components/api/Hit
 const PhotoWall = () => import(/* webpackChunkName: "api" */'@/components/api/PhotoWall.vue')
 const SourceImage = () => import(/* webpackChunkName: "api" */'@/components/api/SourceImage.vue')
 const ChinaProvince = () => import(/* webpackChunkName: "api" */'@/components/api/ChinaProvince.vue')
-const MusicLib = () => import(/* webpackChunkName: "api" */'@/components/api/MusicLib.vue')
+const Music = () => import(/* webpackChunkName: "api" */'@/components/api/Music.vue')
 const SqlReplace = () => import(/* webpackChunkName: "tool" */'@/components/tool/SqlReplace.vue')
 export const router = new Router({
   routes: [
@@ -31,7 +31,7 @@ export const router = new Router({
       { path: '/api/photoWall', name: 'PhotoWall', component: PhotoWall },
       { path: '/api/sourceImage', name: 'SourceImage', component: SourceImage },
       { path: '/api/chinaProvince', name: 'ChinaProvince', component: ChinaProvince },
-      { path: '/api/musicLib', name: 'MusicLib', component: MusicLib },
+      { path: '/api/music', name: 'Music', component: Music },
       { path: '/tool/sqlReplace', name: 'SqlReplace', component: SqlReplace }
     ]},
   ]
@@ -48,7 +48,7 @@ export const routePathes : {[propName: string]: string[]} = {
   '/api/photoWall': ['首页', 'API数据', '照片墙'],
   '/api/sourceImage': ['首页', 'API数据', '图片资源库'],
   '/api/chinaProvince': ['首页', 'API数据', '中国行政区划'],
-  '/api/musicLib': ['首页', 'API数据', '歌曲库'],
+  '/api/music': ['首页', 'API数据', '歌曲库'],
   '/tool/sqlReplace': ['首页', '工具', 'SQL占位符替换']
 }
 
