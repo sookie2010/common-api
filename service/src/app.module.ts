@@ -24,7 +24,7 @@ import { SystemRoleSchema } from './schema/system-role.schema'
 import { ArticleSchema, ArticleKeysSchema } from './schema/article.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
 import { ProvinceSchema } from './schema/province.schema'
-import { MusicSchema } from './schema/music.schema'
+import { MusicSchema, MusicLibSchema } from './schema/music.schema'
 
 const dbConfig = require('../config/db.json')
 
@@ -47,6 +47,7 @@ const dbConfig = require('../config/db.json')
       { name: 'SourceImage', schema: SourceImageSchema },
       { name: 'Province', schema: ProvinceSchema },
       { name: 'Music', schema: MusicSchema },
+      { name: 'MusicLib', schema: MusicLibSchema }
     ]),
   ],
   controllers: [
