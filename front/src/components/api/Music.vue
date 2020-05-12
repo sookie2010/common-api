@@ -105,10 +105,8 @@ export default class Music extends BaseList<MusicPage> {
       title: '所属歌单',
       key: 'lib_id',
       render: (h: Function, {row}: {row: MusicModel}) => {
-        const musicLib = this.musicLibs.find(item => item._id === row.lib_id)
-        if(musicLib) {
-          return h('span', musicLib.name)
-        }
+        const musicLibName = this.findMusicLib(row.lib_id)
+        return musicLibName ? h('span', musicLibName) : undefined
       }
     }]
   private exts: string[] = []
@@ -133,6 +131,10 @@ export default class Music extends BaseList<MusicPage> {
   }
   dataSelect(selection: MusicModel[]) {
     selectedData = selection.map(item => item._id)
+  }
+  findMusicLib(value: string): string | null {
+    const musicLib = this.musicLibs.find(item => item._id === value)
+    return musicLib ? musicLib.name : null
   }
 }
 
