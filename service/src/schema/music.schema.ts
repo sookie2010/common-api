@@ -23,4 +23,4 @@ export const MusicLibSchema = new Schema({
   _id: Types.ObjectId,
   name: String, // 名称
   path: String, // 路径
-})
+}, { collection: 'music_lib', versionKey: false })

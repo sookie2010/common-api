@@ -54,7 +54,7 @@ export interface MusicDto {
   lib_id: string[]
 }
 
-export interface MusicLib {
+export interface MusicLib extends Document {
   _id: Types.ObjectId
   name: string
   path: string

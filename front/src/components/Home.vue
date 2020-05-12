@@ -65,7 +65,7 @@ export default class Home extends Vue{
         { title: '照片墙', path: '/api/photoWall' },
         { title: '图片资源库', path: '/api/sourceImage' },
         { title: '中国行政区划', path: '/api/chinaProvince' },
-        { title: '歌曲库', path: '/api/musicLib' }
+        { title: '歌曲库', path: '/api/music' }
       ]
     },{
       name: 'tool',
@@ -88,7 +88,10 @@ export default class Home extends Vue{
   async created(): Promise<void> {
     this.activeMenuItem = localStorage.getItem('routePath')
     if(this.activeMenuItem) {
-      this.openMenuNames.push(/^\/(.*)\//.exec(this.activeMenuItem)![1])
+      let result = /^\/(.*)\//.exec(this.activeMenuItem)
+      if(result) {
+        this.openMenuNames.push(result[1])
+      }
     }
     if(!localStorage.getItem('login_token')) {
       this.$router.push('/login')
