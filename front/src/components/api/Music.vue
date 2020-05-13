@@ -5,7 +5,7 @@
       <div class="search-title">名称：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name" @on-enter="loadData" />
+      <Input v-model="search.name" @on-enter="loadDataBase(true)" />
     </Col>
     <Col span="2">
       <div class="search-title">所属歌单：</div>
@@ -27,7 +27,7 @@
       <div class="search-title">标题：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.title" @on-enter="loadData" />
+      <Input v-model="search.title" @on-enter="loadDataBase(true)" />
     </Col>
   </Row>
   <Row class-name="search-row">
@@ -35,19 +35,19 @@
       <div class="search-title">唱片集：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.album" @on-enter="loadData" />
+      <Input v-model="search.album" @on-enter="loadDataBase(true)" />
     </Col>
     <Col span="2">
       <div class="search-title">艺术家：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.artist" @on-enter="loadData" />
+      <Input v-model="search.artist" @on-enter="loadDataBase(true)" />
     </Col>
   </Row>
   <div class="btn-container">
     <Button type="success" ghost icon="md-play">播放</Button>
     <div class="search-btn">
-      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button type="primary" @click="loadDataBase(true)" icon="md-search">搜索</Button>
       <Button @click.native="reset" icon="md-refresh">重置</Button>
     </div>
   </div>

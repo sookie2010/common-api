@@ -5,13 +5,13 @@
       <div class="search-title">角色名称/描述：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name" @on-enter="loadData" />
+      <Input v-model="search.name" @on-enter="loadDataBase(true)" />
     </Col>
   </Row>
   <div class="btn-container">
     <Button type="primary" @click="add">添加</Button>
     <div class="search-btn">
-      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button type="primary" @click="loadDataBase(true)" icon="md-search">搜索</Button>
       <Button @click.native="reset" icon="md-refresh">重置</Button>
     </div>
   </div>

@@ -9,19 +9,19 @@
       <div class="search-title">文件名：</div>
     </Col>
     <Col span="4">
-      <Input v-model="search.name" @on-enter="loadData" />
+      <Input v-model="search.name" @on-enter="loadDataBase(true)" />
     </Col>
 
     <Col span="2">
       <div class="search-title">宽度：</div>
     </Col>
     <Col span="2">
-      <Input :number="true" v-model="search.widthMin" @on-enter="loadData">
+      <Input :number="true" v-model="search.widthMin" @on-enter="loadDataBase(true)">
         <span slot="prepend">&gt;=</span>
       </Input>
     </Col>
     <Col span="2">
-      <Input :number="true" v-model="search.widthMax" @on-enter="loadData">
+      <Input :number="true" v-model="search.widthMax" @on-enter="loadDataBase(true)">
         <span slot="prepend">&lt;=</span>
       </Input>
     </Col>
@@ -30,12 +30,12 @@
       <div class="search-title">高度：</div>
     </Col>
     <Col span="2">
-      <Input :number="true" v-model="search.heightMin" @on-enter="loadData">
+      <Input :number="true" v-model="search.heightMin" @on-enter="loadDataBase(true)">
         <span slot="prepend">&gt;=</span>
       </Input>
     </Col>
     <Col span="2">
-      <Input :number="true" v-model="search.heightMax" @on-enter="loadData">
+      <Input :number="true" v-model="search.heightMax" @on-enter="loadDataBase(true)">
         <span slot="prepend">&lt;=</span>
       </Input>
     </Col>
@@ -53,7 +53,7 @@
     </Upload>
     <Button type="error" @click="deleteAll">删除</Button>
     <div class="search-btn">
-      <Button type="primary" @click="loadData" icon="md-search">搜索</Button>
+      <Button type="primary" @click="loadDataBase(true)" icon="md-search">搜索</Button>
       <Button @click.native="reset" icon="md-refresh">重置</Button>
     </div>
   </div>
