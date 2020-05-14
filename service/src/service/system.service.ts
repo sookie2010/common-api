@@ -8,6 +8,7 @@ import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto'
 
+import * as jwt from 'jsonwebtoken'
 import * as child_process from 'child_process'
 import * as fs from 'fs'
 
@@ -17,6 +18,19 @@ export default class SystemService {
               @InjectModel('SystemRole') private readonly systemRoleModel: Model<SystemRole>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {}
 
+  /**
+   * 解析token并查询用户信息
+   * @param token token字符串
+   */
+  async decryptUserInfo(token: string): Promise<SystemUser | null> {
+    const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
+    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value.toString())['_id']
+    if (userId) {
+      return await this.systemUserModel.findById(userId)
+    } else {
+      return null
+    }
+  }
   /**
    * 查询用户列表
    * @param systemUser 查询条件
@@ -122,14 +136,18 @@ export default class SystemService {
   /**
    * 列出所有的配置项
    * @param systemConfig 查询条件
+   * @param isPublic 是否只查询公开的配置项
    */
-  async listConfig(systemConfig: SystemConfig): Promise<SystemConfig[]> {
+  async listConfig(systemConfig: SystemConfig, isPublic: boolean): Promise<SystemConfig[]> {
     const qc: BaseQc = {}
     if (systemConfig.name) {
       qc.$or = [
         {name: new RegExp(CommonUtils.escapeRegexStr(systemConfig.name))},
         {description: new RegExp(CommonUtils.escapeRegexStr(systemConfig.name))},
       ]
+    }
+    if (isPublic) {
+      qc.$where = function(){ return this.is_public }
     }
     return this.systemConfigModel.find(qc).exec()
   }

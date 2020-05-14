@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Query, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, Param, Headers, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import LoginInterceptor from '../common/login.interceptor'
 import SystemService from '../service/system.service'
@@ -78,16 +78,10 @@ export default class SystemController {
    * @param systemConfig 查询条件
    */
   @Get('/config/list')
-  listConfig(@Query() systemConfig: SystemConfig): Promise<SystemConfig[]> {
-    return this.systemService.listConfig(systemConfig)
-  }
-  /**
-   * 获取非公开配置项
-   * @param name 配置项名称
-   */
-  @Get('/config/get/:name')
-  getConfig(@Param('name') name: string): Promise<object> {
-    return this.systemService.getConfig(name, false)
+  async listConfig(@Query() systemConfig: SystemConfig, @Headers('token') token: string): Promise<SystemConfig[]> {
+    const user = await this.systemService.decryptUserInfo(token)
+    // 如果用户并不存在 代表是访客用户
+    return this.systemService.listConfig(systemConfig, !user)
   }
   /**
    * 新增或更新配置项
