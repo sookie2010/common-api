@@ -17,7 +17,7 @@ Vue.use(ViewUI)
 import axios from 'axios'
 // 配置默认axios参数
 axios.defaults.baseURL = process.env.VUE_APP_BASEURL
-axios.defaults.timeout = 1000000
+axios.defaults.timeout = 10000
 
 // 添加请求拦截器
 axios.interceptors.request.use(config => {
@@ -27,11 +27,8 @@ axios.interceptors.request.use(config => {
   }
   return config
 }, err => {
-  // 对请求错误做些什么
-  vm.$Modal.error({
-    title: '错误',
-    content: '请求超时，请稍后再试'
-  })
+  // 请求错误的处理
+  vm.$Message.error('请求超时，请稍后再试')
   return Promise.reject(err)
 })
 
@@ -39,22 +36,14 @@ axios.interceptors.response.use(res=> {
   return res
 }, err => {
   if(err.response.status >= 500) {
-    vm.$Modal.error({
-      title: '错误',
-      content: '服务器内部错误'
-    })
+    vm.$Message.error('服务器内部错误')
   } else if(err.response.status >= 400) {
-    vm.$Modal.warning({
-      title: '警告',
-      content: err.response.data.msg,
-      onOk() {
-        if(err.response.status === 403) {
-          vm.$router.push('/login')
-        }
-      }
-    })
+    vm.$Message.warning(err.response.data.msg)
+    if(err.response.status === 403) {
+      vm.$router.push('/login')
+    }
   }
-  return Promise.resolve(err)
+  return Promise.reject(err)
 })
 Vue.prototype.$http = axios
 /*------axios end------*/
