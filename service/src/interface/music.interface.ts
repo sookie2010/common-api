@@ -12,6 +12,7 @@ export interface Music extends Document {
   title: string // 歌曲名称
   album: string // 唱片集
   artist: string // 艺术家
+  album_image: Buffer // 专辑封面
   lib_id: Types.ObjectId // 歌单ID
 }
 

@@ -11,9 +11,10 @@ import { Page, MsgResult } from '../common/common.dto'
 import SystemUser from '../interface/system-user.interface'
 import PageTransform from '../common/page.transform'
 import SystemService from '../service/system.service'
+import MusicService from '../service/music.service'
 import { Response } from 'express'
 
-import { Readable } from 'stream'
+import { Readable, Writable } from 'stream'
 
 @Controller('/common')
 export default class CommonController {
@@ -24,6 +25,7 @@ export default class CommonController {
     private readonly systemService: SystemService,
     private readonly commonService: CommonService,
     private readonly sourceImageService: SourceImageService,
+    private readonly musicService: MusicService,
   ) {}
   /**
    * 登录
@@ -93,23 +95,58 @@ export default class CommonController {
    * 获取一张背景图
    * @param id 图片ID(不传则根据label随机获取一张)
    * @param label 图片标签
+   * @param res HTTP响应
    */
   @Get('/randomBg')
-  randomBg(@Query('id') id: string, @Query('label') label: string, @Res() res: Response): void {
+  randomBg(@Query('id') id: string, @Query('label') label: string, @Res() response: Response): void {
     this.sourceImageService.findOne(id, label).then((sourceImage: SourceImage) => {
       const stream = new Readable()
       stream.push(sourceImage.img)
       stream.push(null)
-      res.set({
+      response.set({
         'Content-Type': sourceImage.mime,
         'Content-Length': sourceImage.size,
       })
-      stream.pipe(res)
+      stream.pipe(response)
     }).catch(err => {
-      res.set({
+      response.set({
         'Content-Type': 'application/json',
       })
-      res.end(JSON.stringify(new MsgResult(false, err.message)))
+      response.end(JSON.stringify(new MsgResult(false, err.message)))
+    })
+  }
+  /**
+   * 获取音乐文件
+   * @param id 音乐ID
+   * @param res HTTP响应
+   */
+  @Get('/music/get/:id')
+  getMusic(@Param('id') id: string, @Res() response: Response): void {
+    this.musicService.outputMusic(id, response)
+  }
+
+  /**
+   * 获取音乐专辑封面
+   * @param id 音乐ID
+   * @param response HTTP响应
+   */
+  @Get('/music/album/:id')
+  getMusicAlbumImage(@Param('id') id: string, @Res() response: Response): void {
+    this.musicService.findAlbumImage(id).then((albumImage: Buffer) => {
+      if (!albumImage) return
+      const stream = new Readable()
+      stream.push(albumImage)
+      stream.push(null)
+      response.set({
+        'Content-Type': 'image/jpeg',
+        'Content-Length': albumImage.length,
+      })
+      stream.pipe(response)
+    }).catch(err => {
+      response.set({
+        'Content-Type': 'application/json',
+      })
+      response.end(JSON.stringify(new MsgResult(false, err.message)))
     })
   }
 }

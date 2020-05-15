@@ -13,6 +13,7 @@ export const MusicSchema = new Schema({
   title: String, // 歌曲名称
   album: String, // 唱片集
   artist: String, // 艺术家
+  album_image: Buffer, // 专辑封面
   lib_id: Types.ObjectId, // 歌单ID
 }, { collection: 'music', versionKey: false })
 

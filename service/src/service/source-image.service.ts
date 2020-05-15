@@ -14,7 +14,7 @@ export default class SourceImageService {
    * @param id 图片ID(不传则随机获取一张)
    * @param label 图片标签
    */
-  async findOne(id: string, label: string): Promise<SourceImage | MsgResult> {
+  async findOne(id: string, label: string): Promise<SourceImage> {
     if (id) {
       return await this.sourceImageModel.findOne({_id: id}).exec()
     }
