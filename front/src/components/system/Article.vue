@@ -62,11 +62,11 @@
       <Button @click.native="reset" icon="md-refresh">重置</Button>
     </div>
   </div>
-  <Row>
+  <Row :gutter="16">
     <Col span="4" style="height:520px;overflow:auto;">
       <Tree :data="articleTree" :load-data="loadTreeData" @on-select-change="articlePreview"></Tree>
     </Col>
-    <Col span="20">
+    <Col span="20" >
       <div class="table-container">
         <Table border :loading="loading" :columns="articleColumns" :data="articleData" height="520" @on-selection-change="dataSelect"></Table>
       </div>

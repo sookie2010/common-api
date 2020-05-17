@@ -3,61 +3,43 @@
 html,body,#app,.layout {
   height: 100%;
 }
-.layout{
-  background: #f5f7f9;
-  position: relative;
-}
-.ivu-row-flex {
-  height: 100%;
-}
-.layout-breadcrumb{
-  padding: 10px 15px 0;
-}
-.layout-left {
-  box-shadow: 4px 0px 5px 0px @panel-shadow-color;
-}
-.layout-content{
-  margin: 15px;
-  overflow: auto;
-  background: #fff;
-  box-shadow: -2px -2px 5px 0px @panel-shadow-color;
-  padding: 10px;
-  flex-grow: 1;
-  flex-basis: 0;
-}
-.layout-copy{
-  text-align: center;
-  padding: 10px 0 20px;
-  color: #9ea7b4;
-}
-.layout-right{
-  display: flex !important;
-  flex-direction: column;
-}
 .layout-header{
-  height: 60px;
-  line-height: 60px;
-  padding-left: 30px;
-  background: #fff;
-  box-shadow: 0px 4px 5px 0px @panel-shadow-color;
-  h2 {
+  color: #fff;
+  div.main-title {
     display: inline-block;
+    font-size: 22px;
   }
   .nav-btns-right {
     display: inline-block;
     position: absolute;
     right: 20px;
   }
-  .nav-btns-right > span {
-    margin-right: 10px;
+}
+.layout-main {
+  height: calc(100vh - 64px);
+  .layout-breadcrumb{
+    padding: 10px 15px 0;
   }
-  .nav-btns-left {
-    display: inline-block;
-    position: absolute;
-    margin-left: 20px;
-    font-size: 16px;
+  .layout-content{
+    margin: 15px;
+    overflow: auto;
+    background: #fff;
+    box-shadow: -2px -2px 5px 0px @panel-shadow-color;
+    padding: 10px;
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+  .layout-copy{
+    text-align: center;
+    padding: 10px 0 20px;
+    color: #9ea7b4;
+  }
+  .layout-right{
+    display: flex;
+    flex-direction: column;
   }
 }
+
 .ivu-menu-item {
   padding: 0 !important;
   a.menu-link {

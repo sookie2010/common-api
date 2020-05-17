@@ -4,9 +4,9 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
 import SystemConfig from '../interface/system-config.interface'
 import { Page, MsgResult } from '../common/common.dto'
-import COS from 'cos-nodejs-sdk-v5'
 import { Writable } from 'stream'
-import * as path from 'path'
+
+const COS = require('cos-nodejs-sdk-v5')
 
 @Injectable()
 export default class MusicService {
@@ -18,7 +18,7 @@ export default class MusicService {
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
                 // tencent_cos_setting
-    systemConfigModel.findOne({name: 'nos_setting'}).exec().then((systemConfig: SystemConfig) => {
+    systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
       this.bucket = systemConfig.value['Bucket']
       this.region = systemConfig.value['Region']
       this.tencentCosClient = new COS(systemConfig.value['setting'])
@@ -77,7 +77,7 @@ export default class MusicService {
     this.tencentCosClient.getObject({
       Bucket: this.bucket,
       Region: this.region,
-      Key: path.resolve(musicLib.path, music.name),
+      Key: musicLib.path + music.name,
       Output: writer,
     }, function(err: object, data: object) {
       if (err) {
