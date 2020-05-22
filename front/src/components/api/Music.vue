@@ -45,7 +45,7 @@
     </Col>
   </Row>
   <div class="btn-container">
-    <Button type="success" ghost icon="md-play">播放</Button>
+    <Button type="success" ghost icon="md-play" @click="playMusic">播放</Button>
     <div class="search-btn">
       <Button type="primary" @click="loadDataBase(true)" icon="md-search">搜索</Button>
       <Button @click.native="reset" icon="md-refresh">重置</Button>
@@ -58,6 +58,11 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
+  <Drawer title="播放音乐" v-model="musicPlaying" width="720" :mask-closable="false" >
+    <template v-if="musicPlaying">
+      <a-player :audio="musicList"/>
+    </template>
+  </Drawer>
 </div>
 </template>
 
@@ -68,7 +73,12 @@ import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { Component } from 'vue-property-decorator'
 import prettyBytes from 'pretty-bytes'
+import APlayer from '@moefe/vue-aplayer'
 
+Vue.use(APlayer, {
+  defaultCover: `${Vue.prototype.$http.defaults.baseURL}/common/randomBg?id=5ec7770b60990123b7340233`, // 播放器默认封面图片
+  productionTip: false, // 是否在控制台输出版本信息
+})
 let selectedData: string[] = []
 @Component({})
 export default class Music extends BaseList<MusicPage> {
@@ -112,6 +122,9 @@ export default class Music extends BaseList<MusicPage> {
   private exts: string[] = []
   private musicLibs: MusicLibModel[] = []
   private musicData: MusicModel[] = []
+  // 是否正在播放音乐
+  private musicPlaying: boolean = false
+  private musicList: [] = []
   created() {
     this.$http.get('/music/listLibs').then(({data}) => {
       this.musicLibs = data
@@ -123,7 +136,7 @@ export default class Music extends BaseList<MusicPage> {
   }
   async loadData() {
     this.loading = true
-    const { data } = await this.$http.get('/music/list', {params:this.search})
+    const { data } = await this.$http.get('/music/list', {params: this.search})
     selectedData = []
     this.loading = false
     this.search.total = data.total
@@ -135,6 +148,29 @@ export default class Music extends BaseList<MusicPage> {
   findMusicLib(value: string): string | null {
     const musicLib = this.musicLibs.find(item => item._id === value)
     return musicLib ? musicLib.name : null
+  }
+  // 根据当前搜索条件播放音乐
+  async playMusic() {
+    // 显示加载进度条
+    this.$Loading.start()
+    try {
+      const { data } = await this.$http.get('/music/list/all', {params: this.search})
+      this.musicList = data.map((item: MusicModel) => {
+        return {
+          name: item.title || item.name,
+          artist: item.artist,
+          url: `${this.$http.defaults.baseURL}/common/music/get/${item._id}`,
+          cover: `${this.$http.defaults.baseURL}/common/music/album/${item._id}`
+        }
+      })
+      // 结束加载进度条
+      this.$Loading.finish()
+      this.musicPlaying = true
+    } catch (err) {
+      console.error(err)
+      this.$Message.error('获取播放列表失败')
+      this.$Loading.error()
+    }
   }
 }
 

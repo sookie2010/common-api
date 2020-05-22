@@ -1,9 +1,9 @@
-import { Model, Types } from 'mongoose'
+import { Model } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
 import SystemConfig from '../interface/system-config.interface'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page } from '../common/common.dto'
 import { Writable } from 'stream'
 
 const COS = require('cos-nodejs-sdk-v5')
@@ -17,7 +17,6 @@ export default class MusicService {
   constructor(@InjectModel('Music') private readonly musicModel: Model<Music>,
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
-                // tencent_cos_setting
     systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
       this.bucket = systemConfig.value['Bucket']
       this.region = systemConfig.value['Region']
@@ -27,7 +26,7 @@ export default class MusicService {
 
   private listColumns = {_id: 1, name: 1, ext: 1, size: 1, title: 1, album: 1, artist: 1, lib_id: 1}
   /**
-   * 查询歌曲列表
+   * 分页查询歌曲列表
    * @param musicDto 查询条件
    * @param page 分页
    */
@@ -40,6 +39,14 @@ export default class MusicService {
       page.data = musics
       return page
     })
+  }
+  /**
+   * 查询歌曲列表
+   * @param musicDto 查询条件
+   */
+  async listAll(musicDto: MusicDto): Promise<Music[]> {
+    const searchParam = new MusicQc(musicDto)
+    return this.musicModel.find(searchParam, this.listColumns).exec()
   }
   /**
    * 获取所有类型
@@ -79,7 +86,7 @@ export default class MusicService {
       Region: this.region,
       Key: musicLib.path + music.name,
       Output: writer,
-    }, function(err: object, data: object) {
+    }, (err: object, data: object) => {
       if (err) {
         Logger.error(err)
       }

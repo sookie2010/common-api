@@ -39,8 +39,8 @@ export default class SystemService {
   async listUser(systemUser: SystemUser, page: Page): Promise<Page> {
     const qc: BaseQc = {}
     if (systemUser.username) {
-      let reg = new RegExp(CommonUtils.escapeRegexStr(systemUser.username))
-      qc.$or = [{username: reg},{realname: reg}]
+      const reg = new RegExp(CommonUtils.escapeRegexStr(systemUser.username))
+      qc.$or = [{username: reg}, {realname: reg}]
     }
     return this.systemUserModel.countDocuments(qc).exec().then((cnt: number) => {
       page.total = cnt
@@ -56,7 +56,7 @@ export default class SystemService {
    */
   async saveUser(systemUser: SystemUser): Promise<MsgResult> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
-    if(systemUser.role_ids) {
+    if (systemUser.role_ids) {
       systemUser.role_ids = systemUser.role_ids.map(roleId => new Types.ObjectId(roleId))
     }
     if (systemUser._id) { // 更新
@@ -95,8 +95,8 @@ export default class SystemService {
   async listRole(systemRole: SystemRole, page: Page): Promise<Page> {
     const qc: BaseQc = {}
     if (systemRole.name) {
-      let reg = new RegExp(CommonUtils.escapeRegexStr(systemRole.name))
-      qc.$or = [{name: reg},{description: reg}]
+      const reg = new RegExp(CommonUtils.escapeRegexStr(systemRole.name))
+      qc.$or = [{name: reg}, {description: reg}]
     }
     return this.systemRoleModel.countDocuments(qc).exec().then((cnt: number) => {
       page.total = cnt
@@ -147,7 +147,7 @@ export default class SystemService {
       ]
     }
     if (isPublic) {
-      qc.$where = function(){ return this.is_public }
+      qc.$where = function() { return this.is_public }
     }
     return this.systemConfigModel.find(qc).exec()
   }

@@ -24,19 +24,19 @@ export default class CommonService {
    */
   async login(systemUser: SystemUser): Promise<object> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
-    const loginUser : SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
-    if(!loginUser) {
+    const loginUser: SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
+    if (!loginUser) {
       return Promise.resolve({msg: '用户名/密码错误'})
     }
     const userInfo = {
       _id: loginUser._id,
       username: loginUser.username,
       realname: loginUser.realname,
-      role_ids: loginUser.role_ids
+      role_ids: loginUser.role_ids,
     }
     const tokenKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     const token = jwt.sign(userInfo, tokenKeyConfig.value.toString()/*秘钥*/, {
-      expiresIn: '7d' /*过期时间*/
+      expiresIn: '7d', /*过期时间*/
     })
     return Promise.resolve({token, userInfo})
   }
@@ -44,7 +44,7 @@ export default class CommonService {
    * 访客登陆(无需账号密码, 分配一个只具备GET请求权限的用户)
    */
   async guestLogin(): Promise<MsgResult> {
-    const roles : SystemRole[] = await this.systemRoleModel.find({methods: ['GET']}).exec()
+    const roles: SystemRole[] = await this.systemRoleModel.find({methods: ['GET']}).exec()
     if (!roles.length) {
       return new MsgResult(false, '访客角色未设置')
     }
@@ -52,11 +52,11 @@ export default class CommonService {
     const guestUser = {
       username: 'guest',
       realname: '访客用户',
-      role_ids: roleIds
+      role_ids: roleIds,
     }
     const tokenKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     const token = jwt.sign(guestUser, tokenKeyConfig.value.toString()/*秘钥*/, {
-      expiresIn: '1d' /*过期时间*/
+      expiresIn: '1d', /*过期时间*/
     })
     return new MsgResult(true, '访客模式登录', {token, userInfo: guestUser})
   }
@@ -78,7 +78,7 @@ export default class CommonService {
           _id: loginUser._id,
           username: loginUser.username,
           realname: loginUser.realname,
-          role_ids: loginUser.role_ids
+          role_ids: loginUser.role_ids,
         }
         const newToken = jwt.sign(userInfo, systemConfig.value.toString(), {expiresIn: '7d'})
         /* sign的第一个参数必须是plain object */

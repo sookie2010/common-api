@@ -76,21 +76,21 @@ export default class ArticleService {
    */
   async tree(deep: number, parent: string): Promise<object[]> {
     const $match = {}
-    if(deep && parent) {
-      $match[`path.${deep-1}`] = parent
+    if (deep && parent) {
+      $match[`path.${deep - 1}`] = parent
     } else {
       $match['path.0'] = {$exists: true}
     }
     return await this.articleModel.aggregate([
       { $match },
-      { $group: {_id: {$arrayElemAt: ['$path',deep]}, cnt: {$sum: 1}, article_ids: {$push: '$_id'}}},
+      { $group: {_id: {$arrayElemAt: ['$path', deep]}, cnt: {$sum: 1}, article_ids: {$push: '$_id'}}},
       { $project: {
           _id: '$_id',
           cnt: '$cnt',
           article_id: {
-            $cond: { if: { $gt: [ {$size: '$article_ids'}, 1 ] }, then: null, else: {$arrayElemAt:['$article_ids',0]}}
-          }
-        }
+            $cond: { if: { $gt: [ {$size: '$article_ids'}, 1 ] }, then: null, else: {$arrayElemAt: ['$article_ids', 0]}},
+          },
+        },
       },
       { $sort: {_id: 1}},
     ])
@@ -180,8 +180,8 @@ export default class ArticleService {
     let updateCnt: number = 0 // 更新文章计数
     let createCnt: number = 0 // 新增文章计数
     for (const xmlArticle of articleJsonObj.search.entry) {
-      let pathArr: string[] = xmlArticle.path.split('/')
-      if(!pathArr[pathArr.length - 1]) {
+      const pathArr: string[] = xmlArticle.path.split('/')
+      if (!pathArr[pathArr.length - 1]) {
         pathArr.pop() // 去除最后一个空字符串
       }
       const queryParams: ArticleEntity = {

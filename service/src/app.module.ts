@@ -47,7 +47,7 @@ const dbConfig = require('../config/db.json')
       { name: 'SourceImage', schema: SourceImageSchema },
       { name: 'Province', schema: ProvinceSchema },
       { name: 'Music', schema: MusicSchema },
-      { name: 'MusicLib', schema: MusicLibSchema }
+      { name: 'MusicLib', schema: MusicLibSchema },
     ]),
   ],
   controllers: [

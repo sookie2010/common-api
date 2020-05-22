@@ -93,7 +93,7 @@ export default class Home extends Vue{
       ? this.$store.state.loginInfo.userInfo.realname : null
   }
   async created(): Promise<void> {
-    this.activeMenuItem = localStorage.getItem('routePath')
+    this.activeMenuItem = this.$route.path
     if(this.activeMenuItem) {
       let result = /^\/(.*)\//.exec(this.activeMenuItem)
       if(result) {

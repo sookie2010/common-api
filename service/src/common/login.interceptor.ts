@@ -26,17 +26,17 @@ export default class LoginInterceptor implements NestInterceptor {
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     try {
       const userInfo = jwt.verify(token, privateKeyConfig.value.toString())
-      if(userInfo['role_ids'] && Array.isArray(userInfo['role_ids'])) {
+      if (userInfo['role_ids'] && Array.isArray(userInfo['role_ids'])) {
         // 校验用户角色具备的权限
-        let method = request.method // 请求类型
-        let uri = request.route.path // 请求URI
-        let cnt = await this.systemRoleModel.countDocuments({
+        const method = request.method // 请求类型
+        const uri = request.route.path // 请求URI
+        const cnt = await this.systemRoleModel.countDocuments({
           _id: {$in: userInfo['role_ids'].map((roleId: string) => new Types.ObjectId(roleId))},
           $or: [{methods: method}, {include_uri: uri}],
-          exclude_uri: {$ne: uri}
+          exclude_uri: {$ne: uri},
         }).exec()
-        if(!cnt) {
-          this.responseHandler(http.getResponse(), 400, '无访问权限')
+        if (!cnt) {
+          this.responseHandler(http.getResponse(), 401, '无访问权限')
           return
         }
       }

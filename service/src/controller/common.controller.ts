@@ -133,7 +133,7 @@ export default class CommonController {
   @Get('/music/album/:id')
   getMusicAlbumImage(@Param('id') id: string, @Res() response: Response): void {
     this.musicService.findAlbumImage(id).then((albumImage: Buffer) => {
-      if (!albumImage) return
+      if (!albumImage) { return }
       const stream = new Readable()
       stream.push(albumImage)
       stream.push(null)
