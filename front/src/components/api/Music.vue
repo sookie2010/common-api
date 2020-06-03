@@ -79,7 +79,7 @@ Vue.use(APlayer, {
   defaultCover: `${Vue.prototype.$http.defaults.baseURL}/common/randomBg?id=5ec7770b60990123b7340233`, // 播放器默认封面图片
   productionTip: false, // 是否在控制台输出版本信息
 })
-let selectedData: string[] = []
+let selectedIds: string[] = []
 @Component({})
 export default class Music extends BaseList<MusicPage> {
   protected search = new MusicPage()
@@ -137,13 +137,13 @@ export default class Music extends BaseList<MusicPage> {
   async loadData() {
     this.loading = true
     const { data } = await this.$http.get('/music/list', {params: this.search})
-    selectedData = []
+    selectedIds = []
     this.loading = false
     this.search.total = data.total
     this.musicData = data.data
   }
   dataSelect(selection: MusicModel[]) {
-    selectedData = selection.map(item => item._id)
+    selectedIds = selection.map(item => item._id)
   }
   findMusicLib(value: string): string | null {
     const musicLib = this.musicLibs.find(item => item._id === value)
@@ -154,7 +154,7 @@ export default class Music extends BaseList<MusicPage> {
     // 显示加载进度条
     this.$Loading.start()
     try {
-      const { data } = await this.$http.get('/music/list/all', {params: this.search})
+      const { data } = await this.$http.get('/music/list/all', {params: selectedIds.length ? {ids: selectedIds} : this.search})
       this.musicList = data.map((item: MusicModel) => {
         return {
           name: item.title || item.name,

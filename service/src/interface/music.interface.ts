@@ -17,6 +17,7 @@ export interface Music extends Document {
 }
 
 export class MusicQc extends BaseQc {
+  _id?: {$in: string[]}
   name?: {$regex: RegExp}
   ext?: {$in: string[]}
   title?: {$regex: RegExp}
@@ -25,6 +26,10 @@ export class MusicQc extends BaseQc {
   lib_id?: {$in: string[]}
   constructor(musicDto: MusicDto) {
     super()
+    if(Array.isArray(musicDto.ids) && musicDto.ids.length) {
+      this._id = {$in: musicDto.ids}
+      return // 如果有ID就只按ID查
+    }
     if (musicDto.name) {
       this.name = {$regex: new RegExp(CommonUtils.escapeRegexStr(musicDto.name))}
     }
@@ -40,13 +45,14 @@ export class MusicQc extends BaseQc {
     if (musicDto.artist) {
       this.artist = {$regex: new RegExp(CommonUtils.escapeRegexStr(musicDto.artist))}
     }
-    if (musicDto.lib_id) {
+    if (Array.isArray(musicDto.lib_id) && musicDto.lib_id.length) {
       this.lib_id = {$in: musicDto.lib_id}
     }
   }
 }
 
 export interface MusicDto {
+  ids: string[]
   name: string
   ext: string[]
   title: string
