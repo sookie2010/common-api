@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="table-container">
-    <Table :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>
+    <Table border :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>
   </div>
   <Modal v-model="addModal" :title="modalTitle" >
     <SystemConfigAdd :formData="formData" />

@@ -24,10 +24,8 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
-  <Modal v-model="modifyModal" title="修改标签" :footer-hide="true" @on-visible-change="modifyModalClose">
-    <CheckboxGroup v-model="curModifyLabels" @on-change="changeLabel">
-      <Checkbox v-for="item in labelList" :label="item.name" :key="item.name" border @on-change="changeLabel"></Checkbox>
-    </CheckboxGroup>
+  <Modal v-model="modifyModal" title="修改标签"  width="460" footer-hide @on-visible-change="modifyModalClose">
+    <Transfer :data="labels" :target-keys="curModifyLabels" @on-change="tarnsferChange" :titles="['可选标签','已选标签']"></Transfer>
   </Modal>
 </div>
 </template>
@@ -114,7 +112,11 @@ export default class SourceImage extends BaseList<Page> {
   private labelList: ImageLabel[] = []
   private curId: string | null = null
   private modifyModal: boolean = false
-
+  private get labels() {
+    return this.labelList.map(item => {
+      return { key: item.name, label: item.name }
+    })
+  }
   async loadData(): Promise<void> {
     this.loading = true
     const { data } = await this.$http.get('/source-image/list', {params:this.search})
@@ -201,8 +203,9 @@ export default class SourceImage extends BaseList<Page> {
       this.loadData()
     }
   }
-  async changeLabel(labels: string[]): Promise<void> {
-    await this.$http.post('/source-image/updateLabel', {id: this.curId, labels})
+  async tarnsferChange(newTargetKeys: string[], direction: 'right' | 'left', moveKeys: string[]) {
+    this.curModifyLabels = newTargetKeys
+    await this.$http.post('/source-image/updateLabel', {id: this.curId, labels: newTargetKeys})
   }
   created() {
     this.$http.get('/common/config/image_label').then(({data}) => {
