@@ -3,20 +3,20 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import Login from '@/components/Login.vue'
-import Home from '@/components/Home.vue'
-import Welcome from '@/components/Welcome.vue'
-const Article = () => import(/* webpackChunkName: "system" */'@/components/system/Article.vue')
-const Statistics = () => import(/* webpackChunkName: "system" */'@/components/system/Statistics.vue')
-const SystemConfig = () => import(/* webpackChunkName: "system" */'@/components/system/SystemConfig.vue')
-const SystemUser = () => import(/* webpackChunkName: "system" */'@/components/system/SystemUser.vue')
-const SystemRole = () => import(/* webpackChunkName: "system" */'@/components/system/SystemRole.vue')
-const Hitokoto = () => import(/* webpackChunkName: "api" */'@/components/api/Hitokoto.vue')
-const PhotoWall = () => import(/* webpackChunkName: "api" */'@/components/api/PhotoWall.vue')
-const SourceImage = () => import(/* webpackChunkName: "api" */'@/components/api/SourceImage.vue')
-const ChinaProvince = () => import(/* webpackChunkName: "api" */'@/components/api/ChinaProvince.vue')
-const Music = () => import(/* webpackChunkName: "api" */'@/components/api/Music.vue')
-const SqlReplace = () => import(/* webpackChunkName: "tool" */'@/components/tool/SqlReplace.vue')
+import Login from '@/views/Login.vue'
+import Home from '@/views/Home.vue'
+import Welcome from '@/views/Welcome.vue'
+const Article = () => import(/* webpackChunkName: "system" */'@/views/system/Article.vue')
+const Statistics = () => import(/* webpackChunkName: "system" */'@/views/system/Statistics.vue')
+const SystemConfig = () => import(/* webpackChunkName: "system" */'@/views/system/SystemConfig.vue')
+const SystemUser = () => import(/* webpackChunkName: "system" */'@/views/system/SystemUser.vue')
+const SystemRole = () => import(/* webpackChunkName: "system" */'@/views/system/SystemRole.vue')
+const Hitokoto = () => import(/* webpackChunkName: "api" */'@/views/api/Hitokoto.vue')
+const PhotoWall = () => import(/* webpackChunkName: "api" */'@/views/api/PhotoWall.vue')
+const SourceImage = () => import(/* webpackChunkName: "api" */'@/views/api/SourceImage.vue')
+const ChinaProvince = () => import(/* webpackChunkName: "api" */'@/views/api/ChinaProvince.vue')
+const Music = () => import(/* webpackChunkName: "api" */'@/views/api/Music.vue')
+const SqlReplace = () => import(/* webpackChunkName: "tool" */'@/views/tool/SqlReplace.vue')
 export const router = new Router({
   routes: [
     { path: '/login', name: 'Login', component: Login },
