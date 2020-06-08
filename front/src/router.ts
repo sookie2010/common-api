@@ -37,19 +37,16 @@ export const router = new Router({
   ]
 })
 
-export const routePathes : {[propName: string]: string[]} = {
+import menus from './config/menu'
+
+const routePathes : {[propName: string]: string[]} = {
   '/': ['首页'],
-  '/system/config': ['首页', '系统管理', '系统配置'],
-  '/system/user': ['首页', '系统管理', '用户管理'],
-  '/system/role': ['首页', '系统管理', '角色管理'],
-  '/system/article': ['首页', '系统管理', '博客文章'],
-  '/system/statistics': ['首页', '系统管理', '分析统计'],
-  '/api/hitokoto': ['首页', 'API数据', '一言'],
-  '/api/photoWall': ['首页', 'API数据', '照片墙'],
-  '/api/sourceImage': ['首页', 'API数据', '图片资源库'],
-  '/api/chinaProvince': ['首页', 'API数据', '中国行政区划'],
-  '/api/music': ['首页', 'API数据', '歌曲库'],
-  '/tool/sqlReplace': ['首页', '工具', 'SQL占位符替换']
 }
+for(let menu of menus) {
+  for(let submenu of menu.child) {
+    routePathes[submenu.path] = ['首页', menu.title, submenu.title]
+  }
+}
+export { routePathes }
 
 export const filterExclude = ['/login']

@@ -51,41 +51,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import menus from '../config/menu'
 
 @Component({})
 export default class Home extends Vue{
   private name = 'home'
   // 菜单项
-  private menus = [{
-      name: 'system',
-      title: '系统管理',
-      icon: 'md-options',
-      child: [
-        { title: '系统配置', path: '/system/config' },
-        { title: '用户管理', path: '/system/user' },
-        { title: '角色管理', path: '/system/role' },
-        { title: '博客文章', path: '/system/article' },
-        { title: '分析统计', path: '/system/statistics'}
-      ]
-    },{
-      name: 'api',
-      title: 'API数据',
-      icon: 'logo-buffer',
-      child: [
-        { title: '一言', path: '/api/hitokoto' },
-        { title: '照片墙', path: '/api/photoWall' },
-        { title: '图片资源库', path: '/api/sourceImage' },
-        { title: '中国行政区划', path: '/api/chinaProvince' },
-        { title: '歌曲库', path: '/api/music' }
-      ]
-    },{
-      name: 'tool',
-      title: '工具',
-      icon: 'md-build',
-      child: [
-        { title: 'SQL占位符替换', path: '/tool/sqlReplace' }
-      ]
-  }]
+  private menus = menus
   private activeMenuItem: string | null = null
   private openMenuNames: string[] = []
   get realname(): string { // 当前用户的显示名称

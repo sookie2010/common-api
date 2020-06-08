@@ -8,14 +8,26 @@
       </div>
     </div>
     <h2 class="time-text">{{timeText}}</h2>
+    <div class="nav-list">
+      <Row v-for="menu in menus" :key="menu.name">
+        <Col :span="3" class="nav-title">{{ menu.title }}</Col>
+        <Col :span="21">
+        <router-link :to="submenu.path" v-for="submenu in menu.child" :key="submenu.path" class="nav-item">
+          <Icon :type="submenu.icon" /> {{submenu.title}}
+        </router-link>
+        </Col>
+      </Row>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import moment from 'moment'
+import menus from '../config/menu'
 
 @Component({})
 export default class Welcome extends Vue {
+  private menus = menus
   private timeText!: string
   private clock = {
     hourRotate: 0,
@@ -103,5 +115,21 @@ export default class Welcome extends Vue {
 }
 .time-text {
   text-align: center;
+}
+.nav-list {
+  .nav-title {
+    font-size: 16px;
+    line-height: 66px;
+    text-align: right;
+    padding-right: 20px;
+  }
+  .nav-item {
+    display: inline-block;
+    width: 200px;
+    font-size: 16px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
 }
 </style>
