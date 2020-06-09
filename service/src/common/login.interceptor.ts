@@ -1,9 +1,9 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
 import { HttpArgumentsHost } from '@nestjs/common/interfaces'
-// import { Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
-import SystemConfig from '../interface/system-config.interface'
+import { SystemConfig } from '../interface/system-config.interface'
 import SystemRole from '../interface/system-role.interface'
 import { ServerResponse } from 'http'
 import { Request } from 'express'
@@ -15,7 +15,7 @@ export default class LoginInterceptor implements NestInterceptor {
   constructor(@InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>,
               @InjectModel('SystemRole') private readonly systemRoleModel: Model<SystemRole>) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const http: HttpArgumentsHost = context.switchToHttp()
     const request: Request = http.getRequest()
     const token = request.header('token')
@@ -42,21 +42,21 @@ export default class LoginInterceptor implements NestInterceptor {
       }
       return next.handle()
     } catch (err) {
-      let msg = null
+      let message = null
       if (err instanceof jwt.TokenExpiredError) {
-        msg = '登录超时，请重新登录'
+        message = '登录超时，请重新登录'
       } else if (err instanceof jwt.JsonWebTokenError) {
-        msg = 'Token无效，请重新登录'
+        message = 'Token无效，请重新登录'
       }
-      this.responseHandler(context.switchToHttp().getResponse(), 403, msg)
+      this.responseHandler(context.switchToHttp().getResponse(), 403, message)
     }
   }
 
-  private responseHandler(response: ServerResponse, statusCode: number, msg: string): void {
+  private responseHandler(response: ServerResponse, statusCode: number, message: string): void {
     try {
       response.statusCode = statusCode
       response.setHeader('Content-Type', 'application/json')
-      response.end(JSON.stringify({statusCode, msg}))
+      response.end(JSON.stringify({statusCode, message}))
     } catch (err) {}
   }
 }

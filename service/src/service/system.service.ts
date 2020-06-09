@@ -1,8 +1,8 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import SystemConfig from '../interface/system-config.interface'
-import SystemUser from '../interface/system-user.interface'
+import { SystemConfig, SystemConfigEntity } from '../interface/system-config.interface'
+import { SystemUser, SystemUserEntity } from '../interface/system-user.interface'
 import SystemRole from '../interface/system-role.interface'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
@@ -54,7 +54,7 @@ export default class SystemService {
    * 保存用户
    * @param systemUser 用户对象
    */
-  async saveUser(systemUser: SystemUser): Promise<MsgResult> {
+  async saveUser(systemUser: SystemUserEntity): Promise<MsgResult> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     if (systemUser.role_ids) {
       systemUser.role_ids = systemUser.role_ids.map(roleId => new Types.ObjectId(roleId))
@@ -138,7 +138,7 @@ export default class SystemService {
    * @param systemConfig 查询条件
    * @param isPublic 是否只查询公开的配置项
    */
-  async listConfig(systemConfig: SystemConfig, isPublic: boolean): Promise<SystemConfig[]> {
+  async listConfig(systemConfig: SystemConfigEntity, isPublic: boolean): Promise<SystemConfig[]> {
     const qc: BaseQc = {}
     if (systemConfig.name) {
       qc.$or = [
@@ -155,7 +155,7 @@ export default class SystemService {
    * 新增或更新配置项
    * @param systemConfig 配置项内容
    */
-  async saveConfig(systemConfig: SystemConfig): Promise<MsgResult> {
+  async saveConfig(systemConfig: SystemConfigEntity): Promise<MsgResult> {
     if (systemConfig._id) { // 更新
       const configId = systemConfig._id
       delete systemConfig._id

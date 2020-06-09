@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from '../interface/photo-wall.interface'
-import SystemConfig from '../interface/system-config.interface'
+import { SystemConfig } from '../interface/system-config.interface'
 import { FileEntity, Page, MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 

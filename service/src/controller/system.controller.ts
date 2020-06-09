@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Delete, Query, Body, Param, Headers, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, Headers, UseInterceptors, UploadedFile, ValidationPipe } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import LoginInterceptor from '../common/login.interceptor'
 import SystemService from '../service/system.service'
-import SystemConfig from '../interface/system-config.interface'
-import SystemUser from '../interface/system-user.interface'
+import { SystemConfigEntity, SystemConfig } from '../interface/system-config.interface'
+import { SystemUserEntity, SystemUser } from '../interface/system-user.interface'
 import SystemRole from '../interface/system-role.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
@@ -28,7 +28,7 @@ export default class SystemController {
    * @param systemUser 用户对象
    */
   @Post('/user/save')
-  saveUser(@Body() systemUser: SystemUser): Promise<MsgResult> {
+  saveUser(@Body(new ValidationPipe()) systemUser: SystemUserEntity): Promise<MsgResult> {
     return this.systemService.saveUser(systemUser)
   }
   /**
@@ -78,7 +78,7 @@ export default class SystemController {
    * @param systemConfig 查询条件
    */
   @Get('/config/list')
-  async listConfig(@Query() systemConfig: SystemConfig, @Headers('token') token: string): Promise<SystemConfig[]> {
+  async listConfig(@Query() systemConfig: SystemConfigEntity, @Headers('token') token: string): Promise<SystemConfig[]> {
     const user = await this.systemService.decryptUserInfo(token)
     // 如果用户并不存在 代表是访客用户
     return this.systemService.listConfig(systemConfig, !user)
@@ -88,7 +88,7 @@ export default class SystemController {
    * @param systemConfig 配置项内容
    */
   @Post('/config/save')
-  saveConfig(@Body() systemConfig: SystemConfig): Promise<MsgResult> {
+  saveConfig(@Body(new ValidationPipe()) systemConfig: SystemConfigEntity): Promise<MsgResult> {
     if (typeof systemConfig.value !== 'object') {
       try {
         systemConfig.value = JSON.parse(systemConfig.value)

@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Delete, Query, Body, UseInterceptors } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Query, Body, UseInterceptors, ValidationPipe } from '@nestjs/common'
 import HitokotoService from '../service/hitokoto.service'
-import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
+import { HitokotoEntity, HitokotoDto } from '../interface/hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
@@ -25,7 +25,7 @@ export default class HitokotoController {
    * @param hitokoto 一言
    */
   @Post('/save')
-  save(@Body() hitokoto: Hitokoto): Promise<MsgResult> {
+  save(@Body(new ValidationPipe()) hitokoto: HitokotoEntity): Promise<MsgResult> {
     return this.hitokotoService.save(hitokoto)
   }
   /**

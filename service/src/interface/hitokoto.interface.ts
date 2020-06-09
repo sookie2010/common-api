@@ -1,24 +1,22 @@
 import { Document, Types } from 'mongoose'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
+import { IsNotEmpty } from 'class-validator'
 
-export interface Hitokoto extends Document {
+export class HitokotoEntity {
   _id: Types.ObjectId
-  hitokoto: string
-  /**
-   * a	Anime - 动画
-   * b	Comic – 漫画
-   * c	Game – 游戏
-   * d	Novel – 小说
-   * e	Myself – 原创
-   * f	Internet – 来自网络
-   * g	Other – 其他
-   */
+  @IsNotEmpty({message:'内容不能为空'})
+  hitokoto?: string
+  @IsNotEmpty({message:'类型不能为空'})
   type: string
   from: string
   creator: string
   created_at: Date
   number: number
+}
+
+export interface Hitokoto extends HitokotoEntity,Document {
+  _id: Types.ObjectId
 }
 
 export class HitokotoQc extends BaseQc {

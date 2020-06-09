@@ -1,7 +1,7 @@
 import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Hitokoto, HitokotoDto, HitokotoQc } from '../interface/hitokoto.interface'
+import { HitokotoEntity, Hitokoto, HitokotoDto, HitokotoQc } from '../interface/hitokoto.interface'
 import { Page, MsgResult } from '../common/common.dto'
 
 @Injectable()
@@ -52,7 +52,7 @@ export default class HitokotoService {
    * 保存一言
    * @param hitokoto 一言
    */
-  async save(hitokoto: Hitokoto): Promise<MsgResult> {
+  async save(hitokoto: HitokotoEntity): Promise<MsgResult> {
     return this.hitokotoModel.aggregate([{$group: {
       _id: 'max_number',
       number: { $max: '$number' },

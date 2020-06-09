@@ -18,13 +18,13 @@ export interface Page {
 export class MsgResult {
   constructor(
     private readonly status: boolean,
-    private readonly msg: string,
+    private readonly message: string,
     private readonly data?: object) { }
 
   getStatus() {
     return this.status
   }
-  getMsg() {
-    return this.msg
+  getMessage() {
+    return this.message
   }
 }
