@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Page, MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 import { Article, ArticleEntity, ArticleKeys, ArticleDto, ArticleQc } from '../interface/article.interface'
-import SystemConfig from '../interface/system-config.interface'
+import { SystemConfig } from '../interface/system-config.interface'
 
 import * as nodejieba from 'nodejieba'
 import * as xmlParser from 'fast-xml-parser'

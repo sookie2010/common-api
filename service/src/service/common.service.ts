@@ -1,8 +1,8 @@
 import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import SystemConfig from '../interface/system-config.interface'
-import SystemUser from '../interface/system-user.interface'
+import { SystemConfig } from '../interface/system-config.interface'
+import { SystemUser } from '../interface/system-user.interface'
 import SystemRole from '../interface/system-role.interface'
 import { MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
@@ -26,7 +26,7 @@ export default class CommonService {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     const loginUser: SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
     if (!loginUser) {
-      return Promise.resolve({msg: '用户名/密码错误'})
+      return Promise.resolve({message: '用户名/密码错误'})
     }
     const userInfo = {
       _id: loginUser._id,

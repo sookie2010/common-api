@@ -2,7 +2,7 @@ import { Model } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
-import SystemConfig from '../interface/system-config.interface'
+import { SystemConfig } from '../interface/system-config.interface'
 import { Page } from '../common/common.dto'
 import { Writable } from 'stream'
 
