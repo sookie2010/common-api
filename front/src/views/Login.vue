@@ -42,7 +42,7 @@ export default class Login extends Vue {
         this.$store.commit('login', data)
         this.$router.push('/')
       } else {
-        this.$Message.error(data.msg)
+        this.$Message.error(data.message)
       }
     })
   }
@@ -55,7 +55,7 @@ export default class Login extends Vue {
       this.$store.commit('login', data.data)
       this.$router.push('/')
     } else {
-      this.$Message.error(data.msg)
+      this.$Message.error(data.message)
     }
   }
 }

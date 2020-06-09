@@ -167,10 +167,10 @@ export default class SourceImage extends BaseList<Page> {
   uploadSuccess(response: MsgResult): void {
     this.closeUploadTip()
     if(response.status) {
-      this.$Message.success(response.msg)
+      this.$Message.success(response.message)
       this.loadData()
     } else {
-      this.$Message.warning(response.msg)
+      this.$Message.warning(response.message)
     }
   }
   uploadError(): void {

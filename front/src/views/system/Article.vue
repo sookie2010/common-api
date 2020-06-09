@@ -202,9 +202,9 @@ export default class Article extends BaseList<ArticlePage> {
         const { data } = await this.$http.put('/article/splitWord', {_ids: selectedData})
         this.$Modal.remove()
         if(data.status) {
-          this.$Message.success(data.msg)
+          this.$Message.success(data.message)
         } else {
-          this.$Message.warning(data.msg)
+          this.$Message.warning(data.message)
         }
       }
     })
@@ -218,10 +218,10 @@ export default class Article extends BaseList<ArticlePage> {
         const { data } = await this.$http.get('/article/pull')
         this.$Modal.remove()
         if(data.status) {
-          this.$Message.success(data.msg)
+          this.$Message.success(data.message)
           this.loadData()
         } else {
-          this.$Message.warning(data.msg)
+          this.$Message.warning(data.message)
         }
       }
     })
@@ -251,9 +251,9 @@ export default class Article extends BaseList<ArticlePage> {
   uploadSuccess(response: MsgResult) {
     this.closeUploadTip()
     if(response.status) {
-      this.$Message.success(response.msg)
+      this.$Message.success(response.message)
     } else {
-      this.$Message.warning(response.msg)
+      this.$Message.warning(response.message)
     }
   }
   uploadError() {

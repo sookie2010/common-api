@@ -160,9 +160,9 @@ export default class SystemRole extends BaseList<SystemRolePage> {
     this.addModal = true
   }
   async save() {
-    const { msg } = (await this.$http.post('/system/role/save', this.formData)).data
+    const { message } = (await this.$http.post('/system/role/save', this.formData)).data
     this.addModal = false
-    this.$Message.success(msg)
+    this.$Message.success(message)
     this.loadData()
   }
   delete(row: SystemRoleModel) {
@@ -174,10 +174,10 @@ export default class SystemRole extends BaseList<SystemRolePage> {
         const { data } = await this.$http.delete('/system/role/delete', {params: {id: row._id}})
         this.$Modal.remove()
         if(data.status) {
-          this.$Message.success(data.msg)
+          this.$Message.success(data.message)
           this.loadData()
         } else {
-          this.$Message.warning(data.msg)
+          this.$Message.warning(data.message)
         }
       }
     })

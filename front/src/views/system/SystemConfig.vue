@@ -18,12 +18,8 @@
   <div class="table-container">
     <Table border :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>
   </div>
-  <Modal v-model="addModal" :title="modalTitle" >
+  <Modal v-model="addModal" :title="modalTitle" loading @on-ok="save">
     <SystemConfigAdd :formData="formData" />
-    <div slot="footer">
-      <Button type="text" @click="addModal = false">取消</Button>
-      <Button type="primary" @click="save">保存</Button>
-    </div>
   </Modal>
 </div>
 </template>
@@ -132,7 +128,7 @@ export default class SystemConfig extends Vue {
     }
     const { data } = await this.$http.post('/system/config/save', this.formData)
     this.addModal = false
-    this.$Message.success(data.msg)
+    this.$Message.success(data.message)
     this.loadData()
   }
   delete(row: SystemConfigModel) {
@@ -144,10 +140,10 @@ export default class SystemConfig extends Vue {
         const { data } = await this.$http.delete('/system/config/delete', {params: {id: row._id}})
         this.$Modal.remove()
         if(data.status) {
-          this.$Message.success(data.msg)
+          this.$Message.success(data.message)
           this.loadData()
         } else {
-          this.$Message.warning(data.msg)
+          this.$Message.warning(data.message)
         }
       }
     })

@@ -1,6 +1,6 @@
 export interface MsgResult {
   status: boolean
-  msg: string
+  message: string
 }
 
 /**

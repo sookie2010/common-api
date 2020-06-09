@@ -127,9 +127,9 @@ export default class SystemUser extends BaseList<SystemUserPage> {
     this.addModal = true
   }
   async save() {
-    const { msg } = (await this.$http.post('/system/user/save', this.formData)).data
+    const { message } = (await this.$http.post('/system/user/save', this.formData)).data
     this.addModal = false
-    this.$Message.success(msg)
+    this.$Message.success(message)
     this.loadData()
   }
   delete(row: SystemUserModel) {
@@ -141,10 +141,10 @@ export default class SystemUser extends BaseList<SystemUserPage> {
         const { data } = await this.$http.delete('/system/user/delete', {params: {id: row._id}})
         this.$Modal.remove()
         if(data.status) {
-          this.$Message.success(data.msg)
+          this.$Message.success(data.message)
           this.loadData()
         } else {
-          this.$Message.warning(data.msg)
+          this.$Message.warning(data.message)
         }
       }
     })

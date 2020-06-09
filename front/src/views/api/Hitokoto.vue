@@ -40,7 +40,7 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
-  <Modal v-model="addModal" title="新增一言" :loading="true" @on-ok="save">
+  <Modal v-model="addModal" title="新增一言" loading @on-ok="save">
     <HitokotoAdd :typeList="typeList" :formData="formData" />
   </Modal>
 </div>
@@ -109,7 +109,7 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
   async save() {
     const { data } = await this.$http.post('/hitokoto/save', this.formData)
     this.addModal = false
-    this.$Message.success(data.msg)
+    this.$Message.success(data.message)
     this.loadData()
     // 清空表单
     this.formData = {}
@@ -126,7 +126,7 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
       onOk: async () => {
         const { data } = await this.$http.delete('/hitokoto/delete', {params:{_ids: selectedData}})
         this.$Modal.remove()
-        this.$Message.success(data.msg)
+        this.$Message.success(data.message)
         this.loadData()
       }
     })

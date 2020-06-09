@@ -169,10 +169,10 @@ export default class PhotoWall extends BaseList<PhotoWallPage> {
   uploadSuccess(response: MsgResult) {
     this.closeUploadTip()
     if(response.status) {
-      this.$Message.success(response.msg)
+      this.$Message.success(response.message)
       this.loadData()
     } else {
-      this.$Message.warning(response.msg)
+      this.$Message.warning(response.message)
     }
   }
   uploadError() {
