@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { SystemConfig, SystemConfigEntity } from '../interface/system-config.interface'
 import { SystemUser, SystemUserEntity } from '../interface/system-user.interface'
-import SystemRole from '../interface/system-role.interface'
+import { SystemRole, SystemRoleEntity } from '../interface/system-role.interface'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
 import { Page, MsgResult } from '../common/common.dto'
@@ -108,9 +108,9 @@ export default class SystemService {
   }
   /**
    * 保存角色
-   * @param systemUser 角色对象
+   * @param systemRole 角色对象
    */
-  async saveRole(systemRole: SystemRole): Promise<MsgResult> {
+  async saveRole(systemRole: SystemRoleEntity): Promise<MsgResult> {
     if (systemRole._id) { // 更新
       const roleId = systemRole._id
       delete systemRole._id

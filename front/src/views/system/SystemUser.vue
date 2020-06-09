@@ -22,12 +22,12 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
-  <Modal v-model="addModal" :title="modalTitle" :loading="true" @on-ok="save">
-    <Form :model="formData" :label-width="80">
-      <Form-item label="用户名">
+  <Modal v-model="addModal" :title="modalTitle" :loading="modalLoading" @on-ok="save">
+    <Form ref="userForm" :model="formData" :rules="ruleValidate" :label-width="80">
+      <Form-item label="用户名" prop="username">
         <Input v-model="formData.username" />
       </Form-item>
-      <Form-item label="密码">
+      <Form-item label="密码" prop="password">
         <Input v-model="formData.password" type="password" />
       </Form-item>
       <Form-item label="昵称">
@@ -45,14 +45,26 @@
 <script lang="ts">
 import moment from 'moment'
 import { Button } from 'view-design'
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { SystemUserModel } from '../../model/system/system-user'
 import { SystemRoleModel } from '../../model/system/system-role'
+import { VForm } from '../../types'
 
 @Component({})
 export default class SystemUser extends BaseList<SystemUserPage> {
+  @Ref('userForm') private readonly userForm!: VForm
+  private ruleValidate = {
+    username: [
+      { required: true, message: '请输入用户名', trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' },
+      { min: 8, max: 16, message: '密码长度8~16位', trigger: 'blur' },
+      { pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![-=+_.,]+$)[\da-zA-Z-=+_.,]{8,16}$/, message: '密码由字母、数字、特殊字符中的任意两种组成', trigger: 'blur' }
+    ],
+  }
   protected search = new SystemUserPage()
   private systemUserColumns = [{
       title: '用户名',
@@ -127,10 +139,17 @@ export default class SystemUser extends BaseList<SystemUserPage> {
     this.addModal = true
   }
   async save() {
-    const { message } = (await this.$http.post('/system/user/save', this.formData)).data
-    this.addModal = false
-    this.$Message.success(message)
-    this.loadData()
+    this.userForm.validate(async (valid: boolean) => {
+      if(!valid) {
+        this.modalLoading = false
+        return
+      }
+      const { data } = await this.$http.post('/system/user/save', this.formData)
+      this.addModal = false
+      this.$Message.success(data.message)
+      this.loadData()
+    })
+    
   }
   delete(row: SystemUserModel) {
     this.$Modal.confirm({

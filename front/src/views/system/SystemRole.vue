@@ -22,9 +22,9 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
-  <Modal v-model="addModal" :title="modalTitle" :loading="true" @on-ok="save">
-    <Form :model="formData" :label-width="120">
-      <Form-item label="角色名称">
+  <Modal v-model="addModal" :title="modalTitle" :loading="modalLoading" @on-ok="save">
+    <Form ref="roleForm" :model="formData" :rules="ruleValidate" :label-width="120">
+      <Form-item label="角色名称" prop="name">
         <Input v-model="formData.name" />
       </Form-item>
       <Form-item label="描述">
@@ -55,15 +55,22 @@
 </div>
 </template>
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import moment from 'moment'
 import { Button, Tag } from 'view-design'
 import { SystemRoleModel } from '../../model/system/system-role'
+import { VForm } from "../../types"
 
 @Component({})
 export default class SystemRole extends BaseList<SystemRolePage> {
+  @Ref('roleForm') private readonly roleForm!: VForm
+  private ruleValidate = {
+    name: [
+      { required: true, message: '请输入角色名称', trigger: 'blur' }
+    ],
+  }
   protected search = new SystemRolePage()
   private systemRoleColumns = [{
     title: '角色名称',
@@ -160,10 +167,16 @@ export default class SystemRole extends BaseList<SystemRolePage> {
     this.addModal = true
   }
   async save() {
-    const { message } = (await this.$http.post('/system/role/save', this.formData)).data
-    this.addModal = false
-    this.$Message.success(message)
-    this.loadData()
+    this.roleForm.validate(async (valid: boolean) => {
+      if(!valid) {
+        this.modalLoading = false
+        return
+      }
+      const { message } = (await this.$http.post('/system/role/save', this.formData)).data
+      this.addModal = false
+      this.$Message.success(message)
+      this.loadData()
+    })
   }
   delete(row: SystemRoleModel) {
     this.$Modal.confirm({

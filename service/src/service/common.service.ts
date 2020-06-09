@@ -2,8 +2,8 @@ import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { SystemConfig } from '../interface/system-config.interface'
-import { SystemUser } from '../interface/system-user.interface'
-import SystemRole from '../interface/system-role.interface'
+import { SystemUser, SystemUserEntity } from '../interface/system-user.interface'
+import { SystemRole } from '../interface/system-role.interface'
 import { MsgResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 
@@ -22,7 +22,7 @@ export default class CommonService {
    * 登录
    * @param systemUser 用户信息
    */
-  async login(systemUser: SystemUser): Promise<object> {
+  async login(systemUser: SystemUserEntity): Promise<object> {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     const loginUser: SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
     if (!loginUser) {

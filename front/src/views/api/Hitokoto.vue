@@ -40,8 +40,8 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
-  <Modal v-model="addModal" title="新增一言" loading @on-ok="save">
-    <HitokotoAdd :typeList="typeList" :formData="formData" />
+  <Modal v-model="addModal" title="新增一言" :loading="modalLoading" @on-ok="save">
+    <HitokotoAdd ref="addForm" :typeList="typeList" :formData="formData" />
   </Modal>
 </div>
 </template>
@@ -50,12 +50,14 @@ import HitokotoAdd from './HitokotoAdd.vue'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import HitokotoModel from '../../model/api/hitokoto'
-import { Component } from 'vue-property-decorator'
+import { VForm } from '../../types'
+import { Component, Ref } from 'vue-property-decorator'
 import moment from 'moment'
 
 let selectedData: string[] = []
 @Component({ components: {HitokotoAdd} })
 export default class Hitokoto extends BaseList<HitokotoPage> {
+  @Ref('addForm') private readonly addForm!: Vue
   protected search = new HitokotoPage()
   private typeList: {label: string, value: string}[] = []
   private hitokotoColumns = [{
@@ -107,12 +109,18 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
     this.hitokotoData = data.data
   }
   async save() {
-    const { data } = await this.$http.post('/hitokoto/save', this.formData)
-    this.addModal = false
-    this.$Message.success(data.message)
-    this.loadData()
-    // 清空表单
-    this.formData = {}
+    (this.addForm.$refs.hitokotoForm as VForm).validate(async (valid: boolean) => {
+      if(!valid) {
+        this.modalLoading = false
+        return
+      }
+      const { data } = await this.$http.post('/hitokoto/save', this.formData)
+      this.addModal = false
+      this.$Message.success(data.message)
+      this.loadData()
+      // 清空表单
+      this.formData = {}
+    })
   }
   deleteAll() {
     if(!selectedData.length) {

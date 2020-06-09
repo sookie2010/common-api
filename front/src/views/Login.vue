@@ -1,7 +1,7 @@
 <template>
   <div id="login-wrapper">
     <h2 class="title">博客API管理后台</h2>
-    <Form ref="userInfo" :model="userInfo"  :rules="ruleValidate" :label-width="80">
+    <Form ref="loginForm" :model="userInfo" :rules="ruleValidate" :label-width="80">
       <Form-item label="用户名" prop="username">
         <Input v-model="userInfo.username" @on-enter="login"/>
       </Form-item>
@@ -18,10 +18,12 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Ref } from 'vue-property-decorator'
+import { VForm } from "../types"
 
 @Component({})
 export default class Login extends Vue {
+  @Ref('loginForm') private readonly loginForm!: VForm
   private userInfo = {}
   private ruleValidate = {
     username: [
@@ -35,7 +37,7 @@ export default class Login extends Vue {
    * 登录
    */
   async login() {
-    (this.$refs.userInfo as any).validate(async (valid: boolean) => {
+    this.loginForm.validate(async (valid: boolean) => {
       if(!valid) return
       const { data } = await this.$http.post('/common/login', this.userInfo)
       if(data.token) {

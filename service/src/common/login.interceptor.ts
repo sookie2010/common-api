@@ -4,7 +4,7 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces'
 import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
 import { SystemConfig } from '../interface/system-config.interface'
-import SystemRole from '../interface/system-role.interface'
+import { SystemRole } from '../interface/system-role.interface'
 import { ServerResponse } from 'http'
 import { Request } from 'express'
 

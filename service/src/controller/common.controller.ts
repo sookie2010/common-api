@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, Post, Body, Res } from '@nestjs/common'
+import { Controller, Get, Query, Param, Post, Body, Res, ValidationPipe } from '@nestjs/common'
 import CommonService from '../service/common.service'
 import HitokotoService from '../service/hitokoto.service'
 import PhotoWallService from '../service/photo-wall.service'
@@ -8,13 +8,13 @@ import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
 import { ArticleDto } from '../interface/article.interface'
 import { SourceImage } from '../interface/source-image.interface'
 import { Page, MsgResult } from '../common/common.dto'
-import { SystemUser } from '../interface/system-user.interface'
+import { SystemUserEntity } from '../interface/system-user.interface'
 import PageTransform from '../common/page.transform'
 import SystemService from '../service/system.service'
 import MusicService from '../service/music.service'
 import { Response } from 'express'
 
-import { Readable, Writable } from 'stream'
+import { Readable } from 'stream'
 
 @Controller('/common')
 export default class CommonController {
@@ -32,7 +32,7 @@ export default class CommonController {
    * @param systemUser 用户名 密码
    */
   @Post('/login')
-  login(@Body() systemUser: SystemUser): Promise<object> {
+  login(@Body(new ValidationPipe()) systemUser: SystemUserEntity): Promise<object> {
     return this.commonService.login(systemUser)
   }
   /**

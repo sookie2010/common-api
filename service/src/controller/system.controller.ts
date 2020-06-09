@@ -4,7 +4,7 @@ import LoginInterceptor from '../common/login.interceptor'
 import SystemService from '../service/system.service'
 import { SystemConfigEntity, SystemConfig } from '../interface/system-config.interface'
 import { SystemUserEntity, SystemUser } from '../interface/system-user.interface'
-import SystemRole from '../interface/system-role.interface'
+import { SystemRoleEntity, SystemRole } from '../interface/system-role.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
 
@@ -62,7 +62,7 @@ export default class SystemController {
    * @param systemRole 角色对象
    */
   @Post('/role/save')
-  saveRole(@Body() systemRole: SystemRole): Promise<MsgResult> {
+  saveRole(@Body(new ValidationPipe()) systemRole: SystemRoleEntity): Promise<MsgResult> {
     return this.systemService.saveRole(systemRole)
   }
   /**

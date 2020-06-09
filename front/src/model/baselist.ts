@@ -2,7 +2,14 @@ import { Vue } from 'vue-property-decorator'
 import { Page } from './common.dto'
 
 export default abstract class BaseList<T extends Page> extends Vue {
+  /**
+   * 表格数据加载中
+   */
   protected loading: boolean = false
+  /**
+   * 表单提交中
+   */
+  protected modalLoading: boolean = true
   protected abstract search: T
   /**
    * 加载数据的实现
