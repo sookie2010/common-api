@@ -39,13 +39,9 @@ export default class HitokotoService {
    */
   async list(hitokotoDto: HitokotoDto, page: Page): Promise<Page> {
     const searchParam = new HitokotoQc(hitokotoDto)
-    return this.hitokotoModel.countDocuments(searchParam).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.hitokotoModel.find(searchParam).skip(page.start).limit(page.limit).exec()
-    }).then((hitokotos: Hitokoto[]) => {
-      page.data = hitokotos
-      return page
-    })
+    page.total = await this.hitokotoModel.countDocuments(searchParam).exec()
+    page.data = await this.hitokotoModel.find(searchParam).skip(page.start).limit(page.limit).exec()
+    return page
   }
 
   /**
@@ -74,8 +70,7 @@ export default class HitokotoService {
    * @param ids 删除数据的ID们
    */
   async delete(ids: string[]): Promise<MsgResult> {
-    return this.hitokotoModel.deleteMany({_id: {$in: ids}}).exec().then(() => {
-      return new MsgResult(true, '删除成功')
-    })
+    await this.hitokotoModel.deleteMany({_id: {$in: ids}}).exec()
+    return new MsgResult(true, '删除成功')
   }
 }

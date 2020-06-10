@@ -121,7 +121,7 @@ export default class ArticleService {
         await this.articleKeysModel.create({article_id: article._id, keys: articleKeys})
       }
     }
-    return Promise.resolve(new MsgResult(true, `${articles.length} 篇文章分词处理成功`))
+    return new MsgResult(true, `${articles.length} 篇文章分词处理成功`)
   }
   /**
    * 文章内容全文检索

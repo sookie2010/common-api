@@ -36,19 +36,23 @@ export default class SystemService {
    * @param systemUser 查询条件
    * @param page 分页条件
    */
-  async listUser(systemUser: SystemUser, page: Page): Promise<Page> {
+  async listUser(systemUser: SystemUserEntity, page: Page): Promise<Page> {
     const qc: BaseQc = {}
     if (systemUser.username) {
       const reg = new RegExp(CommonUtils.escapeRegexStr(systemUser.username))
       qc.$or = [{username: reg}, {realname: reg}]
     }
-    return this.systemUserModel.countDocuments(qc).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.systemUserModel.find(qc, {password: 0}).skip(page.start).limit(page.limit).exec()
-    }).then((systemUsers: SystemUser[]) => {
-      page.data = systemUsers
-      return page
-    })
+    page.total = await this.systemUserModel.countDocuments(qc).exec()
+    page.data = await this.systemUserModel.find(qc, {password: 0}).skip(page.start).limit(page.limit).exec()
+    return page
+  }
+  /**
+   * 校验用户是否存在
+   * @param username 用户名
+   */
+  async checkUserExists(username: string): Promise<MsgResult> {
+    const cnt: number = await this.systemUserModel.countDocuments({username}).exec()
+    return new MsgResult(true, null, {exists: !!cnt})
   }
   /**
    * 保存用户
@@ -63,11 +67,11 @@ export default class SystemService {
       const userId = systemUser._id
       delete systemUser._id
       await this.systemUserModel.updateOne({_id: userId}, {$set: systemUser})
-      return Promise.resolve(new MsgResult(true, '修改成功'))
+      return new MsgResult(true, '修改成功')
     } else { // 新增
       systemUser._id = new Types.ObjectId()
       await this.systemUserModel.create(systemUser)
-      return Promise.resolve(new MsgResult(true, '保存成功'))
+      return new MsgResult(true, '保存成功')
     }
   }
   /**
@@ -76,10 +80,10 @@ export default class SystemService {
    */
   async deleteUser(_id: string): Promise<MsgResult> {
     if (!_id) {
-      return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
+      return new MsgResult(false, '删除失败，未获得ID')
     }
     await this.systemUserModel.deleteOne({_id}).exec()
-    return Promise.resolve(new MsgResult(true, '删除成功'))
+    return new MsgResult(true, '删除成功')
   }
   /**
    * 查询角色(无分页)
@@ -98,13 +102,9 @@ export default class SystemService {
       const reg = new RegExp(CommonUtils.escapeRegexStr(systemRole.name))
       qc.$or = [{name: reg}, {description: reg}]
     }
-    return this.systemRoleModel.countDocuments(qc).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.systemRoleModel.find(qc).skip(page.start).limit(page.limit).exec()
-    }).then((systemRoles: SystemRole[]) => {
-      page.data = systemRoles
-      return page
-    })
+    page.total = await this.systemRoleModel.countDocuments(qc).exec()
+    page.data = await this.systemRoleModel.find(qc).skip(page.start).limit(page.limit).exec()
+    return page
   }
   /**
    * 保存角色
@@ -115,11 +115,11 @@ export default class SystemService {
       const roleId = systemRole._id
       delete systemRole._id
       await this.systemRoleModel.updateOne({_id: roleId}, {$set: systemRole})
-      return Promise.resolve(new MsgResult(true, '修改成功'))
+      return new MsgResult(true, '修改成功')
     } else { // 新增
       systemRole._id = new Types.ObjectId()
       await this.systemRoleModel.create(systemRole)
-      return Promise.resolve(new MsgResult(true, '保存成功'))
+      return new MsgResult(true, '保存成功')
     }
   }
   /**
@@ -128,10 +128,10 @@ export default class SystemService {
    */
   async deleteRole(_id: string): Promise<MsgResult> {
     if (!_id) {
-      return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
+      return new MsgResult(false, '删除失败，未获得ID')
     }
     await this.systemRoleModel.deleteOne({_id}).exec()
-    return Promise.resolve(new MsgResult(true, '删除成功'))
+    return new MsgResult(true, '删除成功')
   }
   /**
    * 列出所有的配置项
@@ -160,11 +160,11 @@ export default class SystemService {
       const configId = systemConfig._id
       delete systemConfig._id
       await this.systemConfigModel.updateOne({_id: configId}, {$set: systemConfig})
-      return Promise.resolve(new MsgResult(true, '修改成功'))
+      return new MsgResult(true, '修改成功')
     } else { // 新增
       systemConfig._id = new Types.ObjectId()
       await this.systemConfigModel.create(systemConfig)
-      return Promise.resolve(new MsgResult(true, '保存成功'))
+      return new MsgResult(true, '保存成功')
     }
   }
   /**
@@ -173,10 +173,10 @@ export default class SystemService {
    */
   async deleteConfig(_id: string): Promise<MsgResult> {
     if (!_id) {
-      return Promise.resolve(new MsgResult(false, '删除失败，未获得ID'))
+      return new MsgResult(false, '删除失败，未获得ID')
     }
     await this.systemConfigModel.deleteOne({_id}).exec()
-    return Promise.resolve(new MsgResult(true, '删除成功'))
+    return new MsgResult(true, '删除成功')
   }
 
   /**
@@ -187,9 +187,9 @@ export default class SystemService {
   async getConfig(name: string, isPublic: boolean): Promise<object> {
     const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: isPublic}).exec()
     if (systemConfig) {
-      return Promise.resolve(systemConfig.value)
+      return systemConfig.value
     } else {
-      return Promise.resolve({})
+      return {}
     }
   }
   /**
@@ -197,7 +197,6 @@ export default class SystemService {
    * @param blogZip zip压缩文件
    */
   async deployBlogZip(blogZip: Buffer): Promise<MsgResult> {
-
     const deployConfig = await this.systemConfigModel.findOne({name: 'deploy_config'}).exec()
     const tempPath: string = deployConfig.value['temp'] || '/tmp/blog'
     // 删除可能存在的解压后的目录

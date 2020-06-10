@@ -32,13 +32,9 @@ export default class MusicService {
    */
   async list(musicDto: MusicDto, page: Page): Promise<Page> {
     const searchParam = new MusicQc(musicDto)
-    return this.musicModel.countDocuments(searchParam).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.musicModel.find(searchParam, this.listColumns).skip(page.start).limit(page.limit).exec()
-    }).then((musics: Music[]) => {
-      page.data = musics
-      return page
-    })
+    page.total = await this.musicModel.countDocuments(searchParam).exec()
+    page.data = await this.musicModel.find(searchParam, this.listColumns).skip(page.start).limit(page.limit).exec()
+    return page
   }
   /**
    * 查询歌曲列表
@@ -70,8 +66,7 @@ export default class MusicService {
    * @param id 音乐ID
    */
   async findAlbumImage(id: string): Promise<Buffer | undefined> {
-    const music = await this.musicModel.findById(id).exec()
-    return music.album_image
+    return (await this.musicModel.findById(id).exec()).album_image
   }
   /**
    * 输出音乐文件 WritableStream
@@ -87,9 +82,7 @@ export default class MusicService {
       Key: musicLib.path + music.name,
       Output: writer,
     }, (err: object, data: object) => {
-      if (err) {
-        Logger.error(err)
-      }
+      if (err) Logger.error(err)
     })
   }
 }

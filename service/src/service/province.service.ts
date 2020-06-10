@@ -24,12 +24,8 @@ export default class ProvinceService {
    */
   async list(provinceEntity: ProvinceEntity, page: Page): Promise<Page> {
     const searchParam = new ProvinceQc(provinceEntity, false)
-    return this.provinceModel.countDocuments(searchParam).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.provinceModel.find(searchParam).skip(page.start).limit(page.limit).exec()
-    }).then((provinces: Province[]) => {
-      page.data = provinces
-      return page
-    })
+    page.total = await this.provinceModel.countDocuments(searchParam).exec()
+    page.data = await this.provinceModel.find(searchParam).skip(page.start).limit(page.limit).exec()
+    return page
   }
 }

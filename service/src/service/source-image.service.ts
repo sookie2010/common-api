@@ -34,13 +34,9 @@ export default class SourceImageService {
    * @param page 分页
    */
   async list(page: Page): Promise<Page> {
-    return this.sourceImageModel.countDocuments().exec().then((cnt: number) => {
-      page.total = cnt
-      return this.sourceImageModel.find({}, {img: 0}).skip(page.start).limit(page.limit).exec()
-    }).then((sourceImages: SourceImage[]) => {
-      page.data = sourceImages
-      return page
-    })
+    page.total = await this.sourceImageModel.countDocuments().exec()
+    page.data = await this.sourceImageModel.find({}, {img: 0}).skip(page.start).limit(page.limit).exec()
+    return page
   }
 
   /**
@@ -50,9 +46,8 @@ export default class SourceImageService {
   async save(sourceImageEntity: SourceImageEntity): Promise<MsgResult> {
     sourceImageEntity.hash = CommonUtils.dataHash(sourceImageEntity.img, 'md5')
     sourceImageEntity._id = new Types.ObjectId()
-    return this.sourceImageModel.create(sourceImageEntity).then(() => {
-      return new MsgResult(true, '保存成功')
-    })
+    await this.sourceImageModel.create(sourceImageEntity)
+    return new MsgResult(true, '保存成功')
   }
 
   /**
@@ -60,9 +55,8 @@ export default class SourceImageService {
    * @param ids 删除数据的ID们
    */
   async delete(ids: string[]): Promise<MsgResult> {
-    return this.sourceImageModel.deleteMany({_id: {$in: ids}}).exec().then(() => {
-      return new MsgResult(true, '删除成功')
-    })
+    await this.sourceImageModel.deleteMany({_id: {$in: ids}}).exec()
+    return new MsgResult(true, '删除成功')
   }
 
   /**
@@ -75,8 +69,7 @@ export default class SourceImageService {
     mongodb数组添加元素  $addToSet
     删除元素  $pull
     */
-    return this.sourceImageModel.updateOne({_id: id}, { $set: { label }}).then(() => {
-      return new MsgResult(true, '修改标签成功')
-    })
+    await this.sourceImageModel.updateOne({_id: id}, { $set: { label }})
+    return new MsgResult(true, '修改标签成功')
   }
 }

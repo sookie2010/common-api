@@ -20,8 +20,16 @@ export default class SystemController {
    * @param page 分页
    */
   @Get('/user/list')
-  listUser(@Query() systemUser: SystemUser, @Query(PageTransform) page: Page): Promise<Page> {
+  listUser(@Query() systemUser: SystemUserEntity, @Query(PageTransform) page: Page): Promise<Page> {
     return this.systemService.listUser(systemUser, page)
+  }
+  /**
+   * 校验用户是否存在
+   * @param username 用户名
+   */
+  @Get('/usr/exists')
+  checkUserExists(@Query('username') username: string): Promise<MsgResult> {
+    return this.systemService.checkUserExists(username)
   }
   /**
    * 新增用户

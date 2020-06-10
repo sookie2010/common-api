@@ -49,13 +49,9 @@ export default class PhotoWallService {
    */
   async list(photoWallDto: PhotoWallDto, page: Page): Promise<Page> {
     const searchParam = new PhotoWallQc(photoWallDto)
-    return this.photoWallModel.countDocuments(searchParam).exec().then((cnt: number) => {
-      page.total = cnt
-      return this.photoWallModel.find(searchParam).skip(page.start).limit(page.limit).exec()
-    }).then((photoWalls: PhotoWall[]) => {
-      page.data = photoWalls
-      return page
-    })
+    page.total = await this.photoWallModel.countDocuments(searchParam).exec()
+    page.data = await this.photoWallModel.find(searchParam).skip(page.start).limit(page.limit).exec()
+    return page
   }
   /**
    * 保存照片信息
@@ -75,7 +71,7 @@ export default class PhotoWallService {
 
     const md5Check: number = await this.photoWallModel.countDocuments({md5: photowall.md5}).exec()
     if (md5Check > 0) {
-      return Promise.resolve(new MsgResult(false, '图片已存在'))
+      return new MsgResult(false, '图片已存在')
     }
     const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
     // 生成缩略图
@@ -115,11 +111,11 @@ export default class PhotoWallService {
     } else {
       Logger.warn(`${photowall.name} 上传出错, md5值不一致`)
       Logger.warn(`===> 本地文件: ${photowall.md5}, 接口返回: ${eTag}`)
-      return Promise.resolve(new MsgResult(false, `${photowall.name} 上传出错, md5值不一致`))
+      return new MsgResult(false, `${photowall.name} 上传出错, md5值不一致`)
     }
     photowall._id = new Types.ObjectId()
     await this.photoWallModel.create(photowall)
-    return Promise.resolve(new MsgResult(true, '上传成功'))
+    return new MsgResult(true, '上传成功')
   }
 
   /**
@@ -138,7 +134,7 @@ export default class PhotoWallService {
       if (err) { Logger.error(err) }
       return this.photoWallModel.deleteMany({_id: {$in: ids}}).exec()
     }).then(() => {
-      return Promise.resolve(new MsgResult(true, '删除成功'))
+      return new MsgResult(true, '删除成功')
     })
   }
 }

@@ -26,7 +26,7 @@ export default class CommonService {
     systemUser.password = CommonUtils.dataHash(systemUser.password, 'sha1')
     const loginUser: SystemUser = await this.systemUserModel.findOne(systemUser, this.tokenField).exec()
     if (!loginUser) {
-      return Promise.resolve({message: '用户名/密码错误'})
+      return {message: '用户名/密码错误'}
     }
     const userInfo = {
       _id: loginUser._id,
@@ -38,7 +38,7 @@ export default class CommonService {
     const token = jwt.sign(userInfo, tokenKeyConfig.value.toString()/*秘钥*/, {
       expiresIn: '7d', /*过期时间*/
     })
-    return Promise.resolve({token, userInfo})
+    return {token, userInfo}
   }
   /**
    * 访客登陆(无需账号密码, 分配一个只具备GET请求权限的用户)
