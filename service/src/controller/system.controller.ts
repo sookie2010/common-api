@@ -24,10 +24,10 @@ export default class SystemController {
     return this.systemService.listUser(systemUser, page)
   }
   /**
-   * 校验用户是否存在
+   * 校验用户名是否存在
    * @param username 用户名
    */
-  @Get('/usr/exists')
+  @Get('/user/exists')
   checkUserExists(@Query('username') username: string): Promise<MsgResult> {
     return this.systemService.checkUserExists(username)
   }
@@ -90,6 +90,14 @@ export default class SystemController {
     const user = await this.systemService.decryptUserInfo(token)
     // 如果用户并不存在 代表是访客用户
     return this.systemService.listConfig(systemConfig, !user)
+  }
+  /**
+   * 校验配置项名称是否存在
+   * @param name 配置项名称
+   */
+  @Get('/config/exists')
+  checkConfigExists(@Query('name') name: string): Promise<MsgResult> {
+    return this.systemService.checkConfigExists(name)
   }
   /**
    * 新增或更新配置项

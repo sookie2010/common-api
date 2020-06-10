@@ -152,6 +152,14 @@ export default class SystemService {
     return this.systemConfigModel.find(qc).exec()
   }
   /**
+   * 校验配置项名称是否存在
+   * @param name 配置项名称
+   */
+  async checkConfigExists(name: string): Promise<MsgResult> {
+    const cnt: number = await this.systemConfigModel.countDocuments({name}).exec()
+    return new MsgResult(true, null, {exists: !!cnt})
+  }
+  /**
    * 新增或更新配置项
    * @param systemConfig 配置项内容
    */
