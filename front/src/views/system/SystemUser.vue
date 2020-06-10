@@ -57,7 +57,17 @@ export default class SystemUser extends BaseList<SystemUserPage> {
   @Ref('userForm') private readonly userForm!: VForm
   private ruleValidate = {
     username: [
-      { required: true, message: '请输入用户名', trigger: 'blur' }
+      { required: true, message: '请输入用户名', trigger: 'blur' },
+      { validator: (rule: object, value: string, callback: Function) => {
+          this.$http.get('/system/user/exists', {params: {username: value}}).then(({data}) => {
+            if(data.data.exists) {
+              callback(new Error('用户名已存在'))
+            } else {
+              callback()
+            }
+          })
+        }, trigger: 'blur'
+      }
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },

@@ -172,9 +172,9 @@ export default class SystemRole extends BaseList<SystemRolePage> {
         this.modalLoading = false
         return
       }
-      const { message } = (await this.$http.post('/system/role/save', this.formData)).data
+      const { data } = await this.$http.post('/system/role/save', this.formData)
       this.addModal = false
-      this.$Message.success(message)
+      this.$Message.success(data.message)
       this.loadData()
     })
   }

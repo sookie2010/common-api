@@ -18,20 +18,23 @@
   <div class="table-container">
     <Table border :loading="loading" :columns="systemConfigColumns" :data="systemConfigData" height="520" ></Table>
   </div>
-  <Modal v-model="addModal" :title="modalTitle" loading @on-ok="save">
-    <SystemConfigAdd :formData="formData" />
+  <Modal v-model="addModal" :title="modalTitle" :loading="modalLoading" @on-ok="save">
+    <SystemConfigAdd ref="addForm" :formData="formData" />
   </Modal>
 </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Ref, Vue } from 'vue-property-decorator'
 import SystemConfigAdd from './SystemConfigAdd.vue'
 import { SystemConfigModel } from '../../model/system/system-config'
+import { VForm } from '../../types'
 import moment from 'moment'
 import { Button } from 'view-design'
 
 @Component({components: {SystemConfigAdd}})
 export default class SystemConfig extends Vue {
+  @Ref('addForm') private readonly addForm!: Vue
+  private modalLoading: boolean = true
   private loading: boolean = false
   private search: {name?:string} = {}
   private systemConfigColumns = [{
@@ -120,16 +123,16 @@ export default class SystemConfig extends Vue {
     this.addModal = true
   }
   async save() {
-    try {
-      JSON.parse(this.formData.value as string)
-    } catch (e) {
-      this.$Message.warning('值不符合JSON字符串格式')
-      return
-    }
-    const { data } = await this.$http.post('/system/config/save', this.formData)
-    this.addModal = false
-    this.$Message.success(data.message)
-    this.loadData()
+    (this.addForm.$refs.configForm as VForm).validate(async (valid: boolean) => {
+      if(!valid) {
+        this.modalLoading = false
+        return
+      }
+      const { data } = await this.$http.post('/system/config/save', this.formData)
+      this.addModal = false
+      this.$Message.success(data.message)
+      this.loadData()
+    })
   }
   delete(row: SystemConfigModel) {
     this.$Modal.confirm({
