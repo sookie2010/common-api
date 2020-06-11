@@ -49,9 +49,15 @@ export default class SystemService {
   /**
    * 校验用户是否存在
    * @param username 用户名
+   * @param id 需要排除掉的用户ID
    */
-  async checkUserExists(username: string): Promise<MsgResult> {
-    const cnt: number = await this.systemUserModel.countDocuments({username}).exec()
+  async checkUserExists(username: string, id: string): Promise<MsgResult> {
+    type existsQc = { username: string, _id?: {$ne: string} }
+    const qc: existsQc = { username }
+    if(id) {
+      qc._id = {$ne: id}
+    }
+    const cnt: number = await this.systemUserModel.countDocuments(qc).exec()
     return new MsgResult(true, null, {exists: !!cnt})
   }
   /**
@@ -154,9 +160,15 @@ export default class SystemService {
   /**
    * 校验配置项名称是否存在
    * @param name 配置项名称
+   * @param id 需要排除的ID(适用于修改)
    */
-  async checkConfigExists(name: string): Promise<MsgResult> {
-    const cnt: number = await this.systemConfigModel.countDocuments({name}).exec()
+  async checkConfigExists(name: string, id: string): Promise<MsgResult> {
+    type existsQc = { name: string, _id?: {$ne: string} }
+    const qc: existsQc = { name }
+    if(id) {
+      qc._id = {$ne: id}
+    }
+    const cnt: number = await this.systemConfigModel.countDocuments(qc).exec()
     return new MsgResult(true, null, {exists: !!cnt})
   }
   /**

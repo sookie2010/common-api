@@ -3,7 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import LoginInterceptor from '../common/login.interceptor'
 import SystemService from '../service/system.service'
 import { SystemConfigEntity, SystemConfig } from '../interface/system-config.interface'
-import { SystemUserEntity, SystemUser } from '../interface/system-user.interface'
+import { SystemUserEntity } from '../interface/system-user.interface'
 import { SystemRoleEntity, SystemRole } from '../interface/system-role.interface'
 import { Page, MsgResult, FileEntity } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
@@ -26,10 +26,11 @@ export default class SystemController {
   /**
    * 校验用户名是否存在
    * @param username 用户名
+   * @param id 需要排除掉的用户ID
    */
   @Get('/user/exists')
-  checkUserExists(@Query('username') username: string): Promise<MsgResult> {
-    return this.systemService.checkUserExists(username)
+  checkUserExists(@Query('username') username: string, @Query('id')id: string): Promise<MsgResult> {
+    return this.systemService.checkUserExists(username, id)
   }
   /**
    * 新增用户
@@ -94,10 +95,11 @@ export default class SystemController {
   /**
    * 校验配置项名称是否存在
    * @param name 配置项名称
+   * @param id 需要排除的ID(适用于修改)
    */
   @Get('/config/exists')
-  checkConfigExists(@Query('name') name: string): Promise<MsgResult> {
-    return this.systemService.checkConfigExists(name)
+  checkConfigExists(@Query('name') name: string, @Query('id') id: string): Promise<MsgResult> {
+    return this.systemService.checkConfigExists(name, id)
   }
   /**
    * 新增或更新配置项
@@ -106,11 +108,7 @@ export default class SystemController {
   @Post('/config/save')
   saveConfig(@Body(new ValidationPipe()) systemConfig: SystemConfigEntity): Promise<MsgResult> {
     if (typeof systemConfig.value !== 'object') {
-      try {
-        systemConfig.value = JSON.parse(systemConfig.value)
-      } catch (e) {
-        return Promise.resolve(new MsgResult(false, 'value无法解析为JSON格式'))
-      }
+      systemConfig.value = JSON.parse(systemConfig.value)
     }
     return this.systemService.saveConfig(systemConfig)
   }
