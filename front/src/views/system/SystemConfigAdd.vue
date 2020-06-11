@@ -25,12 +25,12 @@ import { SystemConfigModel } from '../../model/system/system-config'
 
 @Component({})
 export default class SystenConfigAdd extends Vue {
-  @Prop() formData?: SystemConfigModel
+  @Prop() formData!: SystemConfigModel
   private ruleValidate = {
     name: [
       { required: true, message: '请输入配置项名称', trigger: 'blur' },
       { validator: (rule: object, value: string, callback: Function) => {
-          this.$http.get('/system/config/exists', {params: {name: value}}).then(({data}) => {
+          this.$http.get('/system/config/exists', {params: {name: value, id: this.formData._id}}).then(({data}) => {
             if(data.data.exists) {
               callback(new Error('配置项名称已存在'))
             } else {
