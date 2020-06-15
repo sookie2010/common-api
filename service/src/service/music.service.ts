@@ -1,9 +1,9 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
 import { SystemConfig } from '../interface/system-config.interface'
-import { Page, PageResult } from '../common/common.dto'
+import { Page, PageResult, MsgResult } from '../common/common.dto'
 import { Writable } from 'stream'
 
 const COS = require('cos-nodejs-sdk-v5')
@@ -84,5 +84,19 @@ export default class MusicService {
     }, (err: object, data: object) => {
       if (err) { Logger.error(err) }
     })
+  }
+
+  /**
+   * 修改所属歌单
+   * @param id 歌曲ID
+   * @param libId 歌单ID
+   */
+  async updateLib(id: string, libId: string): Promise<MsgResult> {
+    const cnt: number = await this.musicLibModel.countDocuments({_id: libId}).exec()
+    if (!cnt) {
+      return new MsgResult(false, '歌单不存在')
+    }
+    await this.musicModel.updateOne({_id: id}, {$set: {lib_id: new Types.ObjectId(libId)}})
+    return new MsgResult(true, '修改成功')
   }
 }

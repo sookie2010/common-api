@@ -1,7 +1,7 @@
-import { Controller, Get, Query, UseInterceptors } from '@nestjs/common'
+import { Controller, Get, Query, Body, UseInterceptors, Post } from '@nestjs/common'
 import MusicService from '../service/music.service'
 import { Music, MusicDto, MusicLib } from '../interface/music.interface'
-import { Page, PageResult } from '../common/common.dto'
+import { Page, PageResult, MsgResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -42,5 +42,15 @@ export default class MusicController {
   @Get('/listLibs')
   listLibs(): Promise<MusicLib[]> {
     return this.musicService.listLibs()
+  }
+
+  /**
+   * 修改所属歌单
+   * @param id 歌曲ID
+   * @param libId 歌单ID
+   */
+  @Post('/updateLib')
+  updateLib(@Body('id') id: string, @Body('libId') libId: string): Promise<MsgResult> {
+    return this.musicService.updateLib(id, libId)
   }
 }
