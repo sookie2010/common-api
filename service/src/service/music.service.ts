@@ -16,11 +16,11 @@ export default class MusicService {
 
   constructor(@InjectModel('Music') private readonly musicModel: Model<Music>,
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
-              @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
+              @InjectModel('SystemConfig') systemConfigModel: Model<SystemConfig>) {
     systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
-      this.bucket = systemConfig.value.Bucket
-      this.region = systemConfig.value.Region
-      this.tencentCosClient = new COS(systemConfig.value.setting)
+      this.bucket = systemConfig.value['Bucket']
+      this.region = systemConfig.value['Region']
+      this.tencentCosClient = new COS(systemConfig.value['setting'])
     })
   }
 

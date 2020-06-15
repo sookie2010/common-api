@@ -24,7 +24,7 @@ export default class SystemService {
    */
   async decryptUserInfo(token: string): Promise<SystemUser | null> {
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
-    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value.toString())._id
+    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value.toString())['_id']
     if (userId) {
       return await this.systemUserModel.findById(userId)
     } else {
@@ -218,7 +218,7 @@ export default class SystemService {
    */
   async deployBlogZip(blogZip: Buffer): Promise<MsgResult> {
     const deployConfig = await this.systemConfigModel.findOne({name: 'deploy_config'}).exec()
-    const tempPath: string = deployConfig.value.temp || '/tmp/blog'
+    const tempPath: string = deployConfig.value['temp'] || '/tmp/blog'
     // 删除可能存在的解压后的目录
     CommonUtils.deleteFolderRecursive(tempPath)
     // 创建临时目录
@@ -230,7 +230,7 @@ export default class SystemService {
       Logger.error(`解压出错 ${err.toString()}`)
       return new MsgResult(false, `解压出错 ${err.toString()}`)
     }
-    const deployPath: string = deployConfig.value.path
+    const deployPath: string = deployConfig.value['path']
 
     if (!deployPath) {
       return new MsgResult(false, '未配置deploy_config.path(发布路径)')
