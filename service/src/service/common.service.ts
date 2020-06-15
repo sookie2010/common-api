@@ -73,7 +73,7 @@ export default class CommonService {
       if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
         let userInfo = jwt.verify(token, systemConfig.value.toString(), {ignoreExpiration: true})
-        const loginUser = await this.systemUserModel.findById(userInfo._id, this.tokenField).exec()
+        const loginUser = await this.systemUserModel.findById(userInfo['_id'], this.tokenField).exec()
         userInfo = {
           _id: loginUser._id,
           username: loginUser.username,

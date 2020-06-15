@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Query, Body, UseInterceptors, UploadedFi
 import { FileInterceptor } from '@nestjs/platform-express'
 import SourceImageService from '../service/source-image.service'
 import { SourceImageEntity } from '../interface/source-image.interface'
-import { Page, MsgResult, FileEntity } from '../common/common.dto'
+import { Page, MsgResult, FileEntity, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -17,7 +17,7 @@ export default class SourceImageController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query(PageTransform) page: Page): Promise<PageResult> {
     return this.sourceImageService.list(page)
   }
   /**
