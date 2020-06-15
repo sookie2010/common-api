@@ -15,6 +15,6 @@ export class SystemUserEntity {
   updated_at: Date // 更新时间
 }
 
-export interface SystemUser extends SystemUserEntity,Document {
+export interface SystemUser extends SystemUserEntity, Document {
   _id: Types.ObjectId
 }

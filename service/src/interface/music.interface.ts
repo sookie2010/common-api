@@ -26,7 +26,7 @@ export class MusicQc extends BaseQc {
   lib_id?: {$in: string[]}
   constructor(musicDto: MusicDto) {
     super()
-    if(Array.isArray(musicDto.ids) && musicDto.ids.length) {
+    if (Array.isArray(musicDto.ids) && musicDto.ids.length) {
       this._id = {$in: musicDto.ids}
       return // 如果有ID就只按ID查
     }

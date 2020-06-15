@@ -18,9 +18,9 @@ export default class MusicService {
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
               @InjectModel('SystemConfig') private readonly systemConfigModel: Model<SystemConfig>) {
     systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
-      this.bucket = systemConfig.value['Bucket']
-      this.region = systemConfig.value['Region']
-      this.tencentCosClient = new COS(systemConfig.value['setting'])
+      this.bucket = systemConfig.value.Bucket
+      this.region = systemConfig.value.Region
+      this.tencentCosClient = new COS(systemConfig.value.setting)
     })
   }
 
@@ -82,7 +82,7 @@ export default class MusicService {
       Key: musicLib.path + music.name,
       Output: writer,
     }, (err: object, data: object) => {
-      if (err) Logger.error(err)
+      if (err) { Logger.error(err) }
     })
   }
 }

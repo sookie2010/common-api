@@ -13,6 +13,6 @@ export class SystemRoleEntity {
   updated_at: Date // 更新时间
 }
 
-export interface SystemRole extends SystemRoleEntity,Document {
+export interface SystemRole extends SystemRoleEntity, Document {
   _id: Types.ObjectId
 }

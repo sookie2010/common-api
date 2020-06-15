@@ -4,7 +4,7 @@ import { IsNotEmpty, Validate, ValidatorConstraint, ValidatorConstraintInterface
 @ValidatorConstraint({ name: 'JsonValidator', async: false })
 class JsonValidate implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments) {
-    if(typeof value !== 'string') return true
+    if (typeof value !== 'string') { return true }
     try {
       JSON.parse(value)
       return true
@@ -29,6 +29,6 @@ export class SystemConfigEntity {
   updated_at: Date // 更新时间
 }
 
-export interface SystemConfig extends SystemConfigEntity,Document {
+export interface SystemConfig extends SystemConfigEntity, Document {
   _id: Types.ObjectId
 }

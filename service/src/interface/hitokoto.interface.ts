@@ -5,9 +5,9 @@ import { IsNotEmpty } from 'class-validator'
 
 export class HitokotoEntity {
   _id: Types.ObjectId
-  @IsNotEmpty({message:'内容不能为空'})
+  @IsNotEmpty({message: '内容不能为空'})
   hitokoto?: string
-  @IsNotEmpty({message:'类型不能为空'})
+  @IsNotEmpty({message: '类型不能为空'})
   type: string
   from: string
   creator: string
@@ -15,7 +15,7 @@ export class HitokotoEntity {
   number: number
 }
 
-export interface Hitokoto extends HitokotoEntity,Document {
+export interface Hitokoto extends HitokotoEntity, Document {
   _id: Types.ObjectId
 }
 
@@ -41,9 +41,9 @@ export class HitokotoQc extends BaseQc {
         $lte: new Date(hitokotoDto.createdAt[1]),
       }
     }
-    if (~~hitokotoDto.length > 0) {
+    if (+hitokotoDto.length > 0) {
       this.hitokoto = { $exists: true }
-      this.$expr = { $lte: [{ $strLenCP: '$hitokoto' }, ~~hitokotoDto.length ]}
+      this.$expr = { $lte: [{ $strLenCP: '$hitokoto' }, +hitokotoDto.length ]}
     }
   }
 }

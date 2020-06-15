@@ -77,8 +77,8 @@ export default class PhotoWallService {
     const thumbnailWidth: SystemConfig = await this.systemConfigModel.findOne({name: 'thumbnail_width'}).exec()
     // 生成缩略图
     let thumbnailBuffer: Buffer
-    if (photowall.width > ~~thumbnailWidth.value) {
-      thumbnailBuffer = await imgSharp.resize(~~thumbnailWidth.value).toBuffer()
+    if (photowall.width > +thumbnailWidth.value) {
+      thumbnailBuffer = await imgSharp.resize(+thumbnailWidth.value).toBuffer()
     } else {
       thumbnailBuffer = image.buffer
     }

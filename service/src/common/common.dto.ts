@@ -16,7 +16,7 @@ export interface Page {
 export class PageResult {
   total: number // 数据总数
   data: object[] // 当前页数据
-  constructor(total: number = 0, data: object[] = []){
+  constructor(total: number = 0, data: object[] = []) {
     this.total = total
     this.data = data
   }
