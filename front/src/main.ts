@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { VNode, CreateElement } from 'vue/types/umd'
 
 import { router, routePathes, filterExclude } from './router'
 import { Route } from 'vue-router'
@@ -42,9 +41,7 @@ axios.interceptors.response.use(res=> {
     if(typeof err.response.data.message === 'string') {
       vm.$Message.warning(err.response.data.message)
     } else if (Array.isArray(err.response.data.message)) {
-      let message = err.response.data.message
-        .map((item: any) => Object.values(item.constraints).join('<br/>'))
-        .join('<br/>')
+      let message = err.response.data.message.join('<br/>')
       vm.$Message.warning(message)
     }
     if (err.response.status === 403) {

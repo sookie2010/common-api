@@ -59,7 +59,7 @@ export default class SystemUser extends BaseList<SystemUserPage> {
     username: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
       { validator: (rule: object, value: string, callback: Function) => {
-          this.$http.get('/system/user/exists', {params: {username: value}}).then(({data}) => {
+          this.$http.get('/system/user/exists', {params: {username: value, id: this.formData._id}}).then(({data}) => {
             if(data.data.exists) {
               callback(new Error('用户名已存在'))
             } else {
@@ -159,7 +159,6 @@ export default class SystemUser extends BaseList<SystemUserPage> {
       this.$Message.success(data.message)
       this.loadData()
     })
-    
   }
   delete(row: SystemUserModel) {
     this.$Modal.confirm({
