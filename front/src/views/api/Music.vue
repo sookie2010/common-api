@@ -58,6 +58,11 @@
     <Page :page-size-opts="$store.state.pageSizeOpts" :total="search.total" :current="search.pageNum" :page-size="search.limit" 
       show-total show-sizer show-elevator @on-change="pageChange($event)" @on-page-size-change="pageSizeChange($event)"></Page>
   </div>
+  <Modal v-model="modifyModal" title="修改所属歌单"  width="460" footer-hide >
+    <RadioGroup v-if="currentRow" v-model="currentRow.lib_id" @on-change="updateMusicLib">
+      <Radio v-for="item in musicLibs" :key="item._id" :label="item._id" border>{{item.name}}</Radio>
+    </RadioGroup>
+  </Modal>
   <Drawer title="播放音乐" v-model="musicPlaying" width="720" :mask-closable="false" >
     <template v-if="musicPlaying">
       <a-player :audio="musicList"/>
@@ -68,6 +73,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { Button } from 'view-design'
 import { MusicModel, MusicLibModel } from '../../model/api/music'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
@@ -118,10 +124,20 @@ export default class Music extends BaseList<MusicPage> {
         const musicLibName = this.findMusicLib(row.lib_id)
         return musicLibName ? h('span', musicLibName) : undefined
       }
+    },{
+      title: '操作',
+      render: (h: Function, {row}: {row: MusicModel}) => {
+        return h(Button, {
+            props: {size:'small'},
+            on: { click: () => { this.update(row) } }
+          },'修改')
+      }
     }]
+  private currentRow: MusicModel | null = null
   private exts: string[] = []
   private musicLibs: MusicLibModel[] = []
   private musicData: MusicModel[] = []
+  private modifyModal: boolean = false
   // 是否正在播放音乐
   private musicPlaying: boolean = false
   private musicList: [] = []
@@ -171,6 +187,15 @@ export default class Music extends BaseList<MusicPage> {
       this.$Message.error('获取播放列表失败')
       this.$Loading.error()
     }
+  }
+  update(row: MusicModel) {
+    this.currentRow = row
+    this.modifyModal = true
+  }
+  async updateMusicLib(libId: string) {
+    if (!this.currentRow) return
+    const { data } = await this.$http.post('/music/updateLib', {id: this.currentRow._id, libId})
+    this.$Message.success(data.message)
   }
 }
 
