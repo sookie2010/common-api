@@ -1,5 +1,5 @@
 import { Controller, Get, Put, Query, Body, UseInterceptors } from '@nestjs/common'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import ArticleService from '../service/article.service'
 import { ArticleDto } from '../interface/article.interface'
@@ -18,7 +18,7 @@ export default class ArticleController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.articleService.list(articleDto, page)
   }
 

@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common'
 import MusicService from '../service/music.service'
 import { Music, MusicDto, MusicLib } from '../interface/music.interface'
-import { Page } from '../common/common.dto'
+import { Page, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -17,7 +17,7 @@ export default class MusicController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() musicDto: MusicDto, @Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query() musicDto: MusicDto, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.musicService.list(musicDto, page)
   }
   /**

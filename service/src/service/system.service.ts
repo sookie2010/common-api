@@ -6,7 +6,7 @@ import { SystemUser, SystemUserEntity } from '../interface/system-user.interface
 import { SystemRole, SystemRoleEntity } from '../interface/system-role.interface'
 import BaseQc from '../common/base.qc'
 import CommonUtils from '../common/common.util'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 
 import * as jwt from 'jsonwebtoken'
 import * as child_process from 'child_process'
@@ -36,15 +36,15 @@ export default class SystemService {
    * @param systemUser 查询条件
    * @param page 分页条件
    */
-  async listUser(systemUser: SystemUserEntity, page: Page): Promise<Page> {
+  async listUser(systemUser: SystemUserEntity, page: Page): Promise<PageResult> {
     const qc: BaseQc = {}
     if (systemUser.username) {
       const reg = new RegExp(CommonUtils.escapeRegexStr(systemUser.username))
       qc.$or = [{username: reg}, {realname: reg}]
     }
-    page.total = await this.systemUserModel.countDocuments(qc).exec()
-    page.data = await this.systemUserModel.find(qc, {password: 0}).skip(page.start).limit(page.limit).exec()
-    return page
+    const total = await this.systemUserModel.countDocuments(qc).exec()
+    const data = await this.systemUserModel.find(qc, {password: 0}).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
   /**
    * 校验用户是否存在
@@ -102,15 +102,15 @@ export default class SystemService {
    * @param systemUser 查询条件
    * @param page 分页条件
    */
-  async listRole(systemRole: SystemRole, page: Page): Promise<Page> {
+  async listRole(systemRole: SystemRole, page: Page): Promise<PageResult> {
     const qc: BaseQc = {}
     if (systemRole.name) {
       const reg = new RegExp(CommonUtils.escapeRegexStr(systemRole.name))
       qc.$or = [{name: reg}, {description: reg}]
     }
-    page.total = await this.systemRoleModel.countDocuments(qc).exec()
-    page.data = await this.systemRoleModel.find(qc).skip(page.start).limit(page.limit).exec()
-    return page
+    const total = await this.systemRoleModel.countDocuments(qc).exec()
+    const data = await this.systemRoleModel.find(qc).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
   /**
    * 保存角色

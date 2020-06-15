@@ -7,7 +7,7 @@ import SourceImageService from '../service/source-image.service'
 import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
 import { ArticleDto } from '../interface/article.interface'
 import { SourceImage } from '../interface/source-image.interface'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 import { SystemUserEntity } from '../interface/system-user.interface'
 import PageTransform from '../common/page.transform'
 import SystemService from '../service/system.service'
@@ -67,7 +67,7 @@ export default class CommonController {
    * 分页查询照片
    */
   @Get('/photos')
-  getPhotos(@Query(PageTransform) page: Page): Promise<Page | MsgResult> {
+  getPhotos(@Query(PageTransform) page: Page): Promise<PageResult | MsgResult> {
     return this.photoWallService.queryPage(page)
   }
 
@@ -85,9 +85,9 @@ export default class CommonController {
    * @param page 分页信息
    */
   @Get('/search')
-  search(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<Page> {
+  search(@Query() articleDto: ArticleDto, @Query(PageTransform) page: Page): Promise<PageResult> {
     if (!articleDto.words) {
-      return Promise.resolve(page)
+      return Promise.resolve(new PageResult())
     }
     return this.articleService.search(articleDto.words, page)
   }

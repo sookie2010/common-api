@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 import { Article, ArticleEntity, ArticleKeys, ArticleDto, ArticleQc } from '../interface/article.interface'
 import { SystemConfig } from '../interface/system-config.interface'
@@ -25,7 +25,7 @@ export default class ArticleService {
    * @param articleDto 查询条件
    * @param page 分页
    */
-  async list(articleDto: ArticleDto, page: Page): Promise<Page> {
+  async list(articleDto: ArticleDto, page: Page): Promise<PageResult> {
     const searchParam = new ArticleQc(articleDto)
     const lookup = { $lookup: {
         from: 'article_keys',
@@ -45,6 +45,7 @@ export default class ArticleService {
         is_splited: { $cond: [{ $gt: [ {$size: '$article_keys'}, 0 ] }, true, false ]},
       },
     }
+    const pageResult: PageResult = new PageResult()
     return this.articleModel.aggregate([
       lookup,
       project,
@@ -52,10 +53,10 @@ export default class ArticleService {
       { $group: {_id: 1, total: {$sum: 1}} },
     ]).then((cnt: Array<{ total: number }>) => {
       if (!cnt.length) {
-        page.total = 0
+        pageResult.total = 0
         return []
       }
-      page.total = cnt[0].total
+      pageResult.total = cnt[0].total
       return this.articleModel.aggregate([
         lookup,
         project,
@@ -65,8 +66,8 @@ export default class ArticleService {
         { $limit: page.limit },
       ])
     }).then((articles: Article[]) => {
-      page.data = articles
-      return page
+      pageResult.data = articles
+      return pageResult
     })
   }
   /**
@@ -128,7 +129,7 @@ export default class ArticleService {
    * @param words 检索关键词
    * @param page 分页信息
    */
-  async search(words: string, page: Page): Promise<Page> {
+  async search(words: string, page: Page): Promise<PageResult> {
     const splitedWords: string[] = []
     for (const whiteSpaceSplited of words.split(/\s+/)) {
       splitedWords.push(...nodejieba.cut(whiteSpaceSplited, true))
@@ -155,17 +156,15 @@ export default class ArticleService {
     ])
     if (!searchResult) {
       // 未查询到匹配的文章
-      page.total = 0
-      page.data = []
-      return page
+      return new PageResult()
     }
-    page.total = searchResult.total
-    page.data = searchResult.articles.map((articleArr: Article[]) => {
+    const total = searchResult.total
+    const data = searchResult.articles.map((articleArr: Article[]) => {
       // 提取摘要 高亮关键词
       articleArr[0].content = this.createSummary(articleArr[0].content, splitedWords, 30)
       return articleArr[0]
     })
-    return page
+    return new PageResult(total, data)
   }
   /**
    * 从主站拉取全部文章(包含正文)

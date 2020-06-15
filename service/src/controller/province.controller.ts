@@ -1,5 +1,5 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common'
-import { Page } from '../common/common.dto'
+import { Page, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 import ProvinceService from '../service/province.service'
@@ -26,7 +26,7 @@ export default class ProvinceController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() provinceEntity: ProvinceEntity, @Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query() provinceEntity: ProvinceEntity, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.provinceService.list(provinceEntity, page)
   }
 }

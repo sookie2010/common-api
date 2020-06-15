@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
 import { SystemConfig } from '../interface/system-config.interface'
-import { Page } from '../common/common.dto'
+import { Page, PageResult } from '../common/common.dto'
 import { Writable } from 'stream'
 
 const COS = require('cos-nodejs-sdk-v5')
@@ -30,11 +30,11 @@ export default class MusicService {
    * @param musicDto 查询条件
    * @param page 分页
    */
-  async list(musicDto: MusicDto, page: Page): Promise<Page> {
+  async list(musicDto: MusicDto, page: Page): Promise<PageResult> {
     const searchParam = new MusicQc(musicDto)
-    page.total = await this.musicModel.countDocuments(searchParam).exec()
-    page.data = await this.musicModel.find(searchParam, this.listColumns).skip(page.start).limit(page.limit).exec()
-    return page
+    const total = await this.musicModel.countDocuments(searchParam).exec()
+    const data = await this.musicModel.find(searchParam, this.listColumns).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
   /**
    * 查询歌曲列表

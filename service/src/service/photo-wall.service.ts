@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { PhotoWall, PhotoWallEntity, PhotoWallDto, PhotoWallQc } from '../interface/photo-wall.interface'
 import { SystemConfig } from '../interface/system-config.interface'
-import { FileEntity, Page, MsgResult } from '../common/common.dto'
+import { FileEntity, Page, MsgResult, PageResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 
 import { NosClient, NosClientOptions } from '@xgheaven/nos-node-sdk'
@@ -27,16 +27,17 @@ export default class PhotoWallService {
    * @param start 起始数据行数(第一行是0)
    * @param limit 每页数据条数
    */
-  async queryPage(page: Page): Promise<Page | MsgResult> {
+  async queryPage(page: Page): Promise<PageResult | MsgResult> {
+    const pageResult = new PageResult()
     return this.photoWallModel.countDocuments({}).exec().then((cnt: number) => {
       if (cnt === 0) {
         throw new Error('没有图片数据')
       }
-      page.total = cnt
+      pageResult.total = cnt
       return this.photoWallModel.find({}).skip(page.start).limit(page.limit).exec()
     }).then((photoWalls: PhotoWall[]) => {
-      page.data = photoWalls
-      return page
+      pageResult.data = photoWalls
+      return pageResult
     }).catch((err: Error) => {
       return new MsgResult(false, err.message)
     })
@@ -47,11 +48,11 @@ export default class PhotoWallService {
    * @param photoWallDto 查询条件
    * @param page 分页信息
    */
-  async list(photoWallDto: PhotoWallDto, page: Page): Promise<Page> {
+  async list(photoWallDto: PhotoWallDto, page: Page): Promise<PageResult> {
     const searchParam = new PhotoWallQc(photoWallDto)
-    page.total = await this.photoWallModel.countDocuments(searchParam).exec()
-    page.data = await this.photoWallModel.find(searchParam).skip(page.start).limit(page.limit).exec()
-    return page
+    const total = await this.photoWallModel.countDocuments(searchParam).exec()
+    const data = await this.photoWallModel.find(searchParam).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
   /**
    * 保存照片信息

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } f
 import { FileInterceptor } from '@nestjs/platform-express/index'
 import PhotoWallService from '../service/photo-wall.service'
 import { PhotoWallDto } from '../interface/photo-wall.interface'
-import { FileEntity, Page, MsgResult } from '../common/common.dto'
+import { FileEntity, Page, MsgResult, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -17,7 +17,7 @@ export default class PhotoWallController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() photoWallDto: PhotoWallDto, @Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query() photoWallDto: PhotoWallDto, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.photoWallService.list(photoWallDto, page)
   }
   /**

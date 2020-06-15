@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { SourceImage, SourceImageEntity } from '../interface/source-image.interface'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 import CommonUtils from '../common/common.util'
 
 @Injectable()
@@ -33,10 +33,10 @@ export default class SourceImageService {
    * 查询背景图列表
    * @param page 分页
    */
-  async list(page: Page): Promise<Page> {
-    page.total = await this.sourceImageModel.countDocuments().exec()
-    page.data = await this.sourceImageModel.find({}, {img: 0}).skip(page.start).limit(page.limit).exec()
-    return page
+  async list(page: Page): Promise<PageResult> {
+    const total = await this.sourceImageModel.countDocuments().exec()
+    const data = await this.sourceImageModel.find({}, {img: 0}).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
 
   /**

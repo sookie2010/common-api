@@ -5,7 +5,7 @@ import SystemService from '../service/system.service'
 import { SystemConfigEntity, SystemConfig } from '../interface/system-config.interface'
 import { SystemUserEntity } from '../interface/system-user.interface'
 import { SystemRoleEntity, SystemRole } from '../interface/system-role.interface'
-import { Page, MsgResult, FileEntity } from '../common/common.dto'
+import { Page, MsgResult, FileEntity, PageResult } from '../common/common.dto'
 import PageTransform from '../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
@@ -20,7 +20,7 @@ export default class SystemController {
    * @param page 分页
    */
   @Get('/user/list')
-  listUser(@Query() systemUser: SystemUserEntity, @Query(PageTransform) page: Page): Promise<Page> {
+  listUser(@Query() systemUser: SystemUserEntity, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.systemService.listUser(systemUser, page)
   }
   /**
@@ -63,7 +63,7 @@ export default class SystemController {
    * @param page 分页
    */
   @Get('/role/list')
-  listRole(@Query() systemRole: SystemRole, @Query(PageTransform) page: Page): Promise<Page> {
+  listRole(@Query() systemRole: SystemRole, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.systemService.listRole(systemRole, page)
   }
   /**

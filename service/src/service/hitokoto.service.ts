@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { HitokotoEntity, Hitokoto, HitokotoDto, HitokotoQc } from '../interface/hitokoto.interface'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 
 @Injectable()
 export default class HitokotoService {
@@ -37,11 +37,11 @@ export default class HitokotoService {
    * @param hitokotoDto 查询条件
    * @param page 分页
    */
-  async list(hitokotoDto: HitokotoDto, page: Page): Promise<Page> {
+  async list(hitokotoDto: HitokotoDto, page: Page): Promise<PageResult> {
     const searchParam = new HitokotoQc(hitokotoDto)
-    page.total = await this.hitokotoModel.countDocuments(searchParam).exec()
-    page.data = await this.hitokotoModel.find(searchParam).skip(page.start).limit(page.limit).exec()
-    return page
+    const total = await this.hitokotoModel.countDocuments(searchParam).exec()
+    const data = await this.hitokotoModel.find(searchParam).skip(page.start).limit(page.limit).exec()
+    return new PageResult(total, data)
   }
 
   /**

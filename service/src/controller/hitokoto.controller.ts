@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Query, Body, UseInterceptors, ValidationPipe } from '@nestjs/common'
 import HitokotoService from '../service/hitokoto.service'
 import { HitokotoEntity, HitokotoDto } from '../interface/hitokoto.interface'
-import { Page, MsgResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../common/common.dto'
 import LoginInterceptor from '../common/login.interceptor'
 import PageTransform from '../common/page.transform'
 
@@ -17,7 +17,7 @@ export default class HitokotoController {
    * @param page 分页
    */
   @Get('/list')
-  list(@Query() hitokotoDto: HitokotoDto, @Query(PageTransform) page: Page): Promise<Page> {
+  list(@Query() hitokotoDto: HitokotoDto, @Query(PageTransform) page: Page): Promise<PageResult> {
     return this.hitokotoService.list(hitokotoDto, page)
   }
   /**
