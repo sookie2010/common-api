@@ -23,7 +23,7 @@ axios.defaults.timeout = 10000
 axios.interceptors.request.use(config => {
   // 在发送请求之前添加token到请求头
   if (localStorage.getItem('login_token')) {
-    config.headers.common['token'] = localStorage.getItem('login_token')
+    config.headers.common.token = localStorage.getItem('login_token')
   }
   return config
 }, err => {

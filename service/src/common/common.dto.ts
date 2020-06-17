@@ -1,3 +1,5 @@
+import { Types } from 'mongoose'
+
 export interface FileEntity {
   fieldname: string // 文件字段
   originalname: string // 文件名
@@ -11,6 +13,13 @@ export interface Page {
   start: number // 起始数据行(从0开始)
   pageNum: number // 当前页码
   limit: number // 每页数据数量
+}
+
+export interface TokenUserInfo {
+  _id?: string | Types.ObjectId
+  username: string
+  realname: string
+  role_ids: string[] | Types.ObjectId[]
 }
 
 export class PageResult {

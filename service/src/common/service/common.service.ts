@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { SystemConfig } from '../../system/interface/system-config.interface'
 import { SystemUser, SystemUserEntity } from '../../system/interface/system-user.interface'
 import { SystemRole } from '../../system/interface/system-role.interface'
-import { MsgResult } from '../common.dto'
+import { TokenUserInfo, MsgResult } from '../common.dto'
 import CommonUtils from '../common.util'
 
 import * as jwt from 'jsonwebtoken'
@@ -28,7 +28,7 @@ export default class CommonService {
     if (!loginUser) {
       return {message: '用户名/密码错误'}
     }
-    const userInfo = {
+    const userInfo: TokenUserInfo = {
       _id: loginUser._id,
       username: loginUser.username,
       realname: loginUser.realname,
@@ -72,8 +72,8 @@ export default class CommonService {
     } catch (err) {
       if (err instanceof jwt.TokenExpiredError) {
         // 如果token过期 则按照忽略过期时间再校验一次 并签发新的token
-        let userInfo = jwt.verify(token, systemConfig.value as string, {ignoreExpiration: true})
-        const loginUser = await this.systemUserModel.findById(userInfo['_id'], this.tokenField).exec()
+        let userInfo = jwt.verify(token, systemConfig.value as string, {ignoreExpiration: true}) as TokenUserInfo
+        const loginUser = await this.systemUserModel.findById(userInfo._id, this.tokenField).exec()
         userInfo = {
           _id: loginUser._id,
           username: loginUser.username,

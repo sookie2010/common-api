@@ -6,7 +6,7 @@ import { SystemUser, SystemUserEntity } from '../interface/system-user.interface
 import { SystemRole, SystemRoleEntity } from '../interface/system-role.interface'
 import BaseQc from '../../common/base.qc'
 import CommonUtils from '../../common/common.util'
-import { Page, MsgResult, PageResult } from '../../common/common.dto'
+import { Page, MsgResult, PageResult, TokenUserInfo } from '../../common/common.dto'
 
 import * as jwt from 'jsonwebtoken'
 import * as child_process from 'child_process'
@@ -24,7 +24,7 @@ export default class SystemService {
    */
   async decryptUserInfo(token: string): Promise<SystemUser | null> {
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
-    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value as string)['_id']
+    const userId: string | Types.ObjectId = (jwt.verify(token, privateKeyConfig.value as string) as TokenUserInfo)._id
     if (userId) {
       return await this.systemUserModel.findById(userId)
     } else {
@@ -52,8 +52,8 @@ export default class SystemService {
    * @param id 需要排除掉的用户ID
    */
   async checkUserExists(username: string, id: string): Promise<MsgResult> {
-    interface existsQc { username: string, _id?: {$ne: string} }
-    const qc: existsQc = { username }
+    interface ExistsQc { username: string, _id?: {$ne: string} }
+    const qc: ExistsQc = { username }
     if (id) {
       qc._id = {$ne: id}
     }
@@ -163,8 +163,8 @@ export default class SystemService {
    * @param id 需要排除的ID(适用于修改)
    */
   async checkConfigExists(name: string, id: string): Promise<MsgResult> {
-    interface existsQc { name: string, _id?: {$ne: string} }
-    const qc: existsQc = { name }
+    interface ExistsQc { name: string, _id?: {$ne: string} }
+    const qc: ExistsQc = { name }
     if (id) {
       qc._id = {$ne: id}
     }
@@ -217,8 +217,8 @@ export default class SystemService {
    * @param blogZip zip压缩文件
    */
   async deployBlogZip(blogZip: Buffer): Promise<MsgResult> {
-    const deployConfig = await this.systemConfigModel.findOne({name: 'deploy_config'}).exec()
-    const tempPath: string = deployConfig.value['temp'] || '/tmp/blog'
+    const deployConfig = (await this.systemConfigModel.findOne({name: 'deploy_config'}).exec()).value as DeployConfig
+    const tempPath: string = deployConfig.temp || '/tmp/blog'
     // 删除可能存在的解压后的目录
     CommonUtils.deleteFolderRecursive(tempPath)
     // 创建临时目录
@@ -230,7 +230,7 @@ export default class SystemService {
       Logger.error(`解压出错 ${err.toString()}`)
       return new MsgResult(false, `解压出错 ${err.toString()}`)
     }
-    const deployPath: string = deployConfig.value['path']
+    const deployPath: string = deployConfig.path
 
     if (!deployPath) {
       return new MsgResult(false, '未配置deploy_config.path(发布路径)')
@@ -242,4 +242,9 @@ export default class SystemService {
 
     return new MsgResult(true, '发布成功')
   }
+}
+
+interface DeployConfig {
+  temp?: string
+  path: string
 }

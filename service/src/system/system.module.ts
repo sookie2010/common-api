@@ -24,5 +24,5 @@ export default {
     { name: 'SystemRole', schema: SystemRoleSchema },
     { name: 'Article', schema: ArticleSchema },
     { name: 'ArticleKeys', schema: ArticleKeysSchema },
-  ]
+  ],
 }

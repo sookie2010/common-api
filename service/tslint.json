@@ -18,9 +18,11 @@
     "no-empty": [true, "allow-empty-catch"],
     "variable-name": {
       "options": [
+        "ban-keywords",
         "check-format",
         "allow-pascal-case",
-        "allow-leading-underscore"
+        "allow-leading-underscore",
+        "allow-snake-case"
       ]
     }
   },

@@ -38,5 +38,5 @@ export default {
     { name: 'Province', schema: ProvinceSchema },
     { name: 'Music', schema: MusicSchema },
     { name: 'MusicLib', schema: MusicLibSchema },
-  ]
+  ],
 }

@@ -106,6 +106,6 @@ interface TencentCosSetting {
   setting: {
     Proxy?: string // 代理
     SecretId: string
-    SecretKey: string
+    SecretKey: string,
   }
 }

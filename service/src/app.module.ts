@@ -18,7 +18,7 @@ const dbConfig = require('../config/db.json')
     }),
     MongooseModule.forFeature([
       ...Api.schemas,
-      ...System.schemas
+      ...System.schemas,
     ]),
   ],
   controllers: [
@@ -29,7 +29,7 @@ const dbConfig = require('../config/db.json')
   providers: [
     ...Api.providers,
     ...System.providers,
-    CommonService
+    CommonService,
   ],
 })
 export class AppModule {}
