@@ -2,9 +2,9 @@ import { Controller, Get, Post, Delete, Query, UseInterceptors, UploadedFile } f
 import { FileInterceptor } from '@nestjs/platform-express/index'
 import PhotoWallService from '../service/photo-wall.service'
 import { PhotoWallDto } from '../interface/photo-wall.interface'
-import { FileEntity, Page, MsgResult, PageResult } from '../common/common.dto'
-import LoginInterceptor from '../common/login.interceptor'
-import PageTransform from '../common/page.transform'
+import { FileEntity, Page, MsgResult, PageResult } from '../../common/common.dto'
+import LoginInterceptor from '../../common/login.interceptor'
+import PageTransform from '../../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/photowall')

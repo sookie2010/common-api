@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose'
-import CommonUtils from '../common/common.util'
+import CommonUtils from '../../common/common.util'
 
 export interface ProvinceEntity {
   _id?: Types.ObjectId

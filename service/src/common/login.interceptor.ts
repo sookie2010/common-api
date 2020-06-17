@@ -3,8 +3,8 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { HttpArgumentsHost } from '@nestjs/common/interfaces'
 import { Observable } from 'rxjs'
 import { InjectModel } from '@nestjs/mongoose'
-import { SystemConfig } from '../interface/system-config.interface'
-import { SystemRole } from '../interface/system-role.interface'
+import { SystemConfig } from '../system/interface/system-config.interface'
+import { SystemRole } from '../system/interface/system-role.interface'
 import { ServerResponse } from 'http'
 import { Request } from 'express'
 
@@ -25,7 +25,7 @@ export default class LoginInterceptor implements NestInterceptor {
     }
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
     try {
-      const userInfo = jwt.verify(token, privateKeyConfig.value.toString())
+      const userInfo = jwt.verify(token, privateKeyConfig.value as string)
       if (userInfo['role_ids'] && Array.isArray(userInfo['role_ids'])) {
         // 校验用户角色具备的权限
         const method = request.method // 请求类型

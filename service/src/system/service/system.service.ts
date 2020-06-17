@@ -1,12 +1,12 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { SystemConfig, SystemConfigEntity } from '../interface/system-config.interface'
+import { SystemConfig, SystemConfigEntity, ConfigValue } from '../interface/system-config.interface'
 import { SystemUser, SystemUserEntity } from '../interface/system-user.interface'
 import { SystemRole, SystemRoleEntity } from '../interface/system-role.interface'
-import BaseQc from '../common/base.qc'
-import CommonUtils from '../common/common.util'
-import { Page, MsgResult, PageResult } from '../common/common.dto'
+import BaseQc from '../../common/base.qc'
+import CommonUtils from '../../common/common.util'
+import { Page, MsgResult, PageResult } from '../../common/common.dto'
 
 import * as jwt from 'jsonwebtoken'
 import * as child_process from 'child_process'
@@ -24,7 +24,7 @@ export default class SystemService {
    */
   async decryptUserInfo(token: string): Promise<SystemUser | null> {
     const privateKeyConfig: SystemConfig = await this.systemConfigModel.findOne({name: 'token_private_key'}).exec()
-    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value.toString())['_id']
+    const userId: string | undefined = jwt.verify(token, privateKeyConfig.value as string)['_id']
     if (userId) {
       return await this.systemUserModel.findById(userId)
     } else {
@@ -204,7 +204,7 @@ export default class SystemService {
    * @param name 配置项名称
    * @param isPublic 是否为公开配置项
    */
-  async getConfig(name: string, isPublic: boolean): Promise<object> {
+  async getConfig(name: string, isPublic: boolean): Promise<ConfigValue> {
     const systemConfig: SystemConfig = await this.systemConfigModel.findOne({name, is_public: isPublic}).exec()
     if (systemConfig) {
       return systemConfig.value

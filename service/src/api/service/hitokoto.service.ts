@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { HitokotoEntity, Hitokoto, HitokotoDto, HitokotoQc } from '../interface/hitokoto.interface'
-import { Page, MsgResult, PageResult } from '../common/common.dto'
+import { Page, MsgResult, PageResult } from '../../common/common.dto'
 
 @Injectable()
 export default class HitokotoService {

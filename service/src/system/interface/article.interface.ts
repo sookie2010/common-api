@@ -1,6 +1,6 @@
 import { Document, Types } from 'mongoose'
-import BaseQc from '../common/base.qc'
-import CommonUtils from '../common/common.util'
+import BaseQc from '../../common/base.qc'
+import CommonUtils from '../../common/common.util'
 
 export interface ArticleEntity {
   _id?: Types.ObjectId

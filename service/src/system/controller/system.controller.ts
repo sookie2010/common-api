@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Delete, Query, Body, Headers, UseInterceptors, UploadedFile, ValidationPipe } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import LoginInterceptor from '../common/login.interceptor'
+import LoginInterceptor from '../../common/login.interceptor'
 import SystemService from '../service/system.service'
 import { SystemConfigEntity, SystemConfig } from '../interface/system-config.interface'
 import { SystemUserEntity } from '../interface/system-user.interface'
 import { SystemRoleEntity, SystemRole } from '../interface/system-role.interface'
-import { Page, MsgResult, FileEntity, PageResult } from '../common/common.dto'
-import PageTransform from '../common/page.transform'
+import { Page, MsgResult, FileEntity, PageResult } from '../../common/common.dto'
+import PageTransform from '../../common/page.transform'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/system')
@@ -108,7 +108,7 @@ export default class SystemController {
   @Post('/config/save')
   saveConfig(@Body(new ValidationPipe()) systemConfig: SystemConfigEntity): Promise<MsgResult> {
     if (typeof systemConfig.value !== 'object') {
-      systemConfig.value = JSON.parse(systemConfig.value)
+      systemConfig.value = JSON.parse(systemConfig.value as string)
     }
     return this.systemService.saveConfig(systemConfig)
   }

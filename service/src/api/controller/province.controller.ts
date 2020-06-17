@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common'
-import { Page, PageResult } from '../common/common.dto'
-import LoginInterceptor from '../common/login.interceptor'
-import PageTransform from '../common/page.transform'
+import { Page, PageResult } from '../../common/common.dto'
+import LoginInterceptor from '../../common/login.interceptor'
+import PageTransform from '../../common/page.transform'
 import ProvinceService from '../service/province.service'
 import { Province, ProvinceEntity } from '../interface/province.interface'
 

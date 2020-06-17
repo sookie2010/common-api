@@ -2,25 +2,22 @@ import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
-import { SystemConfig } from '../interface/system-config.interface'
-import { Page, PageResult, MsgResult } from '../common/common.dto'
+import { SystemConfig } from '../../system/interface/system-config.interface'
+import { Page, PageResult, MsgResult } from '../../common/common.dto'
 import { Writable } from 'stream'
 
 const COS = require('cos-nodejs-sdk-v5')
 
 @Injectable()
 export default class MusicService {
-  private bucket: string // 存储桶名称
-  private region: string // 所在地区简称
   private tencentCosClient: any // 腾讯云对象存储调用客户端
-
+  private cosSetting: TencentCosSetting
   constructor(@InjectModel('Music') private readonly musicModel: Model<Music>,
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
               @InjectModel('SystemConfig') systemConfigModel: Model<SystemConfig>) {
     systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
-      this.bucket = systemConfig.value['Bucket']
-      this.region = systemConfig.value['Region']
-      this.tencentCosClient = new COS(systemConfig.value['setting'])
+      this.cosSetting = systemConfig.value as TencentCosSetting
+      this.tencentCosClient = new COS(this.cosSetting.setting)
     })
   }
 
@@ -77,8 +74,8 @@ export default class MusicService {
     const music: Music = await this.musicModel.findById(id).exec()
     const musicLib: MusicLib = await this.musicLibModel.findById(music.lib_id).exec()
     this.tencentCosClient.getObject({
-      Bucket: this.bucket,
-      Region: this.region,
+      Bucket: this.cosSetting.Bucket,
+      Region: this.cosSetting.Region,
       Key: musicLib.path + music.name,
       Output: writer,
     }, (err: object, data: object) => {
@@ -98,5 +95,17 @@ export default class MusicService {
     }
     await this.musicModel.updateOne({_id: id}, {$set: {lib_id: new Types.ObjectId(libId)}})
     return new MsgResult(true, '修改成功')
+  }
+}
+/**
+ * 腾讯云对象存储配置
+ */
+interface TencentCosSetting {
+  Bucket: string // 存储桶名称
+  Region: string // 所在地区简称
+  setting: {
+    Proxy?: string // 代理
+    SecretId: string
+    SecretKey: string
   }
 }

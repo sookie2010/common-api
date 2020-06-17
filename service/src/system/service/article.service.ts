@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { Page, MsgResult, PageResult } from '../common/common.dto'
-import CommonUtils from '../common/common.util'
+import { Page, MsgResult, PageResult } from '../../common/common.dto'
+import CommonUtils from '../../common/common.util'
 import { Article, ArticleEntity, ArticleKeys, ArticleDto, ArticleQc } from '../interface/article.interface'
 import { SystemConfig } from '../interface/system-config.interface'
 

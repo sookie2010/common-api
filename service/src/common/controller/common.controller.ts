@@ -1,17 +1,18 @@
 import { Controller, Get, Query, Param, Post, Body, Res, ValidationPipe } from '@nestjs/common'
 import CommonService from '../service/common.service'
-import HitokotoService from '../service/hitokoto.service'
-import PhotoWallService from '../service/photo-wall.service'
-import ArticleService from '../service/article.service'
-import SourceImageService from '../service/source-image.service'
-import { Hitokoto, HitokotoDto } from '../interface/hitokoto.interface'
-import { ArticleDto } from '../interface/article.interface'
-import { SourceImage } from '../interface/source-image.interface'
-import { Page, MsgResult, PageResult } from '../common/common.dto'
-import { SystemUserEntity } from '../interface/system-user.interface'
-import PageTransform from '../common/page.transform'
-import SystemService from '../service/system.service'
-import MusicService from '../service/music.service'
+import HitokotoService from '../../api/service/hitokoto.service'
+import PhotoWallService from '../../api/service/photo-wall.service'
+import ArticleService from '../../system/service/article.service'
+import SourceImageService from '../../api/service/source-image.service'
+import { Hitokoto, HitokotoDto } from '../../api/interface/hitokoto.interface'
+import { ArticleDto } from '../../system/interface/article.interface'
+import { SourceImage } from '../../api/interface/source-image.interface'
+import { Page, MsgResult, PageResult } from '../common.dto'
+import { SystemUserEntity } from '../../system/interface/system-user.interface'
+import { ConfigValue } from '../../system/interface/system-config.interface'
+import PageTransform from '../page.transform'
+import SystemService from '../../system/service/system.service'
+import MusicService from '../../api/service/music.service'
 import { Response } from 'express'
 
 import { Readable } from 'stream'
@@ -75,7 +76,7 @@ export default class CommonController {
    * 获取公开的配置项
    */
   @Get('/config/:name')
-  getPublicConfig(@Param('name')name: string): Promise<object> {
+  getPublicConfig(@Param('name')name: string): Promise<ConfigValue> {
     return this.systemService.getConfig(name, true)
   }
 

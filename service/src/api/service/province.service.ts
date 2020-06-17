@@ -1,7 +1,7 @@
 import { Model, Types } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Page, PageResult } from '../common/common.dto'
+import { Page, PageResult } from '../../common/common.dto'
 import { Province, ProvinceEntity, ProvinceQc } from '../interface/province.interface'
 
 @Injectable()
