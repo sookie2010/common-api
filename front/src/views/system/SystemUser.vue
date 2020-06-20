@@ -44,8 +44,8 @@
 </template>
 <script lang="ts">
 import moment from 'moment'
-import { Button } from 'view-design'
 import { Component, Ref } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { SystemUserModel } from '../../model/system/system-user'
@@ -85,25 +85,25 @@ export default class SystemUser extends BaseList<SystemUserPage> {
     },{
       title: '创建时间',
       key: 'created_at',
-      render (h: Function, {row}: {row: SystemUserModel}) {
+      render (h: CreateElement, {row}: {row: SystemUserModel}) {
         return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
       }
     },{
       title: '更新时间',
       key: 'updated_at',
-      render (h: Function, {row}: {row: SystemUserModel}) {
+      render (h: CreateElement, {row}: {row: SystemUserModel}) {
         return row.updated_at ? h('span', moment(row.updated_at).format('YYYY-MM-DD HH:mm:ss')) : undefined
       }
     },{
       title: '操作',
-      render: (h: Function, {row}: {row: SystemUserModel}) => {
+      render: (h: CreateElement, {row}: {row: SystemUserModel}) => {
         return h('div', [
-          h(Button, {
+          h('Button', {
             props: {size:'small'},
             style: {marginRight: '5px'},
             on: { click: () => {this.update(row) } }
           },'修改'),
-          h(Button, {
+          h('Button', {
             props: {size:'small', type:'error', ghost:true},
             on: { click: () => {this.delete(row) } }
           },'删除')

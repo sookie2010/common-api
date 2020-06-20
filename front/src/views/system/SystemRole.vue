@@ -56,10 +56,10 @@
 </template>
 <script lang="ts">
 import { Component, Ref } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import moment from 'moment'
-import { Button, Tag } from 'view-design'
 import { SystemRoleModel } from '../../model/system/system-role'
 import { VForm } from "../../types"
 
@@ -78,9 +78,9 @@ export default class SystemRole extends BaseList<SystemRolePage> {
   },{
     title: '允许的请求类型',
     key: 'methods',
-    render (h: Function, {row}: {row: SystemRoleModel}) {
+    render (h: CreateElement, {row}: {row: SystemRoleModel}) {
       return h('div', row.methods.map(method => {
-        return h(Tag, {
+        return h('Tag', {
           props: {color: 'default'},
           style: {marginRight: '5px'}
         },method)
@@ -89,25 +89,25 @@ export default class SystemRole extends BaseList<SystemRolePage> {
   },{
     title: '创建时间',
     key: 'created_at',
-    render (h: Function, {row}: {row: SystemRoleModel}) {
+    render (h: CreateElement, {row}: {row: SystemRoleModel}) {
       return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
     }
   },{
     title: '更新时间',
     key: 'updated_at',
-    render (h: Function, {row}: {row: SystemRoleModel}) {
+    render (h: CreateElement, {row}: {row: SystemRoleModel}) {
       return h('span', moment(row.updated_at).format('YYYY-MM-DD HH:mm:ss'))
     }
   },{
     title: '操作',
-    render: (h: Function, {row}: {row: SystemRoleModel}) => {
+    render: (h: CreateElement, {row}: {row: SystemRoleModel}) => {
       return h('div', [
-        h(Button, {
+        h('Button', {
           props: {size:'small'},
           style: {marginRight: '5px'},
           on: { click: () => {this.update(row) } }
         },'修改'),
-        h(Button, {
+        h('Button', {
           props: {size:'small', type:'error', ghost:true},
           on: { click: () => {this.delete(row) } }
         },'删除')

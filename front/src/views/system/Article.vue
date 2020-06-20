@@ -87,10 +87,10 @@ import moment from 'moment'
 import hyperdown from 'hyperdown'
 import prismjs from 'prismjs'
 import { Component } from 'vue-property-decorator'
-import { Icon } from 'view-design'
+import { CreateElement, VNode } from 'vue'
 import { MsgResult, Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
-import { ArticleModel, TreeNode, TreeNodeSource } from '../../model/system/article'
+import { ArticleModel, TreeNodeBase, TreeNode, TreeNodeSource } from '../../model/system/article'
 
 import 'prismjs/themes/prism.css'
 
@@ -113,14 +113,14 @@ export default class Article extends BaseList<ArticlePage> {
     },{
       title: '路径',
       key: 'path',
-      render (h: Function, {row}: {row: ArticleModel}) {
+      render (h: CreateElement, {row}: {row: ArticleModel}) {
         return h('span', row.path.join('/'))
       }
     },{
       title: '分类',
       key: 'categories',
       width: 150,
-      render (h: Function, {row}: {row: ArticleModel}) {
+      render (h: CreateElement, {row}: {row: ArticleModel}) {
         let categories = undefined
         if(typeof row.categories === 'string') {
           categories = row.categories
@@ -133,7 +133,7 @@ export default class Article extends BaseList<ArticlePage> {
       title: '标签',
       key: 'tags',
       width: 180,
-      render (h: Function, {row}: {row: ArticleModel}) {
+      render (h: CreateElement, {row}: {row: ArticleModel}) {
         let tags = undefined
         if(typeof row.tags === 'string') {
           tags = row.tags
@@ -150,7 +150,7 @@ export default class Article extends BaseList<ArticlePage> {
       title: '创建时间',
       key: 'create_date',
       width: 180,
-      render (h: Function, {row}: {row: ArticleModel}) {
+      render (h: CreateElement, {row}: {row: ArticleModel}) {
         return h('span', moment(row.create_date).format('YYYY-MM-DD HH:mm:ss'))
       }
     },{
@@ -158,8 +158,8 @@ export default class Article extends BaseList<ArticlePage> {
       key: 'is_splited',
       width: 120,
       align: 'center',
-      render (h: Function, {row}: {row: ArticleModel}) {
-        return h(Icon, {
+      render (h: CreateElement, {row}: {row: ArticleModel}) {
+        return h('Icon', {
           props: {
             size: 20,
             type: row.is_splited ? 'md-checkmark' : 'md-close'
@@ -266,17 +266,24 @@ export default class Article extends BaseList<ArticlePage> {
       closeUploadTip = null
     }
   }
-  async loadTreeData(item: TreeNode, callback: Function) {
+  async loadTreeData(item: TreeNodeBase, callback: Function) {
     const childItems: TreeNodeSource[] = (await this.$http.get('/article/tree', {params:{deep:item.deep+1, parent:item.name}})).data
     callback(childItems.map((childItem): TreeNode => {
-      const treeNode: TreeNode = { name: childItem._id, deep: item.deep+1, expand: false }
-      if(childItem.article_id) {
-        // 已是叶子结点
-        treeNode.title = childItem._id
-        treeNode.id = childItem.article_id
-      } else {
+      const treeNode: TreeNode = { 
+        name: childItem._id,
+        deep: item.deep + 1,
+        expand: false,
+        title: childItem.article_id ? childItem._id : `${childItem._id}(${childItem.cnt})`,
+        id: childItem.article_id || childItem._id,
+        render: (h: CreateElement, {data}: {data: TreeNode}): Array<VNode | string> => {
+          return [
+            h('Icon', {props: {type: childItem.article_id ? 'md-paper' : 'md-folder-open'}, style: {marginRight: '8px'}}),
+            data.title
+          ]
+        }
+      }
+      if(!childItem.article_id) {
         // 仍有下级节点
-        treeNode.title = `${childItem._id}(${childItem.cnt})`
         treeNode.children = []
         treeNode.loading = false
       }
@@ -312,7 +319,7 @@ export default class Article extends BaseList<ArticlePage> {
     this.$http.get('/article/listTags').then(({data}) => {
       this.tags = data
     })
-    this.loadTreeData({deep:-1, name: null, expand: false}, (treeNodes: TreeNode[]) => {
+    this.loadTreeData({deep:-1, name: null}, (treeNodes: TreeNode[]) => {
       this.articleTree.push(...treeNodes)
     })
   }

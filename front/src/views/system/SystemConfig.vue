@@ -25,11 +25,11 @@
 </template>
 <script lang="ts">
 import { Component, Ref, Vue } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import SystemConfigAdd from './SystemConfigAdd.vue'
 import { SystemConfigModel } from '../../model/system/system-config'
 import { VForm } from '../../types'
 import moment from 'moment'
-import { Button } from 'view-design'
 
 @Component({components: {SystemConfigAdd}})
 export default class SystemConfig extends Vue {
@@ -40,7 +40,7 @@ export default class SystemConfig extends Vue {
   private systemConfigColumns = [{
       type: 'expand',
       width: 50,
-      render: (h: Function, {row}: {row: SystemConfigModel}) => {
+      render: (h: CreateElement, {row}: {row: SystemConfigModel}) => {
         return h('pre', JSON.stringify(row.value, null, ' '))
       }
     },{
@@ -54,31 +54,31 @@ export default class SystemConfig extends Vue {
       title: '是否公开',
       key: 'is_public',
       width: 150,
-      render: (h: Function, {row}: {row: SystemConfigModel}) => {
+      render: (h: CreateElement, {row}: {row: SystemConfigModel}) => {
         return h('span', row.is_public ? '是' : '否')
       }
     },{
       title: '创建时间',
       key: 'created_at',
-      render (h: Function, {row}: {row: SystemConfigModel}) {
+      render (h: CreateElement, {row}: {row: SystemConfigModel}) {
         return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
       }
     },{
       title: '更新时间',
       key: 'updated_at',
-      render (h: Function, {row}: {row: SystemConfigModel}) {
+      render (h: CreateElement, {row}: {row: SystemConfigModel}) {
         return row.updated_at ? h('span', moment(row.updated_at).format('YYYY-MM-DD HH:mm:ss')) : undefined
       }
     },{
       title: '操作',
-      render: (h: Function, {row}: {row: SystemConfigModel}) => {
+      render: (h: CreateElement, {row}: {row: SystemConfigModel}) => {
         return h('div', [
-          h(Button, {
+          h('Button', {
             props: {size:'small'},
             style: {marginRight: '5px'},
             on: { click: () => {this.update(row) } }
           },'修改'),
-          h(Button, {
+          h('Button', {
             props: {size:'small', type:'error', ghost:true},
             on: { click: () => {this.delete(row) } }
           },'删除')

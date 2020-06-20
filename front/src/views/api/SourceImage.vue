@@ -30,10 +30,10 @@
 </div>
 </template>
 <script lang="ts">
-import { Tag, Button } from 'view-design'
 import prettyBytes from 'pretty-bytes'
 import moment from 'moment'
 import { Component } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import { MsgResult, Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { SourceImageModel, ImageLabel } from '../../model/api/source-image'
@@ -60,7 +60,7 @@ export default class SourceImage extends BaseList<Page> {
       title: '文件大小',
       key: 'size',
       width: 150,
-      render (h: Function, {row}: {row: SourceImageModel}) {
+      render (h: CreateElement, {row}: {row: SourceImageModel}) {
         return h('span', prettyBytes(row.size))
       }
     },{
@@ -70,7 +70,7 @@ export default class SourceImage extends BaseList<Page> {
     },{
       title: '标签',
       key: 'label',
-      render: (h: Function, {row}: {row: SourceImageModel}) => {
+      render: (h: CreateElement, {row}: {row: SourceImageModel}) => {
         if(!row.label) {
           return undefined
         }
@@ -78,7 +78,7 @@ export default class SourceImage extends BaseList<Page> {
           const index = this.labelList.findIndex(item => {
             return item.name === label
           })
-          return h(Tag, {
+          return h('Tag', {
             props: {color: index === -1 ? 'default' : this.labelList[index].color},
             style: {marginRight: '5px'}
           },label)
@@ -88,19 +88,19 @@ export default class SourceImage extends BaseList<Page> {
       title: '上传时间',
       key: 'created_at',
       width: 180,
-      render (h: Function, {row}: {row: SourceImageModel}) {
+      render (h: CreateElement, {row}: {row: SourceImageModel}) {
         return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
       }
     },{
       title: '操作',
-      render: (h: Function, {row}: {row: SourceImageModel}) => {
+      render: (h: CreateElement, {row}: {row: SourceImageModel}) => {
         return h('div', [
-          h(Button, {
+          h('Button', {
             props: {size:'small',type:'primary'},
             style: {marginRight: '5px'},
             on: { click: () => {this.modifyTags(row) } }
           },'修改标签'),
-          h(Button, {
+          h('Button', {
             props: {size:'small'},
             on: { click: () => {this.preview(row) } }
           },'预览')

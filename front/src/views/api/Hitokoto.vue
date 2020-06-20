@@ -52,6 +52,7 @@ import BaseList from '../../model/baselist'
 import HitokotoModel from '../../model/api/hitokoto'
 import { VForm } from '../../types'
 import { Component, Ref } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import moment from 'moment'
 
 let selectedData: string[] = []
@@ -69,7 +70,7 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
       title: '类型',
       key: 'type',
       width: 180,
-      render: (h: Function, {row}: {row: HitokotoModel}) => {
+      render: (h: CreateElement, {row}: {row: HitokotoModel}) => {
         const label = this.findTypeText(row.type)
         return label ? h('span', label) : undefined
       }
@@ -92,7 +93,7 @@ export default class Hitokoto extends BaseList<HitokotoPage> {
       title: '创建时间',
       key: 'created_at',
       width: 180,
-      render: (h: Function, {row}: {row: HitokotoModel}) => {
+      render: (h: CreateElement, {row}: {row: HitokotoModel}) => {
         return h('span', moment(row.created_at).format('YYYY-MM-DD HH:mm:ss'))
       }
     }]

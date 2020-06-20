@@ -70,10 +70,10 @@
 </template>
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import { MsgResult, Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import PhotoWallModel from '../../model/api/photowall'
-import { Button } from 'view-design'
 
 let selectedData: string[] = []
 let closeUploadTip: Function | void | null
@@ -110,8 +110,8 @@ export default class PhotoWall extends BaseList<PhotoWallPage> {
     },{
       title: '操作',
       width: 100,
-      render: (h: Function, {row}: {row: PhotoWallModel}) => {
-        return h(Button, {
+      render: (h: CreateElement, {row}: {row: PhotoWallModel}) => {
+        return h('Button', {
           props: {size:'small'},
           on: { click: () => {this.preview(row) } }
         },'预览')

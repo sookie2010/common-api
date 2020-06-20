@@ -73,11 +73,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Button } from 'view-design'
 import { MusicModel, MusicLibModel } from '../../model/api/music'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { Component } from 'vue-property-decorator'
+import { CreateElement } from 'vue'
 import prettyBytes from 'pretty-bytes'
 import APlayer from '@moefe/vue-aplayer'
 
@@ -105,7 +105,7 @@ export default class Music extends BaseList<MusicPage> {
       title: '文件大小',
       key: 'size',
       width: 150,
-      render (h: Function, {row}: {row: MusicModel}) {
+      render (h: CreateElement, {row}: {row: MusicModel}) {
         return h('span', prettyBytes(row.size))
       }
     },{
@@ -120,14 +120,14 @@ export default class Music extends BaseList<MusicPage> {
     },{
       title: '所属歌单',
       key: 'lib_id',
-      render: (h: Function, {row}: {row: MusicModel}) => {
+      render: (h: CreateElement, {row}: {row: MusicModel}) => {
         const musicLibName = this.findMusicLib(row.lib_id)
         return musicLibName ? h('span', musicLibName) : undefined
       }
     },{
       title: '操作',
-      render: (h: Function, {row}: {row: MusicModel}) => {
-        return h(Button, {
+      render: (h: CreateElement, {row}: {row: MusicModel}) => {
+        return h('Button', {
             props: {size:'small'},
             on: { click: () => { this.update(row) } }
           },'修改')
