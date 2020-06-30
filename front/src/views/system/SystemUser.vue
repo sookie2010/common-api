@@ -97,7 +97,7 @@ export default class SystemUser extends BaseList<SystemUserPage> {
     },{
       title: '操作',
       render: (h: CreateElement, {row}: {row: SystemUserModel}) => {
-        return h('div', [
+        return [
           h('Button', {
             props: {size:'small'},
             style: {marginRight: '5px'},
@@ -107,7 +107,7 @@ export default class SystemUser extends BaseList<SystemUserPage> {
             props: {size:'small', type:'error', ghost:true},
             on: { click: () => {this.delete(row) } }
           },'删除')
-        ])
+        ]
       }
     }]
   private systemUserData: SystemUserModel[] = []

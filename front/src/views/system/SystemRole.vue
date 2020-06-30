@@ -101,7 +101,7 @@ export default class SystemRole extends BaseList<SystemRolePage> {
   },{
     title: '操作',
     render: (h: CreateElement, {row}: {row: SystemRoleModel}) => {
-      return h('div', [
+      return [
         h('Button', {
           props: {size:'small'},
           style: {marginRight: '5px'},
@@ -111,7 +111,7 @@ export default class SystemRole extends BaseList<SystemRolePage> {
           props: {size:'small', type:'error', ghost:true},
           on: { click: () => {this.delete(row) } }
         },'删除')
-      ])
+      ]
     }
   }]
   private systemRoleData: SystemRoleModel[] = []

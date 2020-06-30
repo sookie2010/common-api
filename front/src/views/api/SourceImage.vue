@@ -94,7 +94,7 @@ export default class SourceImage extends BaseList<Page> {
     },{
       title: '操作',
       render: (h: CreateElement, {row}: {row: SourceImageModel}) => {
-        return h('div', [
+        return [
           h('Button', {
             props: {size:'small',type:'primary'},
             style: {marginRight: '5px'},
@@ -104,7 +104,7 @@ export default class SourceImage extends BaseList<Page> {
             props: {size:'small'},
             on: { click: () => {this.preview(row) } }
           },'预览')
-        ])
+        ]
       }
     }]
   private sourceImageData: SourceImageModel[] = []

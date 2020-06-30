@@ -72,7 +72,7 @@ export default class SystemConfig extends Vue {
     },{
       title: '操作',
       render: (h: CreateElement, {row}: {row: SystemConfigModel}) => {
-        return h('div', [
+        return [
           h('Button', {
             props: {size:'small'},
             style: {marginRight: '5px'},
@@ -82,7 +82,7 @@ export default class SystemConfig extends Vue {
             props: {size:'small', type:'error', ghost:true},
             on: { click: () => {this.delete(row) } }
           },'删除')
-        ])
+        ]
       }
     }]
   private systemConfigData: SystemConfigModel[] = []
