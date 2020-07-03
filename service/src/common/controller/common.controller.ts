@@ -96,7 +96,7 @@ export default class CommonController {
    * 获取一张背景图
    * @param id 图片ID(不传则根据label随机获取一张)
    * @param label 图片标签
-   * @param res HTTP响应
+   * @param response HTTP响应
    */
   @Get('/randomBg')
   randomBg(@Query('id') id: string, @Query('label') label: string, @Res() response: Response): void {
@@ -119,13 +119,28 @@ export default class CommonController {
   /**
    * 获取音乐文件
    * @param id 音乐ID
-   * @param res HTTP响应
+   * @param response HTTP响应
    */
   @Get('/music/get/:id')
   getMusic(@Param('id') id: string, @Res() response: Response): void {
     this.musicService.outputMusic(id, response)
   }
-
+  /**
+   * 下载音乐
+   * @param id 音乐ID
+   * @param response HTTP响应
+   */
+  @Get('/music/download/:id')
+  async downloadMusic(@Param('id')id: string, @Res() response: Response): Promise<void> {
+    const music = await this.musicService.outputMusic(id, response)
+    if (!music) return
+    response.set({
+      'Content-Length': music.size,
+      'Content-Type': 'application/x-download',
+      // 'Content-Disposition': `attachment;filename=${music.name}`
+    })
+    response.attachment(music.name)
+  }
   /**
    * 获取音乐专辑封面
    * @param id 音乐ID

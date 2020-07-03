@@ -70,9 +70,10 @@ export default class MusicService {
    * @param id 音乐ID
    * @param writer 输出流对象
    */
-  async outputMusic(id: string, writer: Writable) {
-    const music: Music = await this.musicModel.findById(id).exec()
+  async outputMusic(id: string, writer: Writable): Promise<Music> {
+    const music: Music = await this.musicModel.findById(id, {name: 1, size: 1, lib_id: 1 }).exec()
     const musicLib: MusicLib = await this.musicLibModel.findById(music.lib_id).exec()
+    if (!music || !musicLib) return null
     this.tencentCosClient.getObject({
       Bucket: this.cosSetting.Bucket,
       Region: this.cosSetting.Region,
@@ -81,6 +82,7 @@ export default class MusicService {
     }, (err: object, data: object) => {
       if (err) { Logger.error(err) }
     })
+    return music
   }
 
   /**
