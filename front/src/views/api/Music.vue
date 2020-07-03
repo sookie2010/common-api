@@ -127,10 +127,17 @@ export default class Music extends BaseList<MusicPage> {
     },{
       title: '操作',
       render: (h: CreateElement, {row}: {row: MusicModel}) => {
-        return h('Button', {
-            props: {size:'small'},
+        return [
+          h('Button', {
+            props: {size:'small',type:'primary'},
+            style: {marginRight: '5px'},
             on: { click: () => { this.update(row) } }
-          },'修改')
+          },'修改'),
+          h('Button', {
+            props: {size: 'small'},
+            on: { click: () => { location.href = `${this.$http.defaults.baseURL || ''}/common/music/download/${row._id}` } }
+          },'下载')
+        ]
       }
     }]
   private currentRow: MusicModel | null = null
@@ -175,8 +182,8 @@ export default class Music extends BaseList<MusicPage> {
         return {
           name: item.title || item.name,
           artist: item.artist,
-          url: `${this.$http.defaults.baseURL}/common/music/get/${item._id}`,
-          cover: `${this.$http.defaults.baseURL}/common/music/album/${item._id}`
+          url: `${this.$http.defaults.baseURL || ''}/common/music/get/${item._id}`,
+          cover: `${this.$http.defaults.baseURL || ''}/common/music/album/${item._id}`
         }
       })
       // 结束加载进度条

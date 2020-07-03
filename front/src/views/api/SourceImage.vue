@@ -187,7 +187,7 @@ export default class SourceImage extends BaseList<Page> {
     this.$Modal.info({
       title: '图片预览',
       width: 500 + 100,
-      content: `<img src="${this.$http.defaults.baseURL||''}/common/randomBg?id=${row._id}" style="width:500px;" />`
+      content: `<img src="${this.$http.defaults.baseURL || ''}/common/randomBg?id=${row._id}" style="width:500px;" />`
     })
   }
   modifyTags(item: SourceImageModel): void {
