@@ -65,7 +65,7 @@
   </Modal>
   <Drawer title="播放音乐" v-model="musicPlaying" width="720" :mask-closable="false" >
     <template v-if="musicPlaying">
-      <a-player :audio="musicList"/>
+      <a-player :audio="musicList" :lrcType="3"/>
     </template>
   </Drawer>
 </div>
@@ -183,7 +183,8 @@ export default class Music extends BaseList<MusicPage> {
           name: item.title || item.name,
           artist: item.artist,
           url: `${this.$http.defaults.baseURL || ''}/common/music/get/${item._id}`,
-          cover: `${this.$http.defaults.baseURL || ''}/common/music/album/${item._id}`
+          cover: `${this.$http.defaults.baseURL || ''}/common/music/album/${item._id}`,
+          lrc: item.lyric_id ? `${this.$http.defaults.baseURL || ''}/common/music/lyric/${item.lyric_id}` : undefined
         }
       })
       // 结束加载进度条

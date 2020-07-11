@@ -8,6 +8,7 @@ export interface MusicModel {
   album?: string // 唱片集
   artist?: string // 艺术家
   lib_id: string // 歌单ID
+  lyric_id: string // 歌词ID
 }
 
 export interface MusicLibModel {
