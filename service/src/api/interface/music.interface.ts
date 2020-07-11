@@ -66,3 +66,10 @@ export interface MusicLib extends Document {
   name: string
   path: string
 }
+
+export interface MusicLyric extends Document {
+  _id: Types.ObjectId
+  cloud_id: number
+  name: string
+  lyric: string
+}

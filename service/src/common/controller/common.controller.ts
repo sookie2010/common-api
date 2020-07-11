@@ -121,19 +121,20 @@ export default class CommonController {
    * @param id 音乐ID
    * @param response HTTP响应
    */
-  @Get('/music/get/:id')
-  getMusic(@Param('id') id: string, @Res() response: Response): void {
-    this.musicService.outputMusic(id, response)
+  @Get('/music/get/:musicId')
+  getMusic(@Param('musicId') musicId: string, @Res() response: Response): void | MsgResult {
+    const music = this.musicService.outputMusic(musicId, response)
+    if (!music) return new MsgResult(false, '歌曲未找到')
   }
   /**
    * 下载音乐
-   * @param id 音乐ID
+   * @param musicId 音乐ID
    * @param response HTTP响应
    */
   @Get('/music/download/:id')
-  async downloadMusic(@Param('id')id: string, @Res() response: Response): Promise<void> {
-    const music = await this.musicService.outputMusic(id, response)
-    if (!music) return
+  async downloadMusic(@Param('musicId')musicId: string, @Res() response: Response): Promise<void | MsgResult> {
+    const music = await this.musicService.outputMusic(musicId, response)
+    if (!music) return new MsgResult(false, '歌曲未找到')
     response.set({
       'Content-Length': music.size,
       'Content-Type': 'application/x-download',
@@ -143,12 +144,12 @@ export default class CommonController {
   }
   /**
    * 获取音乐专辑封面
-   * @param id 音乐ID
+   * @param musicId 音乐ID
    * @param response HTTP响应
    */
-  @Get('/music/album/:id')
-  getMusicAlbumImage(@Param('id') id: string, @Res() response: Response): void {
-    this.musicService.findAlbumImage(id).then((albumImage: Buffer) => {
+  @Get('/music/album/:musicId')
+  getMusicAlbumImage(@Param('musicId') musicId: string, @Res() response: Response): void {
+    this.musicService.findAlbumImage(musicId).then((albumImage: Buffer) => {
       if (!albumImage) { return }
       const stream = new Readable()
       stream.push(albumImage)
@@ -164,5 +165,14 @@ export default class CommonController {
       })
       response.end(JSON.stringify(new MsgResult(false, err.message)))
     })
+  }
+
+  /**
+   * 获取歌词
+   * @param lyricId 歌词ID
+   */
+  @Get('/music/lyric/:lyricId')
+  getMusicLyric(@Param('lyricId') lyricId: string): Promise<string | MsgResult> {
+    return this.musicService.findLyric(lyricId)
   }
 }

@@ -14,7 +14,7 @@ import { HitokotoSchema } from './schema/hitokoto.schema'
 import { PhotoWallSchema } from './schema/photo-wall.schema'
 import { SourceImageSchema } from './schema/source-image.schema'
 import { ProvinceSchema } from './schema/province.schema'
-import { MusicSchema, MusicLibSchema } from './schema/music.schema'
+import { MusicSchema, MusicLibSchema, MusicLyricSchema } from './schema/music.schema'
 
 export default {
   controllers: [
@@ -38,5 +38,6 @@ export default {
     { name: 'Province', schema: ProvinceSchema },
     { name: 'Music', schema: MusicSchema },
     { name: 'MusicLib', schema: MusicLibSchema },
+    { name: 'MusicLyric', schema: MusicLyricSchema },
   ],
 }

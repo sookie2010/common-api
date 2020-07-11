@@ -1,7 +1,7 @@
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Music, MusicDto, MusicQc, MusicLib } from '../interface/music.interface'
+import { Music, MusicDto, MusicQc, MusicLib, MusicLyric } from '../interface/music.interface'
 import { SystemConfig } from '../../system/interface/system-config.interface'
 import { Page, PageResult, MsgResult } from '../../common/common.dto'
 import { Writable } from 'stream'
@@ -14,6 +14,7 @@ export default class MusicService {
   private cosSetting: TencentCosSetting
   constructor(@InjectModel('Music') private readonly musicModel: Model<Music>,
               @InjectModel('MusicLib') private readonly musicLibModel: Model<MusicLib>,
+              @InjectModel('MusicLyric') private readonly musicLyricModel: Model<MusicLyric>,
               @InjectModel('SystemConfig') systemConfigModel: Model<SystemConfig>) {
     systemConfigModel.findOne({name: 'tencent_cos_setting'}).exec().then((systemConfig: SystemConfig) => {
       this.cosSetting = systemConfig.value as TencentCosSetting
@@ -21,7 +22,7 @@ export default class MusicService {
     })
   }
 
-  private listColumns = {_id: 1, name: 1, ext: 1, size: 1, title: 1, album: 1, artist: 1, lib_id: 1}
+  private listColumns = {_id: 1, name: 1, ext: 1, size: 1, title: 1, album: 1, artist: 1, lib_id: 1, lyric_id: 1}
   /**
    * 分页查询歌曲列表
    * @param musicDto 查询条件
@@ -72,8 +73,9 @@ export default class MusicService {
    */
   async outputMusic(id: string, writer: Writable): Promise<Music> {
     const music: Music = await this.musicModel.findById(id, {name: 1, size: 1, lib_id: 1 }).exec()
+    if (!music) return null
     const musicLib: MusicLib = await this.musicLibModel.findById(music.lib_id).exec()
-    if (!music || !musicLib) return null
+    if (!musicLib) return null
     this.tencentCosClient.getObject({
       Bucket: this.cosSetting.Bucket,
       Region: this.cosSetting.Region,
@@ -97,6 +99,19 @@ export default class MusicService {
     }
     await this.musicModel.updateOne({_id: id}, {$set: {lib_id: new Types.ObjectId(libId)}})
     return new MsgResult(true, '修改成功')
+  }
+
+  /**
+   * 获取歌词
+   * @param lyricId 歌词ID
+   */
+  async findLyric(lyricId: string): Promise<string | MsgResult> {
+    const musicLyric: MusicLyric = await this.musicLyricModel.findById(lyricId)
+    if (musicLyric) {
+      return musicLyric.lyric
+    } else {
+      return new MsgResult(false, '歌词不存在')
+    }
   }
 }
 /**
