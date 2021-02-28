@@ -1,10 +1,9 @@
 import { Controller, Get, Query, Body, UseInterceptors, Post, ValidationPipe } from '@nestjs/common'
 import MusicService from '../service/music.service'
-import { Music, MusicDto, MusicLib } from '../interface/music.interface'
+import { Music, MusicDto, MusicLib, MusicLyric } from '../interface/music.interface'
 import { Page, PageResult, MsgResult } from '../../common/common.dto'
 import LoginInterceptor from '../../common/login.interceptor'
 import PageTransform from '../../common/page.transform'
-import { MusicLyric } from 'dist/api/interface/music.interface'
 
 @UseInterceptors(LoginInterceptor)
 @Controller('/music')
