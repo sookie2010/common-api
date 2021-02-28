@@ -173,6 +173,6 @@ export default class CommonController {
    */
   @Get('/music/lyric/:lyricId')
   getMusicLyric(@Param('lyricId') lyricId: string): Promise<string | MsgResult> {
-    return this.musicService.findLyric(lyricId)
+    return this.musicService.findLyricContent(lyricId)
   }
 }

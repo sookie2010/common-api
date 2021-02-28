@@ -63,6 +63,19 @@
       <Radio v-for="item in musicLibs" :key="item._id" :label="item._id" border>{{item.name}}</Radio>
     </RadioGroup>
   </Modal>
+  <Modal v-model="modifyLyricModal" title="编辑歌词" :loading="modalLoading" @on-ok="saveLyric" width="600" >
+    <Form ref="lyricForm" :model="lyricFormData" :rules="lyricRuleValidate" :label-width="120">
+      <Form-item label="网易云ID" prop="cloud_id">
+        <Input v-model="lyricFormData.cloud_id" />
+      </Form-item>
+      <Form-item label="名称" prop="name">
+        <Input v-model="lyricFormData.name" />
+      </Form-item>
+      <Form-item label="歌词" prop="lyric">
+        <Input v-model="lyricFormData.lyric" type="textarea" :rows="4"/>
+      </Form-item>
+    </Form>
+  </Modal>
   <Drawer title="播放音乐" v-model="musicPlaying" width="720" :mask-closable="false" >
     <template v-if="musicPlaying">
       <a-player :audio="musicList" :lrcType="3"/>
@@ -73,7 +86,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { MusicModel, MusicLibModel } from '../../model/api/music'
+import { MusicModel, MusicLibModel, MusicLyricModel } from '../../model/api/music'
+import { VForm } from '../../types'
 import { Page } from '../../model/common.dto'
 import BaseList from '../../model/baselist'
 import { Component } from 'vue-property-decorator'
@@ -125,6 +139,19 @@ export default class Music extends BaseList<MusicPage> {
         return musicLibName ? h('span', musicLibName) : undefined
       }
     },{
+      title: '歌词',
+      key: 'lyric_id',
+      width: 120,
+      align: 'center',
+      render (h: CreateElement, {row}: {row: MusicModel}) {
+        return h('Icon', {
+          props: {
+            size: 20,
+            type: row.lyric_id ? 'md-checkmark' : 'md-close'
+          }
+        })
+      }
+    },{
       title: '操作',
       render: (h: CreateElement, {row}: {row: MusicModel}) => {
         return [
@@ -133,6 +160,11 @@ export default class Music extends BaseList<MusicPage> {
             style: {marginRight: '5px'},
             on: { click: () => { this.update(row) } }
           },'修改'),
+          h('Button', {
+            props: {size:'small'},
+            style: {marginRight: '5px'},
+            on: { click: () => { this.updateLyric(row) } }
+          },'歌词'),
           h('Button', {
             props: {size: 'small'},
             on: { click: () => { location.href = `${this.$http.defaults.baseURL || ''}/common/music/download/${row._id}` } }
@@ -145,6 +177,19 @@ export default class Music extends BaseList<MusicPage> {
   private musicLibs: MusicLibModel[] = []
   private musicData: MusicModel[] = []
   private modifyModal: boolean = false
+  private modifyLyricModal: boolean = false
+  private lyricRuleValidate = {
+    cloud_id: [
+      { required: true, message: '请输入网易云ID', trigger: 'blur' }
+    ],
+    name: [
+      { required: true, message: '请输入名称', trigger: 'blur' }
+    ],
+    lyric: [
+      { required: true, message: '请输入歌词正文', trigger: 'blur' }
+    ],
+  }
+  private lyricFormData: MusicLyricModel = {}
   // 是否正在播放音乐
   private musicPlaying: boolean = false
   private musicList: [] = []
@@ -199,6 +244,31 @@ export default class Music extends BaseList<MusicPage> {
   update(row: MusicModel) {
     this.currentRow = row
     this.modifyModal = true
+  }
+  async updateLyric(row: MusicModel) {
+    this.currentRow = row
+    this.modifyLyricModal = true
+    if (row.lyric_id) {
+      const { data } = (await this.$http.get('/music/lyric/get', {params: {lyricId: row.lyric_id}}))
+      data.cloud_id = data.cloud_id ? data.cloud_id.toString() : null
+      this.lyricFormData = data
+    } else {
+      this.lyricFormData = {}
+    }
+  }
+  async saveLyric() {
+    (this.$refs.lyricForm as VForm).validate(async (valid: boolean) => {
+      if(!valid) {
+        this.modalLoading = false
+        return
+      }
+      const { data } = await this.$http.post(`/music/lyric/save?musicId=${this.currentRow ? this.currentRow._id : ''}`, this.lyricFormData)
+      this.modifyLyricModal = false
+      this.$Message.success(data.message)
+      this.loadData()
+      // 清空表单
+      this.lyricFormData = {}
+    })
   }
   async updateMusicLib(libId: string) {
     if (!this.currentRow) return

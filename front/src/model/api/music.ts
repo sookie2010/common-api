@@ -16,3 +16,10 @@ export interface MusicLibModel {
   name: string // 歌单名称
   path: string // 歌单文件路径
 }
+
+export interface MusicLyricModel {
+  _id?: string
+  cloud_id?: number
+  name?: string
+  lyric?: string
+}
