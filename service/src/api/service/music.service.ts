@@ -102,16 +102,41 @@ export default class MusicService {
   }
 
   /**
-   * 获取歌词
+   * 获取歌词内容
    * @param lyricId 歌词ID
    */
-  async findLyric(lyricId: string): Promise<string | MsgResult> {
-    const musicLyric: MusicLyric = await this.musicLyricModel.findById(lyricId)
+  async findLyricContent(lyricId: string): Promise<string | MsgResult> {
+    const musicLyric: MusicLyric = await this.findLyric(lyricId)
     if (musicLyric) {
       return musicLyric.lyric
     } else {
       return new MsgResult(false, '歌词不存在')
     }
+  }
+
+  /**
+   * 获取歌词
+   * @param lyricId 歌词ID
+   */
+  async findLyric(lyricId: string): Promise<MusicLyric> {
+    return this.musicLyricModel.findById(lyricId)
+  }
+  
+  /**
+   * 保存歌词
+   * @param musicLyric 歌词信息
+   * @param musicId 歌曲ID
+   */
+  async saveLyric(musicLyric: MusicLyric, musicId: string): Promise<MsgResult> {
+    musicLyric.cloud_id = +musicLyric.cloud_id
+    if (musicLyric._id) {
+      await this.musicLyricModel.updateOne({_id: musicLyric._id}, {$set: musicLyric})
+    } else {
+      musicLyric._id = new Types.ObjectId()
+      await this.musicLyricModel.create(musicLyric)
+      await this.musicModel.updateOne({_id: musicId}, {$set: {lyric_id: musicLyric._id}})
+    }
+    return new MsgResult(true, '保存成功')
   }
 }
 /**

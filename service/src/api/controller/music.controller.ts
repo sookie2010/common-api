@@ -1,6 +1,6 @@
-import { Controller, Get, Query, Body, UseInterceptors, Post } from '@nestjs/common'
+import { Controller, Get, Query, Body, UseInterceptors, Post, ValidationPipe } from '@nestjs/common'
 import MusicService from '../service/music.service'
-import { Music, MusicDto, MusicLib } from '../interface/music.interface'
+import { Music, MusicDto, MusicLib, MusicLyric } from '../interface/music.interface'
 import { Page, PageResult, MsgResult } from '../../common/common.dto'
 import LoginInterceptor from '../../common/login.interceptor'
 import PageTransform from '../../common/page.transform'
@@ -52,5 +52,23 @@ export default class MusicController {
   @Post('/updateLib')
   updateLib(@Body('id') id: string, @Body('libId') libId: string): Promise<MsgResult> {
     return this.musicService.updateLib(id, libId)
+  }
+
+  /**
+   * 获取歌词
+   * @param lyricId 歌词ID
+   */
+  @Get('/lyric/get')
+  getLyric(@Query('lyricId') lyricId: string): Promise<MusicLyric> {
+    return this.musicService.findLyric(lyricId)
+  }
+  /**
+   * 保存歌词
+   * @param musicLyric 歌词信息
+   * @param musicId 歌曲ID
+   */
+  @Post('/lyric/save')
+  saveLyric(@Body(new ValidationPipe()) musicLyric: MusicLyric, @Query('musicId') musicId: string): Promise<MsgResult>{
+    return this.musicService.saveLyric(musicLyric, musicId)
   }
 }
