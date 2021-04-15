@@ -275,6 +275,7 @@ export default class Article extends BaseList<ArticlePage> {
         expand: false,
         title: childItem.article_id ? childItem._id : `${childItem._id}(${childItem.cnt})`,
         id: childItem.article_id || childItem._id,
+        isDirectory: !childItem.article_id,
         render: (h: CreateElement, {data}: {data: TreeNode}): Array<VNode | string> => {
           return [
             h('Icon', {props: {type: childItem.article_id ? 'md-paper' : 'md-folder-open'}, style: {marginRight: '8px'}}),
@@ -296,7 +297,7 @@ export default class Article extends BaseList<ArticlePage> {
    * @param curNode 本次选中的节点
    */
   async articlePreview(selectNodes: TreeNode[], curNode: TreeNode) {
-    if(!curNode.id) {
+    if(!curNode.id || curNode.isDirectory) {
       return
     }
     // 加载文章markdown预览

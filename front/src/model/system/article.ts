@@ -23,6 +23,7 @@ export interface TreeNode extends TreeNodeBase {
   children?: TreeNode[] // 子节点
   loading?: boolean // 是否显示加载中
   nodeKey?: number // 树节点唯一标识
+  isDirectory: boolean // 该节点是否为目录
   render?: (h: CreateElement, {data}: {data: TreeNode}) => Array<VNode | string>
 }
 
